@@ -11,47 +11,56 @@
 			sovereign=			"&svNeutral;"
 			inherit=			"&unidCommonText;"
 		
-			abandonedScreen=	"Main"
-			dockScreen=			"Main"
+			attributes=			"debris, friendly"
 
-			structuralHitPoints="20"
-			ejectaType=			"&vtWreckEjecta;"
+			dockScreen=			"Main"
+			abandonedScreen=	"Main"
 
 			scale=				"ship"
-			mobile=				"true"
+			size=				"20"
 			mass=				"50"
-			noMapIcon=			"true"
+			structuralHitPoints="20"
 
-			attributes=			"debris,friendly"
-			levelFrequency=		"ucccu rrvv- ----- ----- -----"
-			locationCriteria=	"+asteroids"
+			mobile=				"true"
+			noMapIcon=			"true"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="480" imageY="0" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="32" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="64" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="96" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="128" imageWidth="32" imageHeight="32" />
+		<!-- Encounter Info -->
 
-			<Image			imageID="&rsStations1;" imageX="480" imageY="160" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="192" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="224" imageWidth="32" imageHeight="32" />
+		<Encounter
+				levelFrequency=		"ucccu rrvv- ----- ----- -----"
+				locationCriteria=	"+asteroids"
+				/>
+
+		<!-- Image and Effects
+		
+			Sealed containers are mostly orange, with a small chance of other
+			colors.
+
+		-->
+
+		<ImageVariants>
+			<Image	imageID="&rsCargoContainer;"	imageX="0"   imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="56"  imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="112" imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="168" imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="224" imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="280" imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="336" imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="392" imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+
+			<Image	imageID="&rsCargoContainer;"	imageX="112" imageY="56"  imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="336" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
 		</ImageVariants>
 
-		<InitialData>
-			<Opened		data="Nil"/>
-		</InitialData>
-
-		<Events>
-			<GetExplosionType>
-				(intContainerGetExplosionType gSource)
-			</GetExplosionType>
-
-			<OnDamage>
-				(intContainerOnDamage gSource aDamageHP)
-			</OnDamage>
-		</Events>
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"50"
+				maxDist=		"3"
+				/>
+				
+		<!-- Dock Screen -->
 
 		<DockScreens>
 			<Main>
@@ -255,7 +264,7 @@
 						<Actions>
 							<Action id="actionContinue" default="1" cancel="1">
 								(block Nil
-									(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush1; 90)
+									(sysAddEncounterEventAtDist 0 gPlayerShip &etPirateAmbush; 90)
 									(scrExitDock gScreen)
 									)
 							</Action>
@@ -267,12 +276,22 @@
 
 		</DockScreens>
 
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"24"
-				maxDist=		"3"
-				/>
-				
+		<!-- Events and Data -->
+
+		<InitialData>
+			<Opened		data="Nil"/>
+		</InitialData>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
 		<Language>
 			<Text id="actionOpenSeal">[O]pen Seal</Text>
 			
@@ -300,7 +319,7 @@
 			<Text id="descPiratesAmbush">
 				
 				This appears to be a makeshift base for a group of pirates. You 
-				see several enemy ships appear on your screen...
+				see enemy ships appear on your screen...
 				
 			</Text>
 			<Text id="descPiratesSpies">
@@ -308,13 +327,13 @@
 				The cargo container is a makeshift pirate base filled with scanning
 				and communications gear.
 				
-				You see several enemy ships appear on your screen...
+				You see enemy ships appear on your screen...
 				
 			</Text>
 			
 			<Text id="descDefault">The hatch to the container is sealed. Do you wish to open it?</Text>
 			
-			<Text id="descContents2OneItem">The cargo container has %itemName%.)</Text>
+			<Text id="descContents2OneItem">The cargo container has %itemName%.</Text>
 			<Text id="descContents2VariousItems">The cargo container is filled with various items.</Text>
 			
 			<Text id="descContents4">
@@ -430,7 +449,7 @@
 	<StationType UNID="&stWeaponsCache;"
 			name=				"(weapons cache)"
 			sovereign=			"&svOutlaw;"
-			dockScreen=			"&dsAbandonedCrate;"
+			dockScreen=			"&dsRPGAbandonedStation;"
 
 			structuralHitPoints="15"
 			ejectaType=			"&vtWreckEjecta;"
@@ -505,7 +524,7 @@
 	<StationType UNID="&stWeaponsCrate;"
 			name=				"(weapons cache)"
 			sovereign=			"&svOutlaw;"
-			dockScreen=			"&dsAbandonedCrate;"
+			dockScreen=			"&dsRPGAbandonedStation;"
 
 			attributes=			"noSalvage"
 
@@ -566,5 +585,9 @@
 				/>
 
 	</StationType>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsCargoContainer;"	bitmap="Resources\CargoContainer.jpg" bitmask="Resources\CargoContainerMask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

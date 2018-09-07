@@ -399,33 +399,43 @@
 	<StationType UNID="&stOutlawConvoyEncounter;"
 			name=				"(outlaw convoy)"
 			sovereign=			"&svIndependentTrader;"
-			dockScreen=			"&dsAbandonedCrate;"
-
-			structuralHitPoints="20"
-			ejectaType=			"&vtWreckEjecta;"
-
-			scale=				"ship"
-			mobile=				"true"
-			mass=				"50"
-			noMapIcon=			"true"
 
 			attributes=			"debris, envAir, envAvoidsFire, friendly, outlaw"
-			levelFrequency=		"uuurv ----- ----- ----- -----"
-			locationCriteria=	"--planetary"
+
+			dockScreen=			"&dsRPGAbandonedStation;"
+
+			scale=				"ship"
+			size=				"20"
+			mass=				"50"
+			structuralHitPoints="20"
+
+			mobile=				"true"
+			noMapIcon=			"true"
+			ejectaType=			"&vtWreckEjecta;"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				levelFrequency=		"uuurv ----- ----- ----- -----"
+				locationCriteria=	"--planetary"
+				/>
 
 		<Names>abandoned cargo container</Names>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="480" imageY="0" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="32" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="64" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="96" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="128" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="160" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="192" imageWidth="32" imageHeight="32" />
-			<Image			imageID="&rsStations1;" imageX="480" imageY="224" imageWidth="32" imageHeight="32" />
-		</ImageVariants>
+		<!-- Items -->
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem1;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem1;"/>
+			</Table>
+		</Items>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Ship	count="1"	class="&scT31ArmedTransport;" orders="tradeRoute"	sovereign="&svBlackMarket;">
@@ -445,15 +455,34 @@
 			</Ship>
 		</Ships>
 
-		<Items>
-			<Table>
-				<Null	chance="20"/>
-				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
-				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
-				<Lookup chance="25" count="1"	table="&trMinorItem1;"/>
-				<Lookup chance="10" count="1"	table="&trMajorItem1;"/>
-			</Table>
-		</Items>
+		<!-- Image and Effects
+		
+			Abandoned containers are mostly yellow, with a small chance of other
+			colors.
+
+		-->
+
+		<ImageVariants>
+			<Image	imageID="&rsCargoContainer;"	imageX="0"   imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="56"  imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="112" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="168" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="224" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="280" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="336" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="392" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+
+			<Image	imageID="&rsCargoContainer;"	imageX="0"   imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="224" imageY="56"  imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"50"
+				maxDist=		"3"
+				/>
+
+		<!-- Events and Data -->
 
 		<Events>
 			<GetExplosionType>
@@ -464,12 +493,6 @@
 				(intContainerOnDamage gSource aDamageHP)
 			</OnDamage>
 		</Events>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"24"
-				maxDist=		"3"
-				/>
 	</StationType>
 
 	<!-- Outlaw Base -->

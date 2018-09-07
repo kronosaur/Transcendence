@@ -1707,10 +1707,11 @@
 	<!ENTITY rsBarbaryHD				"0x00100104">
 	<!ENTITY rsCorsairHD				"0x00100105">
 	<!ENTITY rsVikingHD					"0x00100106">
-
 	<!ENTITY rsCorsairHero				"0x00100107">
 	<!ENTITY rsVikingHero				"0x00100108">
 	<!ENTITY rsBarbaryHero				"0x00100109">
+
+	<!ENTITY etPirateAmbush				"0x0010010A">
 
 	<!-- 0120-013F SUNG SLAVERS -->
 	
@@ -2065,6 +2066,7 @@
 	<!-- 05E0-05FF MISCELLANEOUS -->
 
 	<!ENTITY itNeuralProcessor			"0x001005E0">
+	<!ENTITY rsCargoContainer			"0x001005E1">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
