@@ -418,12 +418,11 @@ CSpaceObject *CPlayerShipController::FindAutoTarget (CItemCtx &ItemCtx) const
 	//	If the weapon is directional, then we look for the best target within
 	//	our fire arc.
 
-	CDeviceClass *pWeapon;
+	CDeviceClass *pWeapon = ItemCtx.GetDeviceClass();
 	int iMinFireArc;
 	int iMaxFireArc;
 	if ((pWeapon = ItemCtx.GetDeviceClass()) 
-			&& pWeapon->CanRotate(ItemCtx, &iMinFireArc, &iMaxFireArc)
-			&& (iMinFireArc != iMaxFireArc))
+			&& pWeapon->GetRotationType(ItemCtx, &iMinFireArc, &iMaxFireArc) == CDeviceClass::rotSwivel)
 		{
 		//	Adjust for ship rotation
 
