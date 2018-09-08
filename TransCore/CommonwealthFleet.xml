@@ -698,7 +698,7 @@ PLAYER DATA
 		
 		<Devices>
 			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="355" maxFireArc="175" posAngle="90" posRadius="24" posZ="8"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="5" posAngle="-90" posRadius="24" posZ="8"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="5" posAngle="-90" posRadius="24" posZ="8"/>
 			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
 			<Device deviceID="&itR9Deflector;"/>
 		</Devices>
