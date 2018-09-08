@@ -509,31 +509,62 @@ void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			//	Paint type specific stuff
 
+			bool bPaintImageCenter = false;
+			int xObjCenter = xCenter - xOffset;
+			int yObjCenter = yCenter - yOffset;
+
 			switch (Entry.pType->GetType())
 				{
+				case designShipClass:
+					{
+					CShipClass *pClass = CShipClass::AsType(Entry.pType);
+
+					if (bDockingPorts)
+						{
+						pClass->PaintDockPortPositions(Output, xObjCenter, yObjCenter, iRotation);
+						bPaintImageCenter = true;
+						}
+
+					if (bDevicePos)
+						{
+						CDeviceDescList Devices;
+						pClass->GenerateDevices(pClass->GetLevel(), Devices);
+
+						pClass->PaintDevicePositions(Output, xObjCenter, yObjCenter, Devices, iRotation);
+						bPaintImageCenter = true;
+						}
+
+					break;
+					}
+
 				case designStationType:
 					{
 					CStationType *pStationType = CStationType::AsType(Entry.pType);
-                    int xStationCenter = xCenter - xOffset;
-                    int yStationCenter = yCenter - yOffset;
 
 					if (bDockingPorts)
-						pStationType->PaintDockPortPositions(Output, xStationCenter, yStationCenter);
+						{
+						pStationType->PaintDockPortPositions(Output, xObjCenter, yObjCenter);
+						bPaintImageCenter = true;
+						}
 
 					if (bDevicePos)
-						pStationType->PaintDevicePositions(Output, xStationCenter, yStationCenter);
+						{
+						pStationType->PaintDevicePositions(Output, xObjCenter, yObjCenter);
+						bPaintImageCenter = true;
+						}
 
-                    //  If we have docking or device positions, mark the center of the station
-
-                    if (bDockingPorts || bDevicePos)
-                        {
-                        const int LINE_HALF_LENGTH = 24;
-                        const CG32bitPixel RGB_CENTER_CROSS(255, 255, 0);
-                        Output.DrawLine(xStationCenter - LINE_HALF_LENGTH, yStationCenter, xStationCenter + LINE_HALF_LENGTH, yStationCenter, 1, RGB_CENTER_CROSS);
-                        Output.DrawLine(xStationCenter, yStationCenter - LINE_HALF_LENGTH, xStationCenter, yStationCenter + LINE_HALF_LENGTH, 1, RGB_CENTER_CROSS);
-                        }
 					break;
 					}
+				}
+
+			//	Paint the center of the image, if necessary
+
+			if (bPaintImageCenter)
+				{
+                const int LINE_HALF_LENGTH = 24;
+                const CG32bitPixel RGB_CENTER_CROSS(255, 255, 0);
+                Output.DrawLine(xObjCenter - LINE_HALF_LENGTH, yObjCenter, xObjCenter + LINE_HALF_LENGTH, yObjCenter, 1, RGB_CENTER_CROSS);
+                Output.DrawLine(xObjCenter, yObjCenter - LINE_HALF_LENGTH, xObjCenter, yObjCenter + LINE_HALF_LENGTH, 1, RGB_CENTER_CROSS);
 				}
 
 			//	Paint the 3D grid, if necessary
