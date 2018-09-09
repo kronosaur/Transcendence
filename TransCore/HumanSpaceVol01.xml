@@ -2067,6 +2067,7 @@
 
 	<!ENTITY itNeuralProcessor			"0x001005E0">
 	<!ENTITY rsCargoContainer			"0x001005E1">
+	<!ENTITY baCashCard					"0x001005E2">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>

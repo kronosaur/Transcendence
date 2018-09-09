@@ -1478,102 +1478,72 @@
 
 	<ItemType UNID="&itCashCardBlue;"
 			name=				"blue cash card"
+			attributes=			"cashCard, consumable, cannotOrder"
+			inherit=			"&baCashCard;"
+
 			level=				"2"
+			frequency=			"rare"
+
 			value=				"100"
 			mass=				"1"
-			frequency=			"rare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"cashCard, consumable, cannotOrder"
 
 			description=		"This ROM stores digital cash and may be redeemed automatically with your ship's computer."
-
-			charges=			"4d25"
-			valueCharges=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
-		<Invoke>
-			(block (amount)
-				(setq amount (multiply (itmGetCharges gItem) 2))
-				(objSendMessage gSource Nil (cat amount " credits deposited to your account."))
-				(plyCredit gPlayer amount)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
+		<StaticData>
+			<Data id="card.balance">(rollDice 8 24)</Data>
+		</StaticData>
 	</ItemType>
 
 	<!-- Cash Card, Gold -->
 
 	<ItemType UNID="&itCashCardGold;"
 			name=				"gold cash card"
+			attributes=			"cashCard, consumable, cannotOrder"
+			inherit=			"&baCashCard;"
+
 			level=				"4"
+			frequency=			"rare"
+
 			value=				"1000"
 			mass=				"1"
-			frequency=			"rare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"cashCard, consumable, cannotOrder"
 
 			description=		"This ROM stores digital cash and may be redeemed automatically with your ship's computer."
-
-			charges=			"4d25"
-			valueCharges=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
-		<Invoke>
-			(block (amount)
-				(setq amount (multiply (itmGetCharges gItem) 10))
-				(objSendMessage gSource Nil (cat amount " credits deposited to your account."))
-				(plyCredit gPlayer amount)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
+		<StaticData>
+			<Data id="card.balance">(rollDice 8 249)</Data>
+		</StaticData>
 	</ItemType>
 
 	<!-- Cash Card, Platinum -->
 
 	<ItemType UNID="&itCashCardPlatinum;"
 			name=				"platinum cash card"
+			attributes=			"cashCard, consumable, cannotOrder"
+			inherit=			"&baCashCard;"
+
 			level=				"6"
+			frequency=			"rare"
+
 			value=				"10000"
 			mass=				"1"
-			frequency=			"rare"
 			unknownType=		"&itUnknownROM;"
-			attributes=			"cashCard, consumable, cannotOrder"
 
 			description=		"This ROM stores digital cash and may be redeemed automatically with your ship's computer."
-
-			charges=			"4d25"
-			valueCharges=		"true"
 			>
 
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
-		<Invoke>
-			(block (amount)
-				(setq amount (multiply (itmGetCharges gItem) 100))
-				(objSendMessage gSource Nil (cat amount " credits deposited to your account."))
-				(plyCredit gPlayer amount)
-
-				; Identify the item
-				(itmSetKnown gItem)
-
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
-				)
-		</Invoke>
+		<StaticData>
+			<Data id="card.balance">(rollDice 8 2499)</Data>
+		</StaticData>
 	</ItemType>
 
 	<!-- Data ROM 
@@ -1919,7 +1889,7 @@
 			name=				"ROM biosoft(s)"
 			virtual=			"true"
 			level=				"1"
-			value=				"150"
+			value=				"300"
 			attributes=			"unknown"
 
 			description=		"These ROM biochips are generally used to upgrade a computer's neural network. Unfortunately, you have no knowledge of the software's specific nature or purpose."
@@ -2971,6 +2941,49 @@
 		</Panes>
 
 	</DockScreen>
+
+<!-- BASE CLASSES -->
+
+	<ItemType unid="&baCashCard;"
+			name=			"(cash card base)"
+			virtual=		"true"
+			level=			"1"
+			>
+		<Invoke>
+			(block (
+				(amount (or
+					(itmGetData gItem 'card.balance)
+					(eval (itmGetStaticData gItem 'card.balance))
+					))
+				)
+				;	Give money to whomever invoked it.
+
+				(objSendMessage gSource Nil (typTranslate gType 'msgCashDeposited {
+					amount: (fmtCurrency 'credit amount)
+					}))
+				(objCredit gSource amount)
+
+				;	Remove the item and identify it.
+
+				(itmSetKnown gItem)
+				(objRemoveItem gSource gItem 1)
+				)
+		</Invoke>
+
+		<Events>
+			<GetTradePrice>
+				(or (itmGetData gItem 'card.balance)
+					(itmGetPrice gItem)
+					)
+			</GetTradePrice>
+		</Events>
+
+		<Language>
+			<Text id="msgCashDeposited">
+				%amount% deposited to your account.
+			</Text>
+		</Language>
+	</ItemType>
 
 <!-- GLOBALS -->
 
