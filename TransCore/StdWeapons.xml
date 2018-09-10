@@ -878,27 +878,33 @@
 
 		<Weapon
 				type=				"particles"
-
 				damage=				"kinetic:25; WMD:1"
-				fireRate=			"16"
-				missileSpeed=		"40"
-				lifetime=			"60"
-				powerUse=			"150"
 
-				particleCount=		"1d11+44"
-				particleSpreadAngle="15"
+				fireRate=			"16"
+
+				powerUse=			"150"
 				sound=				"&snRecoillessCannon;"
 				>
 
-			<Effect>
-				<Particle
-						style=			"line"
-						primaryColor=	"#ccf7ff"
-						secondaryColor=	"#2e3233"
-						/>
-			</Effect>
-		</Weapon>
+			<ParticleSystem
+					style=				"spray"
+					emitLifetime=		"1"
+					emitRate=			"1d11+44"
+					emitSpeed=			"40"
+					spreadAngle=		"15"
 
+					particleLifetime=	"60"
+					>
+
+				<ParticleEffect>
+					<Particle
+							style=			"line"
+							primaryColor=	"#ccf7ff"
+							secondaryColor=	"#2e3233"
+							/>
+				</ParticleEffect>
+			</ParticleSystem>
+		</Weapon>
 	</ItemType>
 
 	<!-- Moskva 21 dual cannon -->
