@@ -21,6 +21,7 @@
 #define NO_LOGO_SWITCH						CONSTLIT("nologo")
 
 #define ADVENTURE_SWITCH					CONSTLIT("adventure")
+#define API_VERSION_SWITCH					CONSTLIT("apiVersion")
 #define ARMOR_TABLE_SWITCH					CONSTLIT("armortable")
 #define ATTRIBUTE_LIST_SWITCH				CONSTLIT("attributelist")
 #define DEBUG_SWITCH						CONSTLIT("debug")
@@ -506,6 +507,10 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 	else
 		Ctx.bNoResources = true;
 
+	//	API version
+
+	Ctx.dwMinAPIVersion = pCmdLine->GetAttributeIntegerBounded(API_VERSION_SWITCH, 0, API_VERSION, API_VERSION);
+
 	//	Extension
 
 	CString sExtensionFolder = pCmdLine->GetAttribute(EXTENSION_FOLDER_ATTRIB);
@@ -558,6 +563,7 @@ bool IsMainCommandParam (const CString &sAttrib)
 	return (strEquals(sAttrib, CONSTLIT("adventure"))
 			|| strEquals(sAttrib, CONSTLIT("all"))
 			|| strEquals(sAttrib, CONSTLIT("allClasses"))
+			|| strEquals(sAttrib, CONSTLIT("apiVersion"))
 			|| strEquals(sAttrib, CONSTLIT("criteria"))
 			|| strEquals(sAttrib, CONSTLIT("debug"))
 			|| strEquals(sAttrib, CONSTLIT("extensionFolder"))
