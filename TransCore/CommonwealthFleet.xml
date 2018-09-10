@@ -975,8 +975,9 @@ PLAYER DATA
 			>
 
 		<RepairerDevice
-				regen=			"10,10,10, 7, 7,  7, 5, 5, 5, 4"
-				powerUse=		"50"
+				regen=				"10,10,10, 7, 7,  7, 5, 5, 5, 4"
+				compartmentRegen=	"10"
+				powerUse=			"50"
 				/>
 
 	</ItemType>
