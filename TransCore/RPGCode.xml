@@ -1044,6 +1044,20 @@
                                                 (scrTranslate gScreen "actionUpgrade:noTech" { item:theItem itemLevel:(itmGetLevel theItem) })
                                                 )
 										}
+
+								;	If we don't have any upgrade items except what the ship already has,
+								;	then we don't allow upgrade.
+
+								(not (filter itemsForSale saleItem (not (itmIsEqual saleItem theItem 'ignoreInstalled))))
+									{
+										visible: True
+										enabled: Nil
+										desc: (scrTranslate gScreen 'actionUpgrade.noNewItems {
+											itemName: (itmGetName theItem Nil)
+											})
+										}
+
+								;	Otherwise, OK
 										
 								{
 									visible: True
