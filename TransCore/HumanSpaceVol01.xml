@@ -2216,6 +2216,7 @@
 	<!-- These modules implement items. They should be clean, for the most
 		part. -->
 
+	<Module filename="Barricades.xml"/>
 	<Module filename="MiscItems.xml"/>
 	<Module filename="MRAD.xml"/>
 	<Module filename="QuantumCPU.xml"/>

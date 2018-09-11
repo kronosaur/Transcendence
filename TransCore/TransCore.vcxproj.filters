@@ -756,5 +756,8 @@
     <Xml Include="SungSlaveCamp.xml">
       <Filter>Human Space Library\Sung Slavers</Filter>
     </Xml>
+    <Xml Include="Barricades.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

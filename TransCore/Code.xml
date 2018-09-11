@@ -62,29 +62,6 @@
 					)
 				))
 
-			(setq intBarricadeUse (lambda (barricadeClass)
-				(block (barricade orientation)
-				
-					(setq orientation (shpGetDirection gPlayerShip))
-					
-					; Create a barricade
-					(setq barricade (sysCreateStation barricadeClass (sysVectorPolarOffset gPlayerShip orientation 2)))
-					
-					(objSetProperty barricade 'rotation orientation)
-					
-					; If the item is damaged, then the barricade is damaged
-					(if (itmIsDamaged gItem)
-						(objSetProperty barricade 'structuralHP (divide (objGetProperty barricade 'maxStructuralHP) 2))
-						)
-					
-					; Remember the item we used so we can recover it
-					(objSetData barricade 'SourceItem (itmSetCount gItem 1))
-
-					; Use up the item
-					(objRemoveItem gSource gItem 1)
-					)
-				))
-
 			(setq intComputeBuyPrice (lambda (thisItem)
 				(objGetBuyPrice gSource thisItem)
 				))
