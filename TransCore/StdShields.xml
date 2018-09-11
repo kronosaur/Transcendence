@@ -373,11 +373,14 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"200"
+				hitPoints=		"0"
 				hpBonus=		"+200,+200, +50, +50"
 				regen=			"0"
 				depletionDelay=	"0"
 				powerUse=		"50"
+
+				hasNonRegenHP=	"true"
+				maxCharges=		"200"
 				/>
 
 	</ItemType>
@@ -399,25 +402,37 @@
 		<Image imageID="&rsItems1;" imageX="288" imageY="480" imageWidth="96" imageHeight="96"/>
 
 		<Invoke key="L">
-			(switch
-				; Does the ship have a superconducting shield? If not
-				; then we can't do anything.
-				(not (eq (shpGetShieldItemUNID gSource) &itSuperconductingShields;))
-					(objSendMessage gSource Nil "Superconducting shields required")
+			(block (
+				(shieldItem (@ (objGetItems gSource "sI") 0))
+				(maxCharges (objGetItemProperty gSource shieldItem 'maxCharges))
+				(charges (objGetItemProperty gSource shieldItem 'charges))
+				)
+				(switch
+					; Does the ship have a superconducting shield? If not
+					; then we can't do anything.
+					(!= (itmGetType shieldItem) &itSuperconductingShields;)
+						(objSendMessage gSource Nil (typTranslate gType 'msgSSRequired))
 
-				; Are the shields fully charged? If they are, then this
-				; won't do anything.
-				(eq (shpGetShieldDamage gSource) 0)
-					(objSendMessage gSource Nil "Superconducting shields already fully charged")
+					; Are the shields fully charged? If they are, then this
+					; won't do anything.
+					(geq charges maxCharges)
+						(objSendMessage gSource Nil (typTranslate gType 'msgSSFull))
 
-				; Charge the shields
-				(block Nil
-					(shpRechargeShield gSource (random 40 60))
-					(objRemoveItem gSource gItem 1)
-					(objSendMessage gSource Nil "Superconducting shields recharged")
+					; Charge the shields
+					(block Nil
+						(objSetItemProperty gSource shieldItem 'incCharges (random 40 60))
+						(objRemoveItem gSource gItem 1)
+						(objSendMessage gSource Nil (typTranslate gType 'msgSSRecharged))
+						)
 					)
 				)
 		</Invoke>
+
+		<Language>
+			<Text id="msgSSRequired">Superconducting shields required</Text>
+			<Text id="msgSSFull">Superconducting shields already fully charged</Text>
+			<Text id="msgSSRecharged">Superconducting shields recharged</Text>
+		</Language>
 	</ItemType>
 
 	<!-- Yoroi S100 -->
