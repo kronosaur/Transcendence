@@ -10,19 +10,20 @@
 			adjective="Corporate"
 			demonym=":a Corporate shareholder(s)"
 			alignment="constructive chaos"
+			   
+			inherit="&unidCommonText;"
 			>
 			
 		<Events>
 			<GetGlobalAchievements>
 				(append
+					;	Crime record
+					
 					(if (geq (int (objGetData gPlayerShip "corpCrimeSeverity")) 2)
-						(list
-							(list
-								"Corporate Hierarchy"
-								(cat "Wanted for " (objGetData gPlayerShip 'corpCrime))
-								"crime record"
-								)
-							)
+						{
+							desc: (typTranslate gType 'textWantedFor { crimeText: (objGetData gPlayerShip 'corpCrime) })
+							sectionID: 'criminalRecord
+							}
 						)
 					)
 			</GetGlobalAchievements>
@@ -82,6 +83,7 @@
 
 		<Language>
 			<Text id="crimeMassDestruction">the mass murder of Corporate citizens</Text>
+			<Text id="textWantedFor">Wanted by the Corporate Hierarchy for %crimeText%</Text>
 		</Language>
 	</Sovereign>
 

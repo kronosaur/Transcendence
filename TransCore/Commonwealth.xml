@@ -2602,6 +2602,7 @@
 			demonym=":a Commonwealth citizen(s)"
 
 			alignment="constructive chaos"
+			inherit="&unidCommonText;"
 			>
 
 		<AttributeDesc>
@@ -2617,14 +2618,13 @@
 		<Events>
 			<GetGlobalAchievements>
 				(append
+					;	Crime record
+					
 					(if (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
-						(list
-							(list
-								"Commonwealth"
-								(cat "Wanted for " (objGetData gPlayerShip "commonCrime"))
-								"crime record"
-								)
-							)
+						{
+							desc: (typTranslate gType 'textWantedFor { crimeText: (objGetData gPlayerShip 'commonCrime) })
+							sectionID: 'criminalRecord
+							}
 						)
 					)
 			</GetGlobalAchievements>
@@ -2709,6 +2709,10 @@
 					)
 			</OnGlobalPlayerSoldItem>
 		</Events>
+		
+		<Language>
+			<Text id="textWantedFor">Wanted by the Commonwealth for %crimeText%</Text>
+		</Language>
 	</Sovereign>
 
 	<EconomyType UNID="&ecCreditEconomy;"

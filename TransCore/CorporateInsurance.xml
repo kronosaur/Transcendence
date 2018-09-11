@@ -43,22 +43,30 @@
 		<Events>
 			<GetGlobalAchievements>
 				(append
-					;	Rank
 					(if (typGetData &stInsuranceCompany; 'insured)
-						(list
-							(list
-								"Insurance provider"
-								"Clavius Insurance Conglomerate"
-								)
-							)
+						{
+							descID: 'insuredBy
+							value: (typGetProperty gType 'name)
+							}
 						)
-					(if (gr (typGetData &stInsuranceCompany; 'claims) 0)
-						(list
-							(list
-								"Insurance claims"
-								(typGetData &stInsuranceCompany; 'claims)
-								)
-							)
+					(switch
+						(gr (typGetData &stInsuranceCompany; 'claims) 0)
+							{
+								descID: 'insuranceClaims
+								value: (typGetData &stInsuranceCompany; 'claims)
+								sectionID: 'conducts
+								}
+								
+						(typGetData &stInsuranceCompany; 'insured)
+							{
+								descID: 'neverClaimedInsurance
+								sectionID: 'conducts
+								}
+								
+						{
+							descID: 'neverBoughtInsurance
+							sectionID: 'conducts
+							}
 						)
 					)
 			</GetGlobalAchievements>
@@ -326,8 +334,14 @@
 				insurance conglomerate stands behind you."
 
 			</Text>
+			
+			<Text id="insuranceClaims">Insurance claims</Text>
+			<Text id="insuredBy">Insured by</Text>
+			<Text id="neverBoughtInsurance">Never bought life insurance</Text>
+			<Text id="neverClaimedInsurance">Never claimed life insurance</Text>
+			
             <Text id="core.mapDesc">
-                "Life insurance policies"
+				Life insurance policies
             </Text>
         </Language>
 	</StationType>
