@@ -1011,7 +1011,10 @@ DWORD CPlayerShipController::OnCommunicate (CSpaceObject *pSender, MessageTypes 
 			if (pSender)
 				{
 				if (!sID.IsBlank())
-					bHandled = pSender->Translate(sID, NULL, &sMessage);
+					{
+					bHandled = (pSender->Translate(strPatternSubst(CONSTLIT("core.%s"), sID), NULL, &sMessage)
+							|| pSender->Translate(sID, NULL, sMessage));
+					}
 				else
 					bHandled = false;
 
