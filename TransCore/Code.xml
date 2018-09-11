@@ -74,8 +74,11 @@
 					
 					; If the item is damaged, then the barricade is damaged
 					(if (itmIsDamaged gItem)
-						(staSetStructuralHP barricade (divide (staGetStructuralHP barricade) 2))
+						(objSetProperty barricade 'structuralHP (divide (objGetProperty barricade 'maxStructuralHP) 2))
 						)
+					
+					; Remember the item we used so we can recover it
+					(objSetData barricade 'SourceItem (itmSetCount gItem 1))
 
 					; Use up the item
 					(objRemoveItem gSource gItem 1)

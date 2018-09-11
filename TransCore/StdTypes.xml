@@ -1151,7 +1151,9 @@
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
-			structuralHitPoints="25"
+			armorID=			"&itReinforcedTitanium1;"
+			structuralHitPoints="100"
+				 
 			ejectaType=			"&vtWreckEjecta;"
 
 			scale=				"ship"
@@ -1163,18 +1165,25 @@
 
 		<DockingPorts
 				portCount=		"2"
-				portRadius=		"32"
+				portRadius=		"48"
 				maxDist=		"3"
 				/>
 
+		<InitialData>
+			<Data id="SourceItem">
+				(itmCreate &itReinforcedTitanium1; 1)
+			</Data>
+		</InitialData>
 	</StationType>
 
 	<StationType UNID="&stBarricade2;"
 			name=				"titanium barricade"
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
-
-			structuralHitPoints="50"
+				 
+			armorID=			"&itReinforcedTitanium2;"
+			structuralHitPoints="200"
+				 
 			ejectaType=			"&vtWreckEjecta;"
 
 			scale=				"ship"
@@ -1186,10 +1195,15 @@
 
 		<DockingPorts
 				portCount=		"2"
-				portRadius=		"32"
+				portRadius=		"48"
 				maxDist=		"3"
 				/>
 
+		<InitialData>
+			<Data id="SourceItem">
+				(itmCreate &itReinforcedTitanium2; 1)
+			</Data>
+		</InitialData>
 	</StationType>
 
 	<StationType UNID="&stBarricade3;"
@@ -1197,7 +1211,9 @@
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsBarricade;"
 
-			structuralHitPoints="100"
+			armorID=			"&itReinforcedTitanium3;"
+			structuralHitPoints="400"
+				 
 			ejectaType=			"&vtWreckEjecta;"
 
 			scale=				"ship"
@@ -1209,10 +1225,15 @@
 
 		<DockingPorts
 				portCount=		"2"
-				portRadius=		"32"
+				portRadius=		"48"
 				maxDist=		"3"
 				/>
 
+		<InitialData>
+			<Data id="SourceItem">
+				(itmCreate &itReinforcedTitanium3; 1)
+			</Data>
+		</InitialData>
 	</StationType>
 
 	<!-- Flotsam -->
