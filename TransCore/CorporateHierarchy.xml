@@ -24,7 +24,9 @@
 								)
 							)
 						)
+					)
 			</GetGlobalAchievements>
+
 			<GetGlobalDockScreen>
 				(switch
 					; This only applies to corporate hierarchy stations

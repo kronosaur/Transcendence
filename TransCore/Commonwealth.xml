@@ -2628,6 +2628,7 @@
 						)
 					)
 			</GetGlobalAchievements>
+
 			<GetGlobalDockScreen>
 				; If the player has docked with an active commonwealth station
 				; with customs, then we need to check for various things

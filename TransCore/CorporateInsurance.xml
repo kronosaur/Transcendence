@@ -60,8 +60,9 @@
 								)
 							)
 						)
-
+					)
 			</GetGlobalAchievements>
+
 			<GetGlobalResurrectPotential>
 				(switch
 					; If not insured, we never resurrect
