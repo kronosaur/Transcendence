@@ -2615,6 +2615,19 @@
 		</AttributeDesc>
 
 		<Events>
+			<GetGlobalAchievements>
+				(append
+					(if (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
+						(list
+							(list
+								"Commonwealth"
+								(cat "Wanted for " (objGetData gPlayerShip "commonCrime"))
+								"crime record"
+								)
+							)
+						)
+					)
+			</GetGlobalAchievements>
 			<GetGlobalDockScreen>
 				; If the player has docked with an active commonwealth station
 				; with customs, then we need to check for various things
