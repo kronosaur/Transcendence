@@ -542,6 +542,7 @@
 							itemCount: (itmGetCount itemNeeded)
 							itemName: (itmGetName itemNeeded 'actual)
 							itemNames: (itmGetName itemNeeded '(actual plural))
+							itemNamesShort: (itmGetName itemNeeded '(actual plural short))
 							})
 						desc
 						)
@@ -785,7 +786,7 @@
 				Unfortunately, you need %itemCount% more %itemNames%.
 			</Text>
 			<Text id="errorComponentMissing">
-				Unfortunately, you do not have any %itemNames%.
+				Unfortunately, you do not have any %itemNamesShort%.
 			</Text>
 			<Text id="errorMoneyLacking">
 				Unfortunately, you do not have enough credits.
