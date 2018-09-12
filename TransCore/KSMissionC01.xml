@@ -407,7 +407,7 @@
 						}
 					{
 						descID: 'textFailureDebrief2
-						data: { item: (itmGetName (msnGetData gSource 'rewardItem) 'count) }
+						data: { item: (itmGetName (msnGetData gSource 'rewardItem) '(count escapeQuotes)) }
 						}
 					)
 			</Text>
@@ -428,7 +428,7 @@
 			</Text>
 			<Text id="SuccessDebrief">
 				(msnTranslate gSource 'textSuccessDebrief {
-					reward: (itmGetName (msnGetData gSource 'rewardItem) 0x040)
+					reward: (itmGetName (msnGetData gSource 'rewardItem) '(demonstrative))
 					})
 			</Text>
 			<Text id="textSuccessDebrief">
