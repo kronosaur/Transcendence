@@ -82,7 +82,7 @@
 
 						(priceData
 							(map nodesToCheck 'excludeNil theData 
-								(if (gr (setq tempPrice (sysGetItemBuyPrice (@ theData 'nodeID) theItem)) minPrice) {
+								(if (gr (setq tempPrice (sysGetItemBuyPrice (@ theData 'nodeID) theItem "* -blackMarket;")) minPrice) {
 									nodeID: (@ theData 'nodeID)
 									distance: (@ theData 'distance)
 									price: tempPrice
@@ -108,7 +108,7 @@
 							'nodeID
 							))
 
-						(knownObjs (sysFindObject gPlayerShip "sTAFV +property:known;"))
+						(knownObjs (sysFindObject gPlayerShip "sTAFV +property:known; -blackMarket;"))
 						(localPriceData
 							(map knownObjs 'excludeNil theObj 
 								(if (gr (setq tempPrice 
