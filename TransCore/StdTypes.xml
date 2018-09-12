@@ -1132,8 +1132,13 @@
 			levelFrequency=		"ucccu rrvv- ----- ----- -----"
 			locationCriteria=	"-planetary"
 			>
-		<Image shipwreckID="&scCorsair;, &scBorer;, &scEarthzone;, &scRoninA;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scCorsair;"/>
+			<Shipwreck class="&scBorer;"/>
+			<Shipwreck class="&scEarthzone;"/>
+			<Shipwreck class="&scRoninA;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table>
 				<Null	chance="20"/>
@@ -1177,8 +1182,13 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
-		<Image shipwreckID="&scRoninB;, &scSotho;, &scEI100;, &scT31ArmedTransport;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scRoninB;"/>
+			<Shipwreck class="&scSotho;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scT31ArmedTransport;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table count="2">
 				<Null	chance="10"/>
@@ -1225,8 +1235,12 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
-		<Image shipwreckID="&scRepentant;, &scEI100;, &scBarbary;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scRepentant;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scBarbary;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table count="1d4">
 				<Null	chance="5"/>
@@ -1277,8 +1291,12 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
-		<Image shipwreckID="&scPlague;, &scEI100;, &scRevelations;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scPlague;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scRevelations;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table count="1d4">
 				<Null	chance="5"/>
@@ -1409,7 +1427,7 @@
 			noMapIcon=			"true"
 			>
 			
-		<Image shipwreckID="&scMikeno;"/>
+		<ImageShipwreck class="&scMikeno;"/>
 		
 		<DockScreens>
 			<Main name="Debug Depot">
