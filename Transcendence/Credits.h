@@ -12,12 +12,13 @@ const int ADDITIONAL_PROGRAMMING_COUNT = (sizeof(ADDITIONAL_PROGRAMMING) / sizeo
 
 static char *SPECIAL_THANKS[] =
 	{
+	"Alexander Huitric (Wolfy) • Patrick Martin (Megas) • Joe Needleman (Ttech) • Ember Song (Shrike)",
+
 	"Betelgeuse • Nathan Brown (Atarlost) • Michael Curran (Burzmali)",
-	"Ruggero Dondi (Digdug) • Johan Friis (Alterecco) • Alexander Huitric (Wolfy)",
-	"David Lenker (dvlenk6) • Hendrik Liersch (Bimbel) • Jess Merkley (Fossaman)",
-	"Jason Miao • Kieran Mitchell (Yugi) • Mike Mosher (Prophet)",
-	"Bryan Murray (Periculi) • Joe Needleman (Ttech) • Dan Newman (SparcMan)",
-	"Robert Patrick (RPC) • Ember Song (Shrike)",
+	"Ruggero Dondi (Digdug) • Johan Friis (Alterecco) • David Lenker (dvlenk6)",
+	"Hendrik Liersch (Bimbel) • Jess Merkley (Fossaman) • Jason Miao",
+	"Kieran Mitchell (Yugi) • Mike Mosher (Prophet) • Bryan Murray (Periculi)",
+	"Dan Newman (SparcMan) • Robert Patrick (RPC)",
 	};
 
 const int SPECIAL_THANKS_COUNT = (sizeof(SPECIAL_THANKS) / sizeof(SPECIAL_THANKS[0]));
@@ -34,7 +35,6 @@ static char *FEEDBACK[] =
 	"Aniki",
 	"Apemant",
 	"Aquilai",
-	"Archcannon/0xABCDEF",
 	"Arkheias",
 	"AssumedPseudonym",
 	"Azmond",
@@ -97,7 +97,6 @@ static char *FEEDBACK[] =
 
 	"Sisir Gadisetti (Blitz)",
 	"Marcus Gavel",
-	"giantcabbage",
 	"Goat Not Sheep",
 	"Fritz Goldhoorn",
 
@@ -142,7 +141,6 @@ static char *FEEDBACK[] =
 	"Manekineko",
 	"Marmot",
 	"D. F. McCourt",
-	"Megas",
 	"Mesh",
 	"Mingan",
 	"Mist",
@@ -157,7 +155,6 @@ static char *FEEDBACK[] =
 	"Jeremy Nicoll",
 	"Jan Nielsen",
 	"Nimatek",
-	"NMS",
 
 	"Obsidean",
 	"OddBob",
@@ -170,7 +167,6 @@ static char *FEEDBACK[] =
 	"pixelfck",
 	"PKodon",
 	"PlayMeNow",
-	"PM",
 	"Ponkan",
 	"Premier",
 	"Psycholis",
@@ -256,6 +252,7 @@ static char *INSPIRATION[] =
 	"Diablo",
 	"The Diamond Age",
 	"Downbelow Station",
+	"The Expanse",
 	"Dwarf Fortress",
 	"Firefly",
 	"A Fire Upon the Deep",
