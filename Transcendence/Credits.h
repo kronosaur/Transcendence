@@ -12,7 +12,8 @@ const int ADDITIONAL_PROGRAMMING_COUNT = (sizeof(ADDITIONAL_PROGRAMMING) / sizeo
 
 static char *SPECIAL_THANKS[] =
 	{
-	"Alexander Huitric (Wolfy) • Patrick Martin (Megas) • Joe Needleman (Ttech) • Ember Song (Shrike)",
+	"Alexander Huitric (Wolfy) • Patrick Martin (Megas) • Joe Needleman (Ttech)",
+	"Jeremy Skaggs (AssumedPseudonym) • Ember Song (Shrike)",
 
 	"Betelgeuse • Nathan Brown (Atarlost) • Michael Curran (Burzmali)",
 	"Ruggero Dondi (Digdug) • Johan Friis (Alterecco) • David Lenker (dvlenk6)",
