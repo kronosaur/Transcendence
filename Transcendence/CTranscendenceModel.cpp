@@ -1091,9 +1091,20 @@ void CTranscendenceModel::GenerateGameStats (CGameStats *retStats, bool bGameOve
 		bCleanUp = true;
 		}
 
-	//	Add the game version
+	//	Add the current game version
 
 	retStats->Insert(CONSTLIT("Version"), m_Version.sProductVersion);
+
+	//	If we created the game with a different version, show that too
+
+	CString sCreateVersion = m_GameFile.GetCreateVersion();
+	if (!strEquals(m_Version.sProductVersion, sCreateVersion))
+		{
+		if (sCreateVersion.IsBlank())
+			retStats->Insert(CONSTLIT("Version Created"), CONSTLIT("Unknown"));
+		else
+			retStats->Insert(CONSTLIT("Version Created"), sCreateVersion);
+		}
 
 	//	Some stats we only add at the end of the game
 
@@ -1468,7 +1479,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		//	Log that we loaded a game
 
-		kernelDebugLogPattern("Loaded game file version: %x", m_GameFile.GetCreateVersion());
+		kernelDebugLogPattern("Loaded game file version: %s", (LPSTR)m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
 
 		return NOERROR;
 		}
