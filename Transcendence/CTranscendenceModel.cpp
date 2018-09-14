@@ -1479,7 +1479,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		//	Log that we loaded a game
 
-		kernelDebugLogPattern("Loaded game file version: %s", (LPSTR)m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
+		kernelDebugLogPattern("Loaded game file version: %s", m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
 
 		return NOERROR;
 		}
