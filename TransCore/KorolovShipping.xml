@@ -79,7 +79,7 @@
 						(= level 2) "Journeyman"
 						(= level 3) "Master"
 						(= level 4) "Legend"
-						(cat "ERROR: Korolov level: " level)
+						(cat "ERROR: Korolov level: " (or level "Nil"))
 						)
 					)
 			</Text>
@@ -329,13 +329,24 @@
 							</Action>
 
 							<Action id="actionDockServices">
-								(if (typGetData &unidKorolovShipping; 'level)
-									(rpgDockServices gPlayerShip {
-										checkMilitaryID: True
-										})
-									(scrShowScreen gScreen &dsRPGMessage; {
-										desc: (scrTranslate gScreen 'descNoDockServicesAccess)
-										})
+								(block (
+									(playerLevel (typGetData &unidKorolovShipping; 'level))
+									)
+									(switch
+										(not playerLevel)
+											(scrShowScreen gScreen &dsRPGMessage; {
+												desc: (scrTranslate gScreen 'descNoDockServicesAccess)
+												})
+
+										(= playerLevel -1)
+											(scrShowScreen gScreen &dsRPGMessage; {
+												desc: (scrTranslate gScreen 'descNoDockServicesAccess)
+												})
+
+										(rpgDockServices gPlayerShip {
+											checkMilitaryID: True
+											})
+										)
 									)
 							</Action>
 
@@ -1185,6 +1196,39 @@
 							)
 					)
 			</OnBehavior>
+
+			<OnDockObjDestroyed>
+				;	If a station that we're docked with got destroyed, then we 
+				;	need to react.
+
+				(switch
+					;	If we're being escorted by the player, don't do anything
+					;	(Let the mission handle it).
+
+					(objGetData gSource 'korolovPlayerEscort)
+						Nil
+
+					;	If the station destroyed was our home base, then we just 
+					;	gate out.
+
+					(= (objGetID aObjDestroyed) (objGetData gSource 'home))
+						(block ()
+							(shpCancelOrders gSource)
+							(shpOrder gSource 'gate)
+							(objSetObjRefData gSource 'korolovDest Nil)
+							)
+
+					;	Otherwise, return home
+
+					(block (
+						(homeObj (objGetObjByID (objGetData gSource 'home)))
+						)
+						(shpCancelOrders gSource)
+						(shpOrder gSource 'dock homeObj)
+						(objSetObjRefData gSource 'korolovDest Nil)
+						)
+					)
+			</OnDockObjDestroyed>
 			
 			<OrderTraffic>
 				(block (
@@ -1219,7 +1263,7 @@
 						(block Nil
 							(shpCancelOrders gSource)
 							(shpOrder gSource 'dock dest)
-							(shpOrder gSource 'wait Nil (random 5 12))
+							(shpOrder gSource 'waitForThreat Nil (random 5 12))
 							(shpOrder gSource 'dock homeObj)
 							(objSetObjRefData gSource 'korolovDest Nil)
 							)
@@ -1467,15 +1511,24 @@
 					(rpgMissionRewardPayment (msnGetData missionObj 'reward))
 					(typIncData &unidKorolovShipping; 'xp (msnGetData missionObj 'missionXP))
 
-					; If the player has destroyed 3 frigates, try deploying the Kronosaurus
+					;	If the player has destroyed 3 frigates, try deploying the Kronosaurus
+					;	NOTE: chrDeployKronosaurus will return Nil if the Kronosaurus is already
+					;	dead.
+
 					(if (geq (typGetGlobalData &scCharonFrigateRaider; 'totalDestroyed) 3)
 						(msnSetData missionObj 'kronosaurusWarning (chrDeployKronosaurus))
 						)
 
-					; Check to see if we've been promoted
+					;	Check to see if we've been promoted
+					;
+					;	NOTE: In some cases korComputePlayerLevel will return a lower level than
+					;	the player's current level. This can happen because killing the Kronosaurus
+					;	automatically brings the player up to level 4, even if they've previously
+					;	failed a mission (which forces a cap at level 3).
+
 					(setq oldRank (korGetPlayerLevel))
 					(setq newRank (korComputePlayerLevel))
-					(if (not (= oldRank newRank))
+					(if (gr newRank oldRank)
 						(block Nil
 
 							;	dsRPGMission checks for a well-known data member in the mission

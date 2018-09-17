@@ -858,4 +858,53 @@
 		</Effect>
 	</EffectType>
 
+	<EffectType unid="&efDarkAcidBoltDefault;"
+			instance=		"owner"
+			>
+		<Effect>
+			<Ray
+					style=			"smooth"
+					shape=			"oval"
+					primaryColor=	"#00ff6a"
+					secondaryColor=	"#00b24a"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+
+							{
+								length: (mathScale damageHP 240 3250 80 260 50)
+								width: (mathScale damageHP 240 3250 12 24 50)
+								intensity: 50
+								}
+							)
+					</GetParameters>
+				</Events>
+			</Ray>
+
+			<ParticlePattern
+					style=			"comet"
+					particleCount=	"160"
+					primaryColor=	"#00ffea"
+					jitterLength=	"80-150"
+					>
+				<Events>
+					<GetParameters>
+						(block (
+							(damageHP (@ gData 'damageHP))
+							)
+							{
+								particleCount: (mathScale damageHP 240 3250 200 300 50)
+								length: (mathScale damageHP 240 3250 80 260 50)
+								width: (mathScale damageHP 240 3250 6 12 50)
+								}
+							)
+					</GetParameters>
+				</Events>
+			</ParticlePattern>
+		</Effect>
+	</EffectType>
+
 </TranscendenceModule>

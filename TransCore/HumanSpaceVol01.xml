@@ -1579,6 +1579,8 @@
 	<!ENTITY rsIceFarmRocky				"0x00100048">
 	<!ENTITY dsInsuranceCriminalLiability	"0x00100049">
 	<!ENTITY rsCorporateEnclave			"0x0010004A">
+	<!ENTITY rsCorporateArmorDealer		"0x0010004B">
+	<!ENTITY rsCorporateFuelDepot		"0x0010004C">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
@@ -1705,10 +1707,11 @@
 	<!ENTITY rsBarbaryHD				"0x00100104">
 	<!ENTITY rsCorsairHD				"0x00100105">
 	<!ENTITY rsVikingHD					"0x00100106">
-
 	<!ENTITY rsCorsairHero				"0x00100107">
 	<!ENTITY rsVikingHero				"0x00100108">
 	<!ENTITY rsBarbaryHero				"0x00100109">
+
+	<!ENTITY etPirateAmbush				"0x0010010A">
 
 	<!-- 0120-013F SUNG SLAVERS -->
 	
@@ -2060,6 +2063,12 @@
 
 	<!ENTITY itSuperHeavyBlastPlate		"0x001005C0">
 
+	<!-- 05E0-05FF MISCELLANEOUS -->
+
+	<!ENTITY itNeuralProcessor			"0x001005E0">
+	<!ENTITY rsCargoContainer			"0x001005E1">
+	<!ENTITY baCashCard					"0x001005E2">
+
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
 	
@@ -2195,6 +2204,7 @@
 	<Module filename="Salvagers.xml"/>
 	<Module filename="Sapiens.xml"/>
 	<Module filename="SistersOfDomina.xml"/>
+	<Module filename="SungSlaveCamp.xml"/>
 	<Module filename="SungSlavers.xml"/>
 	<Module filename="TeratonResearch.xml"/>
 	<Module filename="Teratons.xml"/>
@@ -2206,8 +2216,10 @@
 	<!-- These modules implement items. They should be clean, for the most
 		part. -->
 
+	<Module filename="Barricades.xml"/>
 	<Module filename="MiscItems.xml"/>
 	<Module filename="MRAD.xml"/>
+	<Module filename="QuantumCPU.xml"/>
 	<Module filename="StdArmor.xml"/>
 	<Module filename="StdAutons.xml"/>
 	<Module filename="StdDevices.xml"/>

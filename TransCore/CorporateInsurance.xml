@@ -41,6 +41,36 @@
 		</Ships>
 
 		<Events>
+			<GetGlobalAchievements>
+				(append
+					(if (typGetData &stInsuranceCompany; 'insured)
+						{
+							descID: 'insuredBy
+							value: (typGetProperty gType 'name)
+							}
+						)
+					(switch
+						(gr (typGetData &stInsuranceCompany; 'claims) 0)
+							{
+								descID: 'insuranceClaims
+								value: (typGetData &stInsuranceCompany; 'claims)
+								sectionID: 'conducts
+								}
+								
+						(typGetData &stInsuranceCompany; 'insured)
+							{
+								descID: 'neverClaimedInsurance
+								sectionID: 'conducts
+								}
+								
+						{
+							descID: 'neverBoughtInsurance
+							sectionID: 'conducts
+							}
+						)
+					)
+			</GetGlobalAchievements>
+
 			<GetGlobalResurrectPotential>
 				(switch
 					; If not insured, we never resurrect
@@ -304,8 +334,14 @@
 				insurance conglomerate stands behind you."
 
 			</Text>
+			
+			<Text id="insuranceClaims">Insurance claims</Text>
+			<Text id="insuredBy">Insured by</Text>
+			<Text id="neverBoughtInsurance">Never bought life insurance</Text>
+			<Text id="neverClaimedInsurance">Never claimed life insurance</Text>
+			
             <Text id="core.mapDesc">
-                "Life insurance policies"
+				Life insurance policies
             </Text>
         </Language>
 	</StationType>

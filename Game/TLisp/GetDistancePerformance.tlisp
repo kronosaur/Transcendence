@@ -1,0 +1,17 @@
+
+(block (
+	(allNodes (sysGetNodes))
+	(curNode (@ allNodes 0))
+
+	startTime
+	)
+	(print (count allNodes) " nodes")
+
+	(setq startTime (sysTicks))
+
+	(map allNodes theNode
+		(sysGetTopologyDistance curNode theNode)
+		)
+
+	(print "Time: " (- (sysTicks) startTime))
+	)

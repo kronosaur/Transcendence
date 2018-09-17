@@ -451,36 +451,6 @@
 				We sell mining equipment up to tech level %maxLevel%.
 			</Text>
 
-			<Text id="Intro:New">
-
-				The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands
-				on a platform in the center, surrounded by comms equipment and visual displays.
-				He turns his attention towards you as you approach:
-
-				"Welcome to %stationName%! I saw your ship on my displays; she looks like she's armed for combat.
-				How about taking on a mission for us? We could use the help, and there would be payment."
-
-			</Text>
-			<Text id="Intro:Return">
-				(cat
-					(random
-						(list
-							"The colony supervisor stands at the center plugged in to his consoles and display. "
-							"The colony supervisor stands at his station, surveying the status on his displays. "
-							"The colony supervisor stands at the center, his hands conducting the consoles and displays. "
-							)
-						)
-					"He turns his attention towards you as you approach:\n\n"
-					(random
-						(list
-							"\"Welcome, %name%! We have another mission for you, if you are interested.\""
-							"\"Welcome to %stationName%! If you're looking for work, I might be able to set you up with something.\""
-							"\"Welcome, %name%! Are you interested in flying a mission for us? There would be payment, of course.\""
-							)
-						)
-					)
-			</Text>
-
 			<Text id="rumor.intro">
 				The colony supervisor is working at his station. The comms channels
 				are quiet and he stops to chat:\n\n
@@ -773,15 +743,63 @@
 					})
 			</Text>
 			<Text id="textSummary">
+				
 				Centauri warlords have captured a mining ship from %stationName%.
 				Your mission is to destroy the warlords and rescue the mining ship.
 
 				System: %systemName%\n
 				Payment: %payment%
+				
+			</Text>
+			
+			<!-- INTRO -->
+			
+			<Text id="FirstIntro">
+				(msnTranslate gSource 'textFirstIntro {
+					stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					})
+			</Text>
+			<Text id="textFirstIntro">
+				
+				The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands
+				on a platform in the center, surrounded by comms equipment and visual displays.
+				He turns his attention towards you as you approach:
+
+				"Welcome to %stationName%! I saw your ship on my displays; she looks like she's armed for combat.
+				How about taking on a mission for us? We could use the help, and there would be payment."
+
 			</Text>
 			<Text id="Intro">
-				(mne_calcIntro (objGetObjByID (msnGetProperty gSource 'ownerID)))
+				(msnTranslate gSource (random (list 'descSupervisor1 'descSupervisor2 'descSupervisor3)) {
+					stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					})
 			</Text>
+			<Text id="descSupervisor1">
+				
+				The colony supervisor stands at the center plugged in to his consoles and display.
+				He turns his attention towards you as you approach:
+				
+				"Welcome to %stationName%! If you're looking for work, I might be able to set you up with something."
+				
+			</Text>
+			<Text id="descSupervisor2">
+				
+				The colony supervisor stands at his station, surveying the status on his displays.
+				He turns his attention towards you as you approach:
+				
+				"Welcome, %name%! We have another mission for you, if you're interested."
+				
+			</Text>
+			<Text id="descSupervisor3">
+				
+				The colony supervisor stands at the center, his hands conducting the consoles and displays.
+				He turns his attention towards you as you approach:
+				
+				"Welcome, %name%! Are you interested in flying a mission for us? There would be payment, of course."
+				
+			</Text>
+			
+			<!-- BRIEFING -->
 
 			<Text id="Briefing">
 				(msnTranslate gSource 'textBriefing {
@@ -1000,9 +1018,56 @@
 				System: %systemName%\n
 				Payment: %payment%
 			</Text>
-			<Text id="Intro">
-				(mne_calcIntro (objGetObjByID (msnGetProperty gSource 'ownerID)))
+			
+			<!-- INTRO -->
+			
+			<Text id="FirstIntro">
+				(msnTranslate gSource 'textFirstIntro {
+					stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					})
 			</Text>
+			<Text id="textFirstIntro">
+				
+				The meeting hall is carved deep below the asteroid's surface. The colony supervisor stands
+				on a platform in the center, surrounded by comms equipment and visual displays.
+				He turns his attention towards you as you approach:
+
+				"Welcome to %stationName%! I saw your ship on my displays; she looks like she's armed for combat.
+				How about taking on a mission for us? We could use the help, and there would be payment."
+
+			</Text>
+			<Text id="Intro">
+				(msnTranslate gSource (random (list 'descSupervisor1 'descSupervisor2 'descSupervisor3)) {
+					stationName: (objGetName (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					})
+			</Text>
+			<Text id="descSupervisor1">
+				
+				The colony supervisor stands at the center plugged in to his consoles and display.
+				He turns his attention towards you as you approach:
+				
+				"Welcome to %stationName%! If you're looking for work, I might be able to set you up with something."
+				
+			</Text>
+			<Text id="descSupervisor2">
+				
+				The colony supervisor stands at his station, surveying the status on his displays.
+				He turns his attention towards you as you approach:
+				
+				"Welcome, %name%! We have another mission for you, if you're interested."
+				
+			</Text>
+			<Text id="descSupervisor3">
+				
+				The colony supervisor stands at the center, his hands conducting the consoles and displays.
+				He turns his attention towards you as you approach:
+				
+				"Welcome, %name%! Are you interested in flying a mission for us? There would be payment, of course."
+				
+			</Text>
+			
+			<!-- BRIEFING -->
+			
 			<Text id="Briefing">
 				(msnTranslate gSource 'textBriefing {
 					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)))
@@ -1013,7 +1078,7 @@
 
 				"Outlaw miners have staked an illegal claim to %targetName%
 				in this system. We want you to go out there and terminate their claim.
-				We'll pay you %reward if you succeed.
+				We'll pay you %reward% if you succeed.
 
 				"Do we have a deal?"
 
@@ -1036,7 +1101,7 @@
 			</Text>
 			<Text id="SuccessDebrief">
 				(msnTranslate gSource 'textSuccessDebrief {
-					payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
+					reward: (fmtCurrency 'credit (msnGetData gSource 'reward))
 					})
 			</Text>
 			<Text id="textSuccessDebrief">
@@ -1061,19 +1126,6 @@
 
 	<Globals>
 		(block Nil
-			;	mne_calcIntro
-			;
-			;	This function is used to determine which mission intro screen to
-			;	use at Commonwealth mining colonies
-			(setq mne_calcIntro (lambda (sourceObj)
-				(objTranslate sourceObj
-					(if (msnFind sourceObj "Saru") "Intro:Return" "Intro:New")
-					{ 
-						stationName: (objGetName sourceObj) 
-						}
-					)
-				))
-
 			(setq mneAllTargetsDestroyed (lambda (sourceObj excludeObj)
 				(block (allDestroyed)
 					(setq allDestroyed True)

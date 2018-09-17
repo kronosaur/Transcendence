@@ -125,7 +125,7 @@
 									(eq status 'destroyed) "Lost Jenna"
 									(eq status 'destroyedByPlayer) "Killed Jenna"
 									(eq status 'returnedHome) "Allowed Jenna to return home"
-									(cat "ERROR: Jenna status: " status)
+									(cat "ERROR: Jenna status: " (or status "Nil"))
 									)
 								Nil
 								"achievements &amp; regrets"

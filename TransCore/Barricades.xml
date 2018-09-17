@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- STATION TYPES -->
+
+	<StationType UNID="&stBarricade1;"
+			name=				"titanium barricade"
+			sovereign=			"&svNeutral;"
+			dockScreen=			"&dsBarricade;"
+
+			armorID=			"&itReinforcedTitanium1;"
+			structuralHitPoints="100"
+				 
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mass=				"8"
+			noMapIcon=			"true"
+			>
+
+		<Image imageID="&rsBarricades;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="1"/>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+
+		<InitialData>
+			<Data id="SourceItem">
+				(itmCreate &itReinforcedTitanium1; 1)
+			</Data>
+		</InitialData>
+	</StationType>
+
+	<StationType UNID="&stBarricade2;"
+			name=				"titanium barricade"
+			sovereign=			"&svNeutral;"
+			dockScreen=			"&dsBarricade;"
+				 
+			armorID=			"&itReinforcedTitanium2;"
+			structuralHitPoints="200"
+				 
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mass=				"15"
+			noMapIcon=			"true"
+			>
+
+		<Image imageID="&rsBarricades;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="1"/>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+
+		<InitialData>
+			<Data id="SourceItem">
+				(itmCreate &itReinforcedTitanium2; 1)
+			</Data>
+		</InitialData>
+	</StationType>
+
+	<StationType UNID="&stBarricade3;"
+			name=				"titanium barricade"
+			sovereign=			"&svNeutral;"
+			dockScreen=			"&dsBarricade;"
+
+			armorID=			"&itReinforcedTitanium3;"
+			structuralHitPoints="400"
+				 
+			ejectaType=			"&vtWreckEjecta;"
+
+			scale=				"ship"
+			mass=				"30"
+			noMapIcon=			"true"
+			>
+
+		<Image imageID="&rsBarricades;" imageWidth="80" imageHeight="80" rotationCount="120" rotationColumns="1"/>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+
+		<InitialData>
+			<Data id="SourceItem">
+				(itmCreate &itReinforcedTitanium3; 1)
+			</Data>
+		</InitialData>
+	</StationType>
+
+<!-- ITEM TYPES -->
+
+	<!-- Level 2: Segment of Reinforced Titanium Plate 1 -->
+
+	<ItemType UNID="&itReinforcedTitanium1;"
+			name=				"titanium barricade"
+			attributes=			"barricade, minorItem, nami, specialty"
+			  
+			level=				"2"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			value=				"200"
+			mass=				"5000"
+			  
+			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"100"
+
+				repairTech=	"1"
+				damageAdjLevel="2"
+				/>
+
+		<Invoke uninstalledOnly="true">
+			(intBarricadeUse &stBarricade1;)
+		</Invoke>
+
+	</ItemType>
+
+	<!-- Level 3: Segment of Reinforced Titanium Plate 2 -->
+
+	<ItemType UNID="&itReinforcedTitanium2;"
+			name=				"double titanium barricade"
+			attributes=			"barricade, minorItem, nami, specialty"
+			  
+			level=				"3"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			value=				"500"
+			mass=				"10000"
+			  
+			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"200"
+
+				repairTech=	"1"
+				damageAdjLevel="2"
+				/>
+
+		<Invoke uninstalledOnly="true">
+			(intBarricadeUse &stBarricade2;)
+		</Invoke>
+
+	</ItemType>
+
+	<!-- Level 4: Segment of Reinforced Titanium Plate 3 -->
+
+	<ItemType UNID="&itReinforcedTitanium3;"
+			name=				"quad titanium barricade"
+			attributes=			"barricade, minorItem, nami, specialty"
+			  
+			level=				"4"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			value=				"1000"
+			mass=				"20000"
+			  
+			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"400"
+
+				repairTech=	"1"
+				damageAdjLevel="2"
+				/>
+
+		<Invoke uninstalledOnly="true">
+			(intBarricadeUse &stBarricade3;)
+		</Invoke>
+
+	</ItemType>
+
+<!-- DOCK SCREENS -->
+
+	<DockScreen UNID="&dsBarricade;"
+			inherit="&dsDockScreenBase;"
+			>
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(hpLeft (objGetProperty gSource 'structuralHP))
+						(hpMax (objGetProperty gSource 'maxStructuralHP))
+						(intactPercent (/ hpLeft hpMax))
+
+						(sourceItem (objGetData gSource 'SourceItem))
+						(mass (itmGetMass sourceItem))
+						(fitsInCargo (gr (objGetCargoSpaceLeft gPlayerShip) mass))
+
+						(condition (switch
+							(gr intactPercent 1)
+								'impossible
+
+							(gr intactPercent 0.99)
+								'perfect
+
+							(gr intactPercent 0.9)
+								'excellent
+
+							(gr intactPercent 0.8)
+								'great
+
+							(gr intactPercent 0.6)
+								'damagedSomewhat
+
+							(gr intactPercent 0.4)
+								'damaged
+
+							(gr intactPercent 0.25)
+								'damagedHeavily
+
+							'unrecoverable
+							))
+
+						(recoverable (and fitsInCargo (!= condition 'unrecoverable)))
+						)
+						(switch
+							(= condition 'unrecoverable)
+								(scrSetDescTranslate gScreen 'descStatusUnrecoverable {
+									itemName: (itmGetName sourceItem 'noModifiers)
+									angle: (objGetProperty gSource 'rotation)
+									mass: (strMassString mass)
+									})
+
+							(not fitsInCargo)
+								(scrSetDescTranslate gScreen 'descStatusCannotFit {
+									itemName: (itmGetName sourceItem 'noModifiers)
+									angle: (objGetProperty gSource 'rotation)
+									mass: (strMassString mass)
+									condition: (scrTranslate gScreen (cat "condition." condition))
+									})
+
+							(scrSetDescTranslate gScreen 'descStatus {
+								itemName: (itmGetName sourceItem 'noModifiers)
+								angle: (objGetProperty gSource 'rotation)
+								mass: (strMassString mass)
+								condition: (scrTranslate gScreen (cat "condition." condition))
+								})
+							)
+
+						(scrEnableAction gScreen 'actionRecover recoverable)
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionRecover">
+						(block (
+							(hpMax (objGetProperty gSource 'maxStructuralHP))
+							(hpLeft (objGetProperty gSource 'structuralHP))
+
+							recovered
+							)
+							(setq recovered (objGetData gSource 'SourceItem))
+
+							;	We allow the barricade station to be somewhat damaged 
+							;	before damage transfers to the item (which limits the station to half hp)
+
+							(if (ls (/ hpLeft hpMax) 0.70)
+								(setq recovered (itmSetProperty recovered 'damaged True))
+								)
+
+							;	But we also store the structural HP on the item, in case 
+							;	it gets deployed again.
+
+							(if (ls hpLeft hpMax)
+								(setq recovered (itmSetData recovered 'structuralHP hpLeft))
+								)
+
+							(objAddItem gPlayerShip recovered)
+							(objDestroy gSource)
+							)
+					</Action>
+
+					<Action id="actionSetFacing">
+						<ShowPane pane="SetFacing"/>
+					</Action>
+
+					<Action id="actionTurnClockwise">
+						(block Nil
+							(objSetProperty gSource 'rotation (+ (objGetProperty gSource 'rotation) 45))
+							(scrRefreshScreen gScreen)
+							)
+					</Action>
+
+					<Action id="actionTurnCounterclockwise">
+						(block Nil
+							(objSetProperty gSource 'rotation (- (objGetProperty gSource 'rotation) 45))
+							(scrRefreshScreen gScreen)
+							)
+					</Action>
+
+					<Action id="actionUndock" cancel="1">
+						<Exit/>
+					</Action>
+				</Actions>
+			</Default>
+
+			<SetFacing
+					showCounter="true"
+					>
+				<OnPaneInit>
+					(block (
+						(rotation (objGetProperty gSource 'rotation))
+						)
+						(scrSetCounter gScreen rotation)
+						(scrSetDescTranslate gScreen 'descFacing {
+							angle: rotation
+							})
+						)
+				</OnPaneInit>
+
+				<Actions>
+					<Action id="actionSet" default="1">
+						(block (
+							(newRotation (scrGetCounter gScreen))
+							)
+							(switch
+								(or (ls newRotation 0) (gr newRotation 359))
+									(scrSetCounter gScreen (objGetProperty gSource 'rotation))
+
+								(block ()
+									(objSetProperty gSource 'rotation newRotation)
+									(scrShowPane gScreen 'Default)
+									(scrRefreshScreen gScreen)
+									)
+								)
+							)
+					</Action>
+
+					<Action id="actionCancel" cancel="1">
+						<ShowPane pane="Default"/>
+					</Action>
+				</Actions>
+			</SetFacing>
+		</Panes>
+
+		<Language>
+			<Text id="actionRecover">[R]ecover Barricade</Text>
+			<Text id="actionSetFacing">Set [F]acing</Text>
+			<Text id="actionTurnClockwise">[T]urn Clockwise 45 Degrees</Text>
+			<Text id="actionTurnCounterclockwise">Turn [C]ounterclockwise 45 Degrees</Text>
+			<Text id="actionSet">[S]et</Text>
+
+			<Text id="descStatus">
+
+				You are docked with a titanium barricade facing %angle% degrees.
+				These structures are often used as cheap, static defenses.
+
+				This deployed %itemName% is %condition% and has a mass of %mass%.
+
+			</Text>
+			<Text id="descStatusUnrecoverable">
+
+				You are docked with a titanium barricade facing %angle% degrees.
+				These structures are often used as cheap, static defenses.
+
+				This deployed %itemName% is so heavily damaged that it cannot be 
+				recovered.
+
+			</Text>
+			<Text id="descStatusCannotFit">
+
+				You are docked with a titanium barricade facing %angle% degrees.
+				These structures are often used as cheap, static defenses.
+
+				This deployed %itemName% is %condition% and has a mass of %mass%.
+				Unfortunately, you cannot fit it in your cargo hold.
+
+			</Text>
+			<Text id="condition.impossible">in impossibly good condition</Text>
+			<Text id="condition.perfect">in perfect condition</Text>
+			<Text id="condition.excellent">in excellent condition</Text>
+			<Text id="condition.great">in great condition</Text>
+			<Text id="condition.damagedSomewhat">somewhat damaged</Text>
+			<Text id="condition.damaged">damaged</Text>
+			<Text id="condition.damagedHeavily">heavily damaged</Text>
+
+			<Text id="descFacing">This titanium barricade is facing %angle% degrees.</Text>
+		</Language>
+	</DockScreen>
+
+<!-- GLOBALS -->
+
+	<Globals>
+		(block ()
+			(setq intBarricadeUse (lambda (barricadeClass)
+				(block (barricade orientation)
+				
+					(setq orientation (shpGetDirection gPlayerShip))
+					
+					; Create a barricade
+					(setq barricade (sysCreateStation barricadeClass (sysVectorPolarOffset gPlayerShip orientation 2)))
+					
+					(objSetProperty barricade 'rotation orientation)
+					
+					; If the item is damaged, then the barricade is damaged
+
+					(switch
+						(itmGetData gItem 'structuralHP)
+							(objSetProperty barricade 'structuralHP (itmGetData gItem 'structuralHP))
+
+						(itmIsDamaged gItem)
+							(objSetProperty barricade 'structuralHP (divide (objGetProperty barricade 'maxStructuralHP) 2))
+						)
+					
+					; Remember the item we used so we can recover it
+					(objSetData barricade 'SourceItem (itmSetCount gItem 1))
+
+					; Use up the item
+					(objRemoveItem gSource gItem 1)
+					)
+				))
+			)
+	</Globals>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsBarricades;"	bitmap="Resources\Barricades.png"/>
+
+</TranscendenceModule>

@@ -35,6 +35,8 @@
 			<!-- Statistics -->
 
 			<Text id="achievementsAndRegrets">achievements &amp; regrets</Text>
+			<Text id="conducts">conducts</Text>
+			<Text id="criminalRecord">criminal record</Text>
 			<Text id="missionsAndActivities">missions &amp; activities</Text>
 			<Text id="notes">notes</Text>
 			<Text id="autonsAndWingmen">autons &amp; wingmen</Text>
@@ -45,6 +47,10 @@
 			<Text id="listAnd">" and "</Text>
 			<Text id="listComma">", "</Text>
 			<Text id="listCommaAnd">", and "</Text>
+			
+			<!-- Common Noun Phrases -->
+			
+			<Text id="nounHitPoints">hit point(s)</Text>
 		</Language>
 	</Type>
 

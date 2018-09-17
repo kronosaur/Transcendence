@@ -1157,6 +1157,56 @@
 
 <!-- SHIP ENCOUNTER TABLES ================================================ -->
 
+	<ShipTable unid="&etPirateAmbush;">
+		<LevelTable>
+
+			<!-- Level 1 -->
+
+			<Ship	levelFrequency="crv-- -----"	class="&scCorsair;"		count="1d4+1"	orders="attack"	sovereign="&svPirates;"/>
+			<Ship	levelFrequency="crv-- -----"	class="&scViking;"		count="1"		orders="attack"	sovereign="&svPirates;"/>
+
+			<!-- Level 2 -->
+
+			<Ship	levelFrequency="-crv- -----"	class="&scCorsair;"		count="2d3"		orders="attack"	sovereign="&svPirates;"/>
+			<Group	levelFrequency="-crv- -----">
+				<Ship								class="&scViking;"		count="1"		orders="attack"	sovereign="&svPirates;"/>
+				<Ship								class="&scCorsair;"		count="1d4"		orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+
+			<!-- Level 3 -->
+
+			<Ship	levelFrequency="--crv -----"	class="&scCorsair;"		count="2d6+1"	orders="attack"	sovereign="&svPirates;"/>
+			<Group	levelFrequency="--crv -----">
+				<Ship								class="&scViking;"		count="1d4"		orders="attack"	sovereign="&svPirates;"/>
+				<Ship								class="&scCorsair;"		count="1d6"		orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+			<Group	levelFrequency="--crv -----">
+				<Ship								class="&scCorsair-II;"	count="1d2"		orders="attack"	sovereign="&svPirates;"/>
+				<Ship								class="&scCorsair;"		count="1d6"		orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+			<Group	levelFrequency="--crv -----">
+				<Ship								class="&scCorsair-II;"	count="1"		orders="attack"	sovereign="&svPirates;"/>
+				<Ship								class="&scViking;"		count="1d4"		orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+
+			<!-- Level 4 -->
+
+			<Ship	levelFrequency="---cr v----"	class="&scViking;"		count="2d6+1"	orders="attack"	sovereign="&svPirates;"/>
+			<Ship	levelFrequency="---cr v----"	class="&scCorsair-II;"	count="2d3"		orders="attack"	sovereign="&svPirates;"/>
+			<Group	levelFrequency="---cr v----">
+				<Ship								class="&scCorsair-II;"	count="1d6"		orders="attack"	sovereign="&svPirates;"/>
+				<Ship								class="&scViking;"		count="1d6"		orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+
+			<!-- Level 5+ -->
+
+			<Group	levelFrequency="----c rvvvv">
+				<Ship								class="&scDrake;"		count="1"		orders="attack"	sovereign="&svPirates;"/>
+				<Ship								class="&scViking;"		count="2d6"		orders="attack"	sovereign="&svPirates;"/>
+			</Group>
+		</LevelTable>
+	</ShipTable>
+
 	<EncounterTable UNID="&etPirateAmbush1;">
 		<Group>
 			<Ship class="&scCorsair;"	count="1d3" orders="attack"	sovereign="&svPirates;"/>

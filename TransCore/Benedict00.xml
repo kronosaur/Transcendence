@@ -51,9 +51,12 @@
 			</OnCreate>
 
 			<OnAccepted>
+			</OnAccepted>
+
+			<OnAcceptedUndock>
 				(block (
 					(ownerObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(trainingPos (sysVectorRandom ownerObj 20 15 "t"))
+					(trainingPos (sysVectorRandom ownerObj 24 15 "t"))
 					
 					droneObjList
 					)
@@ -80,6 +83,7 @@
 					;	Add each of the drones to our list of targets
 					
 					(msnSetData gSource 'targetIDs (map droneObjList theObj (objGetID theObj)))
+					(msnSetPlayerTarget gSource)
 					
 					;	Remember that we accepted this mission
 					
@@ -88,12 +92,11 @@
 					;	Once we accept this mission, we're done with the intro
 					
 					(typSetData &unidBenedictStoryArc; 'introDone True)
-					)
-			</OnAccepted>
 
-			<OnAcceptedUndock>
-				;	Remember when we started the battle
-				(msnSetData gSource 'startTime (unvGetTick))
+					;	Remember when we started the battle
+
+					(msnSetData gSource 'startTime (unvGetTick))
+					)
 			</OnAcceptedUndock>
 			
 			<OnDeclined>

@@ -62,56 +62,6 @@
 					)
 				))
 
-			(setq intBarricadeUse (lambda (barricadeClass)
-				(block (barricade newOrientation lastPos)
-
-					; Figure out the new position for the barricade
-					(setq newOrientation (typGetGlobalData &stBarricade1; "lastOrientation"))
-
-					(setq lastPos (sysVectorPolarOffset gPlayerShip 0 0))
-					(if (gr (sysVectorDistance lastPos (typGetGlobalData &stBarricade1; "lastPos")) 0)
-						(block Nil
-							(setq newOrientation Nil)
-							(typSetGlobalData &stBarricade1; "lastPos" lastPos)
-							)
-						)
-
-					(switch
-						(not newOrientation)
-							(setq newOrientation 1)
-
-						(setq newOrientation (modulo (add newOrientation 3) 4))
-						)
-					(typSetGlobalData &stBarricade1; "lastOrientation" newOrientation)
-
-					; Create a barricade
-					(setq barricade (sysCreateStation barricadeClass (sysVectorPolarOffset gPlayerShip (multiply newOrientation 90) 2)))
-
-					; Set the image
-					(switch
-						(eq newOrientation 0)
-							(staSetImageVariant barricade 1)
-
-						(eq newOrientation 1)
-							(staSetImageVariant barricade 0)
-
-						(eq newOrientation 2)
-							(staSetImageVariant barricade 3)
-
-						(eq newOrientation 3)
-							(staSetImageVariant barricade 2)
-						)
-
-					; If the item is damaged, then the barricade is damaged
-					(if (itmIsDamaged gItem)
-						(staSetStructuralHP barricade (divide (staGetStructuralHP barricade) 2))
-						)
-
-					; Use up the item
-					(objRemoveItem gSource gItem 1)
-					)
-				))
-
 			(setq intComputeBuyPrice (lambda (thisItem)
 				(objGetBuyPrice gSource thisItem)
 				))

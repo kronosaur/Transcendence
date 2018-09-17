@@ -329,12 +329,14 @@
 			
 			<OnProduceMissiles>
 				(if (not (objIsAbandoned gSource))
-					(block (theItems)
-						(setq theItems (objGetItems gSource "m +NAMILauncher;"))
-						(if (or (not theItems) (ls (itmGetCount (item theItems 0)) 16))
-							(block (newMissiles)
-								(setq newMissiles (random 10 40))
-								(objAddItem gSource (itmCreate &itXM300Missile; newMissiles))
+					(block (reapers)
+						
+						;	check how many reaper missiles we have and produce more if we're going to run out
+						
+						(setq reapers (@ (objGetItems gSource "m +unid:&itXM300Missile;;") 0))
+						(if (or (not reapers) (ls (itmGetCount reapers) 16))
+							(objAddItem gSource
+								(itmCreate &itXM300Missile; (random 10 40))		;	produce between 10 and 40 missiles
 								)
 							)
 						)

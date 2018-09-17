@@ -78,7 +78,7 @@ bool COutputChart::Output (void)
 
 	else
 		{
-		if (m_Image.CopyToClipboard() != NOERROR)
+		if (!m_Image.CopyToClipboard())
 			{
 			printf("Unable to copy to clipboard.\n");
 			return false;

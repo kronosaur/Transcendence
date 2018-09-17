@@ -221,6 +221,16 @@
 			</Main>
 		</DockScreens>
 
+		<Events>
+			<OnCreate>
+				(block ()
+					;	Every station is overseen by a different AD
+
+					(objSetData gSource 'assistantDirector (korNextDirector))
+					)
+			</OnCreate>
+		</Events>
+
 		<Language>
 			<Text id="descWelcome">
 

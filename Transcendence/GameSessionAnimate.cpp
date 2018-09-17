@@ -113,22 +113,15 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
                         {
                         int xCenter = m_rcScreen.left + RectWidth(m_rcScreen) / 2;
                         int yCenter = m_rcScreen.top + RectHeight(m_rcScreen) / 2;
-                        iMouseAimAngle = ::IntVectorToPolar(xMouse - xCenter, yCenter - yMouse);
+                        iMouseAimAngle = ::VectorToPolar(CVector(xMouse - xCenter, yCenter - yMouse));
                         CPaintHelper::PaintArrow(Screen, xMouse, yMouse, iMouseAimAngle, g_pHI->GetVisuals().GetColor(colorTextHighlight));
 
-#ifdef DEBUG_MOUSE_AIM
-						const CIntegralRotationDesc &Desc = pShip->GetRotationDesc();
-						const CIntegralRotation &Rotation = pShip->GetRotationState();
-
-						CString sDebugText = strPatternSubst(CONSTLIT("Aim: %d\nRotation: %d"), iMouseAimAngle, (pShip ? pShip->GetRotation() : 0));
-						if (Rotation.GetManeuverToFace(Desc, iMouseAimAngle) == NoRotation && Absolute(AngleBearing(iMouseAimAngle, pShip->GetRotation())) > 6)
+						if (g_pUniverse->GetDebugOptions().IsShowFacingsAngleEnabled())
 							{
-							Rotation.GetManeuverToFace(Desc, iMouseAimAngle);
+							const CG16bitFont &DebugFont = m_HI.GetVisuals().GetFont(fontMedium);
+							CString sDebugText = strPatternSubst(CONSTLIT("Aim: %d"), iMouseAimAngle);
+							CPaintHelper::PaintArrowText(Screen, xMouse, yMouse, iMouseAimAngle, sDebugText, DebugFont, g_pHI->GetVisuals().GetColor(colorTextHighlight));
 							}
-
-						const CG16bitFont &DebugFont = m_HI.GetVisuals().GetFont(fontMedium);
-						CPaintHelper::PaintArrowText(Screen, xMouse, yMouse, iMouseAimAngle, sDebugText, DebugFont, g_pHI->GetVisuals().GetColor(colorTextHighlight));
-#endif
                         }
                     else
                         iMouseAimAngle = -1;
@@ -437,6 +430,9 @@ void CGameSession::PaintSRS (CG32bitImage &Screen)
 
 		if (pShip->IsSRSEnhanced())
 			dwViewportFlags |= CSystem::VWP_ENHANCED_DISPLAY;
+
+		if (pShip->GetAbility(ablMiningComputer) == ablInstalled)
+			dwViewportFlags |= CSystem::VWP_MINING_DISPLAY;
 		}
 
 	//	If we're showing damage flash, fill the screen
@@ -468,7 +464,7 @@ void CGameSession::PaintSRS (CG32bitImage &Screen)
 
 	else
 		{
-		SetProgramState(psPaintingSRS);
+		SetProgramState(psPaintingSRS, g_pUniverse->GetPOV());
 		g_pUniverse->PaintPOV(Screen, m_rcScreen, dwViewportFlags);
 		SetProgramState(psAnimating);
 		}

@@ -94,7 +94,7 @@
 							;	OK
 							
 							(block (
-								(flags (if (= (itmGetCount itemToAnalyze) 1) '(installedState 'demonstrative 'escapeQuotes) '(installedState 'article 'escapeQuotes)))
+								(flags (if (= (itmGetCount itemToAnalyze) 1) '(installedState demonstrative escapeQuotes) '(installedState article escapeQuotes)))
 								(theName (itmGetName itemToAnalyze flags))
 								)
 								(switch
@@ -304,7 +304,7 @@
 						
 						(leq (random 1 100) failureChance)
 							(block (
-								(flags (if (= (itmGetCount itemToAnalyze) 1) '(installedState 'demonstrative 'escapeQuotes) '(installedState 'article 'escapeQuotes)))
+								(flags (if (= (itmGetCount itemToAnalyze) 1) '(installedState demonstrative escapeQuotes) '(installedState article escapeQuotes)))
 								(theName (itmGetName itemToAnalyze flags))
 								)
 							

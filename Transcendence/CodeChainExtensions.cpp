@@ -99,6 +99,7 @@ ICCItem *fnPlyComposeString (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwDat
 
 #define FN_UI_SET_SOUNDTRACK_MODE	1
 #define FN_UI_QUEUE_SOUNDTRACK		2
+#define FN_UI_KEY_LABEL				3
 
 ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 
@@ -531,6 +532,10 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
 		//	UI functions
 		//	------------
+
+		{	"uiKeyLabel",							fnUISet,		FN_UI_KEY_LABEL,
+			"(uiKeyLabel command) -> text",
+			"s",	0,	},
 
 		{	"uiQueueSoundtrack",					fnUISet,	FN_UI_QUEUE_SOUNDTRACK,
 			"(uiQueueSoundtrack soundtrackUNID [options]) -> True/Nil",
@@ -1483,7 +1488,11 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_SCR_TRANSLATE:
 			{
-			CString sText = pArgs->GetElement(1)->GetStringValue();
+			ICCItem *pText = pArgs->GetElement(1);
+			if (pText->IsNil())
+				return pCC->CreateNil();
+
+			CString sText = pText->GetStringValue();
 			ICCItem *pData = NULL;
 			if (pArgs->GetCount() > 2)
 				pData = pArgs->GetElement(2);
@@ -1728,7 +1737,9 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
         case FN_SCR_CONTROL_VALUE_TRANSLATE:
             {
 			CString sID = pArgs->GetElement(1)->GetStringValue();
-			CString sText = pArgs->GetElement(2)->GetStringValue();
+
+			ICCItem *pText = pArgs->GetElement(2);
+			CString sText = (pText->IsNil() ? NULL_STR : pText->GetStringValue());
 
 			ICCItem *pData = NULL;
 			if (pArgs->GetCount() > 3)
@@ -1787,7 +1798,8 @@ ICCItem *fnScrSet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 			{
 			//	Args
 
-			CString sText = pArgs->GetElement(1)->GetStringValue();
+			ICCItem *pText = pArgs->GetElement(1);
+			CString sText = (pText->IsNil() ? NULL_STR : pText->GetStringValue());
 
 			ICCItem *pData = NULL;
 			if (pArgs->GetCount() > 2)
@@ -2156,6 +2168,24 @@ ICCItem *fnUISet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 	switch (dwData)
 		{
+		case FN_UI_KEY_LABEL:
+			{
+			CString sCommand = pArgs->GetElement(0)->GetStringValue();
+			CGameKeys::Keys iCmd = CGameKeys::GetGameCommand(sCommand);
+			if (iCmd == CGameKeys::keyError)
+				return pCC->CreateError(CONSTLIT("Unknown command"), pArgs->GetElement(0));
+
+			DWORD dwVirtKey = g_pTrans->GetSettings().GetKeyMap().GetKey(iCmd);
+			if (dwVirtKey == CVirtualKeyData::INVALID_VIRT_KEY)
+				return pCC->CreateNil();
+
+			CString sKey = CVirtualKeyData::GetKeyLabel(dwVirtKey);
+			if (sKey.IsBlank())
+				return pCC->CreateNil();
+
+			return pCC->CreateString(sKey);
+			}
+
 		case FN_UI_QUEUE_SOUNDTRACK:
 			{
 			//	Get the track. If we can't find it, we assume that it has not 

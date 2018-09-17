@@ -356,7 +356,7 @@
 			<Text id="InProgress:underAttack">
 
 				The command center is filled with men and women shouting orders and counter-orders.
-				The constant drone of sirens is punctuated frequently by concussive blow of explosions.
+				The constant drone of sirens is punctuated frequently by the concussive blow of explosions.
 
 				A woman shouts at you, "Get out of here and make yourself useful!"
 
@@ -407,7 +407,7 @@
 						}
 					{
 						descID: 'textFailureDebrief2
-						data: { item: (itmGetName (msnGetData gSource 'rewardItem) 'count) }
+						data: { item: (itmGetName (msnGetData gSource 'rewardItem) '(count escapeQuotes)) }
 						}
 					)
 			</Text>
@@ -428,7 +428,7 @@
 			</Text>
 			<Text id="SuccessDebrief">
 				(msnTranslate gSource 'textSuccessDebrief {
-					reward: (itmGetName (msnGetData gSource 'rewardItem) 0x040)
+					reward: (itmGetName (msnGetData gSource 'rewardItem) '(demonstrative))
 					})
 			</Text>
 			<Text id="textSuccessDebrief">

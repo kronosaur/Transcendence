@@ -622,7 +622,7 @@
 				(typSetData charType 'screenData screenData)
 				))
 				
-			(setq rpgCharacterSetStatus (lambda (charType status)
+			(setq rpgCharacterSetStatus (lambda (charType newStatus)
 			
 				;	This function sets the status of the character. We support the following
 				;	values:
@@ -632,18 +632,18 @@
 				;	'dead: Character is permanently dead.
 
 				(block (
-					(status (typGetData charType 'status))
+					(oldStatus (typGetData charType 'status))
 					)
 					(switch				
 						;	If the character is permanently dead, then we can't 
 						;	change the status.
 
-						(= status 'dead)
+						(= oldStatus 'dead)
 							Nil
 
 						;	Set the status
 
-						(typSetData charType 'status status)
+						(typSetData charType 'status newStatus)
 						)
 					)
 				))

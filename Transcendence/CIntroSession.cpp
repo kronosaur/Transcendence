@@ -177,7 +177,13 @@ void CIntroSession::CreateIntroShips (DWORD dwNewShipClass, DWORD dwSovereign, C
 
 	//	Sovereign of POV
 
-	DWORD dwCurSovereign = (dwSovereign ? dwSovereign : g_pUniverse->GetPOV()->GetSovereign()->GetUNID());
+	DWORD dwCurSovereign;
+	if (dwSovereign)
+		dwCurSovereign = dwSovereign;
+	else if (g_pUniverse->GetPOV())
+		dwCurSovereign = g_pUniverse->GetPOV()->GetSovereign()->GetUNID();
+	else
+		dwCurSovereign = g_PlayerSovereignUNID;
 
 	//	Look for the surviving ships
 
@@ -1638,7 +1644,8 @@ void CIntroSession::Update (void)
 
 	//	Slight HACK: If the current POV is not a ship, then create a new one
 
-	if (g_pUniverse->GetPOV()->GetCategory() != CSpaceObject::catShip)
+	if (g_pUniverse->GetPOV() == NULL
+			|| g_pUniverse->GetPOV()->GetCategory() != CSpaceObject::catShip)
 		CreateIntroShips();
 
 	//	Figure out how long it took to update

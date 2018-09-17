@@ -162,6 +162,9 @@
     <ClCompile Include="CHost.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="LanguageTable.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -195,6 +198,9 @@
       <Filter>TLisp Files</Filter>
     </None>
     <None Include="..\Game\TLisp\LanguageUnitTest.tlisp">
+      <Filter>TLisp Files</Filter>
+    </None>
+    <None Include="..\Game\TLisp\GetDistancePerformance.tlisp">
       <Filter>TLisp Files</Filter>
     </None>
   </ItemGroup>

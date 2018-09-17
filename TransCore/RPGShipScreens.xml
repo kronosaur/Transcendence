@@ -601,7 +601,7 @@
 							(scrSetDesc gScreen (msnGetProperty theMission 'summary))
 							)
 							
-						(scrShowAction gScreen 0 (msnGetProperty theMission 'canBeDeleted))
+						(scrShowAction gScreen 'actionRemoveMission (msnGetProperty theMission 'canBeDeleted))
 						)
 				</OnPaneInit>
 

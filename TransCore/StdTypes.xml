@@ -116,7 +116,6 @@
 
 	<Image UNID="&rsStargate;"		bitmap="Resources\Stargates1.jpg"		bitmask="Resources\Stargates1Mask.bmp"  />
 	<Image UNID="&rsNavBeacon;"		bitmap="Resources\NavBeacon.jpg"		bitmask="Resources\NavBeaconMask.bmp" NoPM="true"/>
-	<Image UNID="&rsBarricades;"	bitmap="Resources\Barricades.jpg"		bitmask="Resources\BarricadesMask.bmp" />
 	<Image UNID="&rsLogBuoy;"		bitmap="Resources\LogBuoy.jpg"		bitmask="Resources\LogBuoyMask.bmp"  loadOnUse="true"/>
 
 	<Image UNID="&rsShockwave1;"	bitmap="Resources\Shockwave1.jpg"		bitmask="Resources\Shockwave1Mask.bmp" loadOnUse="true"/>
@@ -928,363 +927,6 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 	</ItemType>
 
-	<!-- Scramble Algorithm -->
-
-	<ItemType UNID="&itScrambleAlgorithm;"
-			name=				"Scramble1.5 algorithm cube"
-			level=				"6"
-			value=				"1000"
-			mass=				"50"
-			frequency=			"uncommon"
-			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"consumable, info, quantumProgram"
-
-			description=		"This algorithm hacks into near-by enemy ship computers and temporarily disable their control systems. Scramble1.5 requires a quantum CPU to execute."
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
-
-		<Invoke key="S">
-			(switch
-				; If we don't have a quantum CPU
-				(not (objGetItems gSource "*I+QuantumCPU"))
-					(objSendMessage gSource Nil "Quantum CPU required")
-
-				; Otherwise, we paralyze enemy ships in the area
-				(block (targets)
-					(setq targets (sysFindObject gSource "sEN:16;"))
-					(enum targets target
-						(objProgramDamage target gSource "Scramble1.5" 6
-							(objMakeParalyzed target (random 600 1200))
-							)
-						)
-					(if targets
-						(objSendMessage gSource Nil "Scramble1.5: Targets disabled")
-						(objSendMessage gSource Nil "Scramble1.5: No targets in range")
-						)
-
-					(itmSetKnown gItem)
-					(objRemoveItem gSource gItem 1)
-					)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Shield Optimizer Cube -->
-
-	<ItemType UNID="&itShieldOptimizer;"
-			name=				"ShieldPower v3.1.8 algorithm cube"
-			level=				"5"
-			value=				"1000"
-			mass=				"50"
-			frequency=			"uncommon"
-			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"info, minorItem, quantumProgram, shieldEnhance"
-
-			description=		"This algorithm enhances shield generators of technology levels 4 through 9."
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(switch
-				; If we don't have a quantum CPU
-				(not (objGetItems gSource "*I+QuantumCPU"))
-					(objSendMessage gSource Nil "Quantum CPU required")
-
-				; Enhance shield generator
-				(block (notFound)
-					; Install
-					(setq notFound True)
-					(objEnumItems gSource "sI" theItem
-						(block (shieldItem)
-							(setq shieldItem theItem)
-							(if notFound
-								(block Nil
-									(switch
-										; If the shield generator is not advanced enough, then nothing happens
-										(ls (itmGetLevel shieldItem) 4)
-											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldPower algorithm")
-
-										; If the shield generator is too advanced, then nothing happens
-										(gr (itmGetLevel shieldItem) 9)
-											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldPower algorithm")
-
-										; If the item is damaged, we repair it
-										(itmIsDamaged shieldItem)
-											(block Nil
-												(shpRepairItem gSource theItem)
-												(objSendMessage gSource Nil "Shield generator has been repaired")
-												)
-
-										; Enhance the shield generator
-										(block (result)
-											(setq result (shpEnhanceItem gSource theItem 0x0102))
-											(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more powerful" "shield generator"))
-											)
-										)
-									(setq notFound Nil)
-									)
-								)
-							)
-						)
-
-					(if notFound
-						(objSendMessage gSource Nil "Shield generator required")
-						)
-
-					; Identify the item
-					(itmSetKnown gItem)
-
-					; Remove ROM
-					(objRemoveItem gSource gItem 1)
-					)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Shield Power Saver Cube -->
-
-	<ItemType UNID="&itShieldPowerSaver;"
-			name=				"ShieldEfficiency v1.2.5 algorithm cube"
-			level=				"6"
-			value=				"1500"
-			mass=				"50"
-			frequency=			"uncommon"
-			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"info, minorItem, quantumProgram, shieldEnhance"
-
-			description=		"This algorithm increases the efficiency of shield generators of technology levels 4 through 9."
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(switch
-				; If we don't have a quantum CPU
-				(not (objGetItems gSource "*I+QuantumCPU"))
-					(objSendMessage gSource Nil "Quantum CPU required")
-
-				; Enhance shield generator
-				(block (notFound)
-					; Install
-					(setq notFound True)
-					(objEnumItems gSource "sI" theItem
-						(block (shieldItem)
-							(setq shieldItem theItem)
-							(if notFound
-								(block Nil
-									(switch
-										; If the shield generator is not advanced enough, then nothing happens
-										(ls (itmGetLevel shieldItem) 4)
-											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldEfficiency algorithm")
-
-										; If the shield generator is too advanced, then nothing happens
-										(gr (itmGetLevel shieldItem) 9)
-											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldEfficiency algorithm")
-
-										; If the item is damaged, we repair it
-										(itmIsDamaged shieldItem)
-											(block Nil
-												(shpRepairItem gSource theItem)
-												(objSendMessage gSource Nil "Shield generator has been repaired")
-												)
-
-										; Enhance the shield generator
-										(block (result)
-											(setq result (shpEnhanceItem gSource theItem 0x0f02))
-											(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more efficient" "shield generator"))
-											)
-										)
-									(setq notFound Nil)
-									)
-								)
-							)
-						)
-
-					(if notFound
-						(objSendMessage gSource Nil "Shield generator required")
-						)
-
-					; Identify the item
-					(itmSetKnown gItem)
-
-					; Remove ROM
-					(objRemoveItem gSource gItem 1)
-					)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Defective Shield Optimizer Cube -->
-
-	<ItemType UNID="&itDefectiveShieldOptimizer;"
-			name=				"ShieldPower v1.0 algorithm cube"
-			level=				"5"
-			value=				"5"
-			mass=				"50"
-			frequency=			"rare"
-			unknownType=		"&itUnknownMnemonicCube;"
-			attributes=			"info, minorItem, quantumProgram, shieldDamage"
-
-			description=		"The first version of the ShieldPower algorithm is promising but contains significant bugs."
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
-
-		<Invoke>
-			(switch
-				; If we don't have a quantum CPU
-				(not (objGetItems gSource "*I+QuantumCPU"))
-					(objSendMessage gSource Nil "Quantum CPU required")
-
-				; Enhance shield generator
-				(block (notFound)
-					; Install
-					(setq notFound True)
-					(objEnumItems gPlayerShip "sI" theItem
-						(block (shieldItem)
-							(setq shieldItem theItem)
-							(if notFound
-								(block Nil
-									(switch
-										; If the shield generator is not advanced enough, then nothing happens
-										(ls (itmGetLevel shieldItem) 4)
-											(objSendMessage gSource Nil "Shield generator is too primitive for ShieldPower algorithm")
-
-										; If the shield generator is too advanced, then nothing happens
-										(gr (itmGetLevel shieldItem) 9)
-											(objSendMessage gSource Nil "Shield generator is too advanced for ShieldPower algorithm")
-
-										; If the item is damaged, we cannot do anything
-										(itmIsDamaged shieldItem)
-											(objSendMessage gSource Nil "Shield generator is too damaged for optimization")
-
-										; 10% chance of enhancing the shield generator (otherwise, a bug)
-										(if (leq (random 1 100) 10)
-											(block (result)
-												(setq result (shpEnhanceItem gSource theItem 0x0102))
-												(objSendMessage gSource Nil (intItemEnhanceStatus result "Your shields are more powerful" "shield generator"))
-												)
-											(block (result)
-												(setq result (shpEnhanceItem gSource theItem 0x8102))
-												(objSendMessage gSource Nil (intItemEnhanceStatus result "ShieldPower: qbit indeterminacy exception [#!800A410!]" "shield generator"))
-												)
-											)
-										)
-									(setq notFound Nil)
-									)
-								)
-							)
-						)
-
-					(if notFound
-						(objSendMessage gSource Nil "Shield generator required")
-						)
-
-					; Identify the item
-					(itmSetKnown gItem)
-
-					; Remove ROM
-					(objRemoveItem gSource gItem 1)
-					)
-				)
-		</Invoke>
-	</ItemType>
-
-	<!-- Segment of Reinforced Titanium Plate 1 -->
-
-	<ItemType UNID="&itReinforcedTitanium1;"
-			name=				"titanium barricade"
-			attributes=			"barricade, minorItem, nami, specialty"
-			  
-			level=				"2"
-			frequency=			"uncommon"
-			numberAppearing=	"1d4"
-
-			value=				"200"
-			mass=				"5000"
-			  
-			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
-
-		<Armor
-				hitPoints=	"100"
-
-				repairTech=	"1"
-				damageAdjLevel="2"
-				/>
-
-		<Invoke uninstalledOnly="true">
-			(intBarricadeUse &stBarricade1;)
-		</Invoke>
-
-	</ItemType>
-
-	<!-- Segment of Reinforced Titanium Plate 2 -->
-
-	<ItemType UNID="&itReinforcedTitanium2;"
-			name=				"double titanium barricade"
-			attributes=			"barricade, minorItem, nami, specialty"
-			  
-			level=				"3"
-			frequency=			"uncommon"
-			numberAppearing=	"1d4"
-
-			value=				"500"
-			mass=				"10000"
-			  
-			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
-
-		<Armor
-				hitPoints=	"200"
-
-				repairTech=	"1"
-				damageAdjLevel="2"
-				/>
-
-		<Invoke uninstalledOnly="true">
-			(intBarricadeUse &stBarricade2;)
-		</Invoke>
-
-	</ItemType>
-
-	<!-- Segment of Reinforced Titanium Plate 3 -->
-
-	<ItemType UNID="&itReinforcedTitanium3;"
-			name=				"quad titanium barricade"
-			attributes=			"barricade, minorItem, nami, specialty"
-			  
-			level=				"4"
-			frequency=			"uncommon"
-			numberAppearing=	"1d4"
-
-			value=				"1000"
-			mass=				"20000"
-			  
-			description=		"These reinforced titanium plates are used in station construction both as bulkheads and as exterior armor."
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="480" imageWidth="96" imageHeight="96"/>
-
-		<Armor
-				hitPoints=	"400"
-
-				repairTech=	"1"
-				damageAdjLevel="2"
-				/>
-
-		<Invoke uninstalledOnly="true">
-			(intBarricadeUse &stBarricade3;)
-		</Invoke>
-
-	</ItemType>
-
 <!-- SHIP CLASSES ========================================================= -->
 
 	<!-- EI100/M Missileship-->
@@ -1408,92 +1050,6 @@
 
 -->
 
-	<!-- Barricade -->
-
-	<StationType UNID="&stBarricade1;"
-			name=				"titanium barricade"
-			sovereign=			"&svNeutral;"
-			dockScreen=			"&dsBarricade;"
-
-			structuralHitPoints="25"
-			ejectaType=			"&vtWreckEjecta;"
-
-			scale=				"ship"
-			mass=				"8"
-			noMapIcon=			"true"
-			>
-
-		<ImageVariants>
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"32"
-				maxDist=		"3"
-				/>
-
-	</StationType>
-
-	<StationType UNID="&stBarricade2;"
-			name=				"titanium barricade"
-			sovereign=			"&svNeutral;"
-			dockScreen=			"&dsBarricade;"
-
-			structuralHitPoints="50"
-			ejectaType=			"&vtWreckEjecta;"
-
-			scale=				"ship"
-			mass=				"15"
-			noMapIcon=			"true"
-			>
-
-		<ImageVariants>
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"32"
-				maxDist=		"3"
-				/>
-
-	</StationType>
-
-	<StationType UNID="&stBarricade3;"
-			name=				"titanium barricade"
-			sovereign=			"&svNeutral;"
-			dockScreen=			"&dsBarricade;"
-
-			structuralHitPoints="100"
-			ejectaType=			"&vtWreckEjecta;"
-
-			scale=				"ship"
-			mass=				"30"
-			noMapIcon=			"true"
-			>
-
-		<ImageVariants>
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="0"   imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="80"  imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="160" imageWidth="80" imageHeight="80" />
-			<Image			imageID="&rsBarricades;" imageX="0" imageY="240" imageWidth="80" imageHeight="80" />
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"32"
-				maxDist=		"3"
-				/>
-
-	</StationType>
-
 	<!-- Flotsam -->
 
 	<StationType UNID="&stFlotsam;"
@@ -1576,8 +1132,13 @@
 			levelFrequency=		"ucccu rrvv- ----- ----- -----"
 			locationCriteria=	"-planetary"
 			>
-		<Image shipwreckID="&scCorsair;, &scBorer;, &scEarthzone;, &scRoninA;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scCorsair;"/>
+			<Shipwreck class="&scBorer;"/>
+			<Shipwreck class="&scEarthzone;"/>
+			<Shipwreck class="&scRoninA;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table>
 				<Null	chance="20"/>
@@ -1621,8 +1182,13 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
-		<Image shipwreckID="&scRoninB;, &scSotho;, &scEI100;, &scT31ArmedTransport;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scRoninB;"/>
+			<Shipwreck class="&scSotho;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scT31ArmedTransport;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table count="2">
 				<Null	chance="10"/>
@@ -1669,8 +1235,12 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
-		<Image shipwreckID="&scRepentant;, &scEI100;, &scBarbary;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scRepentant;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scBarbary;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table count="1d4">
 				<Null	chance="5"/>
@@ -1721,8 +1291,12 @@
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
-		<Image shipwreckID="&scPlague;, &scEI100;, &scRevelations;"/>
-
+		<ImageVariants>
+			<Shipwreck class="&scPlague;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scRevelations;"/>
+		</ImageVariants>
+		
 		<Items>
 			<Table count="1d4">
 				<Null	chance="5"/>
@@ -1853,7 +1427,7 @@
 			noMapIcon=			"true"
 			>
 			
-		<Image shipwreckID="&scMikeno;"/>
+		<ImageShipwreck class="&scMikeno;"/>
 		
 		<DockScreens>
 			<Main name="Debug Depot">

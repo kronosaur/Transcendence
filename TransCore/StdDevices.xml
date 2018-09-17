@@ -182,7 +182,11 @@
 
 		<CargoHoldDevice
 				cargoSpace=		"150"
-				/>
+				>
+			<Equipment>
+				<Install equipment="miningComputer"/>
+			</Equipment>
+		</CargoHoldDevice>
 
 	</ItemType>
 
@@ -419,29 +423,6 @@
 	</ItemType>
 
 <!-- LEVEL V -->
-
-	<!-- Mnemonic Processor -->
-
-	<ItemType UNID="&itMnemonicProcessor;"
-			name=				"Heisenmachines quantum CPU"
-			attributes=			"commonwealth, heisenmachines, majorItem, quantumCPU"
-			  
-			level=				"5"
-			frequency=			"uncommon"
-
-			value=				"7500"
-			mass=				"1000"
-			  
-			description=		"The Heisenmachines Corporation was the first commercial producer of quantum CPUs. Quantum CPUs are necessary for processing the instructions in a mnemonic memory cube."
-			>
-
-		<Image imageID="&rsItems1;" imageX="0" imageY="192" imageWidth="96" imageHeight="96"/>
-
-		<MiscellaneousDevice
-				powerUse=		"20"
-				/>
-
-	</ItemType>
 
 	<!-- Makayev Enhancer -->
 

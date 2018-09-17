@@ -81,7 +81,7 @@
 			locationCriteria=	"-planetary"
 			>
 
-		<Image shipwreckID="&scEI500;"/>
+		<ImageShipwreck class="&scEI500;"/>
 
 		<Events>
 			<GetExplosionType>
@@ -310,7 +310,7 @@
 									(eq status 'destroyed) "Lost Volkov"
 									(eq status 'destroyedByPlayer) "Killed Volkov"
 									(eq status 'returnedHome) "Allowed Volkov to find his wife"
-									(cat "ERROR: Volkov status: " status)
+									(cat "ERROR: Volkov status: " (or status "Nil"))
 									)
 								Nil
 								"achievements &amp; regrets"

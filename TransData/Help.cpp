@@ -20,6 +20,7 @@
 #define ENTITIES_SWITCH						CONSTLIT("entities")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
+#define LANGUAGE_SWITCH						CONSTLIT("language")
 #define LOOT_SIM_SWITCH						CONSTLIT("lootsim")
 #define PERF_TEST_SWITCH					CONSTLIT("perftest")
 #define RANDOM_ITEMS_SWITCH					CONSTLIT("randomitems")
@@ -34,6 +35,7 @@
 #define STATION_FREQUENCY_SWITCH			CONSTLIT("stationfrequency")
 #define STATION_PLACE_SIM_SWITCH			CONSTLIT("stationSeparationSim")
 #define STATS_SWITCH						CONSTLIT("stats")
+#define SYSTEM_IMAGES_SWITCH				CONSTLIT("systemimages")
 #define SYSTEM_LABELS_SWITCH				CONSTLIT("systemlabels")
 #define SYSTEM_TEST_SWITCH					CONSTLIT("systemtest")
 #define TOPOLOGY_MAP_SWITCH					CONSTLIT("topologyMap")
@@ -192,6 +194,12 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/variantCount]       number of weapon variants.\n");
 		printf("      [/weaponSuppress]     shield prevents firing these damage types.\n");
 		}
+	else if (pCmdLine->GetAttributeBool(LANGUAGE_SWITCH))
+		{
+		printf("  /language             Output language tables.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      /criteria:n           Types to output.\n");
+		}
 	else if (pCmdLine->GetAttributeBool(LOOT_SIM_SWITCH))
 		{
 		printf("  /lootsim              Simulation of items encountered in a game.\n");
@@ -312,6 +320,16 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
 		printf("      [/count:n]            n iterations.\n");
 		}
+	else if (pCmdLine->GetAttributeBool(SYSTEM_IMAGES_SWITCH))
+		{
+		printf("  /systemimages         Generate snapshots of system maps.\n");
+		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/xMargin:n]          Margin around images.\n");
+		printf("      [/xSpacing:n]         Spacing between images.\n");
+		printf("      [/zoom:n]             Scale (thousands of pixels per AU).\n");
+		}
 	else if (pCmdLine->GetAttributeBool(SYSTEM_LABELS_SWITCH))
 		{
 		printf("  /systemlabels         Generate counts for all labels.\n");
@@ -406,6 +424,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("  /encounterFreq        Outputs encounter tables.\n");
 		printf("  /encountersim         Simulate an attack on the station.\n");
 		printf("  /encountertable       Encounter table.\n");
+		printf("  /language             Output language tables.\n");
 		if (bDebug)
 			printf("  /lootsim              Simulation of items found in a game.\n");
 		if (bDebug)

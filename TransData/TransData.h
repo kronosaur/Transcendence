@@ -100,6 +100,7 @@ void GenerateEntitiesTable (const CString &sDataFile, CXMLElement *pCmdLine);
 void GenerateImageChart (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateItemFrequencyTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateItemTable (CUniverse &Universe, CXMLElement *pCmdLine);
+void GenerateLanguageTable (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateLootSim (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateRandomItemTables (CUniverse &Universe, CXMLElement *pCmdLine);
 void GenerateShieldStats (CUniverse &Universe, CXMLElement *pCmdLine);

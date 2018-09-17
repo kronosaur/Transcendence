@@ -231,6 +231,7 @@
 				(list
 					{
 						descID: 'textJuanCarlosMeeting1
+						translateType: &msCSCCollectDataROM;
 						}
 					{
 						descID: 'textJuanCarlosMeeting2

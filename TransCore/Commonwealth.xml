@@ -560,6 +560,13 @@
 				<Panes>
 					<Default descID="descWelcome">
 						<Actions>
+							<Action id="actionBuyShip">
+								(scrShowScreen gScreen &dsRPGShipBroker; {
+									createCriteria: "s +systemLevel:0-2; +commonwealth; -military; -notStandard; +shipBroker;"
+									checkMilitaryID: True
+									})
+							</Action>
+
 							<Action id="actionCommoditiesExchange">
 								(scrShowScreen gScreen &dsRPGCommoditiesExchange; {
 									checkMilitaryID: True
@@ -572,13 +579,6 @@
 									})
 							</Action>
 					
-							<Action id="actionBuyShip">
-								(scrShowScreen gScreen &dsRPGShipBroker; {
-									createCriteria: "s +systemLevel:0-2; +commonwealth; -military; -notStandard; +shipBroker;"
-									checkMilitaryID: True
-									})
-							</Action>
-
 							<Action id="actionUndock" cancel="1">
 								<Exit/>
 							</Action>
@@ -1079,7 +1079,7 @@
 		</Ships>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<AcceptDonation	criteria="*"					priceAdj="100"/>
+			<AcceptDonation	criteria="* -ID; -questItem;" priceAdj="100"/>
 
 			<ConsumeTrade	criteria="{core.fusionFuel}"		impact="1"/>
 			<ConsumeTrade	criteria="{human.basicFood}"	impact="1"/>
@@ -1092,13 +1092,13 @@
 				;			If 0, gain no donation points
 				;			If greater than 0, this is the credit value to gain 1 donation point
 
-				(	; pattern				donate	result
-					("* +Meds;"				50		'info)
-					("* +Illegal;"			250		'info)
-					("* +Lux;"				100		'info)
-					("* +Food;"				50		'info)
-					("f"					50		'info)
-					(Nil					0		'thanksForNothing)
+				(	; pattern						donate	result
+					("* +meds;"						50		'info)
+					("* +illegal; +consumerGood"	250		'info)
+					("* +lux;"						100		'info)
+					("* +food;"						50		'info)
+					("f"							50		'info)
+					(Nil							0		'thanksForNothing)
 					)
 			</DonationTable>
 		</StaticData>
@@ -2608,6 +2608,7 @@
 			demonym=":a Commonwealth citizen(s)"
 
 			alignment="constructive chaos"
+			inherit="&unidCommonText;"
 			>
 
 		<AttributeDesc>
@@ -2621,6 +2622,19 @@
 		</AttributeDesc>
 
 		<Events>
+			<GetGlobalAchievements>
+				(append
+					;	Crime record
+					
+					(if (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
+						{
+							desc: (typTranslate gType 'textWantedFor { crimeText: (objGetData gPlayerShip 'commonCrime) })
+							sectionID: 'criminalRecord
+							}
+						)
+					)
+			</GetGlobalAchievements>
+
 			<GetGlobalDockScreen>
 				; If the player has docked with an active commonwealth station
 				; with customs, then we need to check for various things
@@ -2701,6 +2715,10 @@
 					)
 			</OnGlobalPlayerSoldItem>
 		</Events>
+		
+		<Language>
+			<Text id="textWantedFor">Wanted by the Commonwealth for %crimeText%</Text>
+		</Language>
 	</Sovereign>
 
 	<EconomyType UNID="&ecCreditEconomy;"
@@ -2796,12 +2814,7 @@
 								
 								; Compose a list of all wrecks in the area
 								
-								(setq allWrecks (filter (sysFindObject gSource "TK N:100; +shipwreck; -uncharted; -locked;") theObj
-									(and 
-										(not (objIsRadioactive theObj))
-										(not (objGetData theObj "0010300c_marked"))
-										)
-									))
+								(setq allWrecks (rpgFindWrecksToSalvage gSource '0010300c_marked))
 								)
 							(block (destObj)
 								(setq destObj (random allWrecks))

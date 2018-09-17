@@ -136,7 +136,6 @@ class CGameKeys
 		CGameKeys (void);
 
         void GetCommands (TArray<SCommandKeyDesc> &Result) const;
-		CGameKeys::Keys GetGameCommand (const CString &sCmd) const;
 		inline Keys GetGameCommand (DWORD dwVirtKey) const { return m_iMap[(dwVirtKey < 256 ? dwVirtKey : 0)]; }
         Keys GetGameCommandFromChar (char chChar) const;
 		char GetKeyIfChar (Keys iCommand) const;
@@ -150,6 +149,8 @@ class CGameKeys
         void SetGameKey (const CString &sKeyID, Keys iCommand);
         void SetLayout (ELayouts iLayout);
 		ALERROR WriteAsXML (IWriteStream *pOutput);
+
+		static CGameKeys::Keys GetGameCommand (const CString &sCmd);
 
 	private:
         struct SKeyMapEntry
@@ -207,6 +208,7 @@ class CGameSettings
 			noMissionCheckpoint,			//	Do not save on mission accept
 			defaultBuyTab,					//	Default tab when buying items
 			noMouseAim,						//	Disable mouse aiming
+			forcePermadeath,				//	We treat a game file as ended when we would normally resurrect
 
 			//	Installation options
 			useTDB,							//	Force use of .TDB
@@ -245,7 +247,7 @@ class CGameSettings
 			introSpoilers,					//	Show high-level ships in intro
 
 			//	Constants
-			OPTIONS_COUNT = 40,
+			OPTIONS_COUNT = 41,
 			};
 
 		CGameSettings (IExtraSettingsHandler *pExtra = NULL) : m_pExtra(pExtra) { }

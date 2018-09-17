@@ -76,7 +76,15 @@
 
 		<Satellites>
 			<Orbitals count="1d4" distance="2d8+6" angle="random">
-				<Station type="&stShipwreck1;"/>
+				<Station type="&stShipwreck1;">
+					<InitialData>
+						<!-- We don't want salvagers to take this loot (technically because
+							they don't want to get close to the outpost, but game-wise 
+							because we want players to get this loot). -->
+
+						<Data id="core.noSalvage">True</Data>
+					</InitialData>
+				</Station>
 			</Orbitals>
 		</Satellites>
 

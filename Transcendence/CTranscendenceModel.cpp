@@ -173,6 +173,31 @@ void CTranscendenceModel::AddSaveFileFolder (const CString &sFilespec)
 		}
 	}
 
+TArray<CString> CTranscendenceModel::CalcConditionsWhenDestroyed (SDestroyCtx &Ctx, CSpaceObject *pPlayerShip) const
+
+//	CalcConditionsWhenDestroyed
+//
+//	Returns a set of conditions for the epitaph
+
+	{
+	TArray<CString> Effects;
+
+	if (pPlayerShip->IsRadioactive() && Ctx.iCause != killedByRadiationPoisoning)
+		Effects.Insert(CONSTLIT("radioactive"));
+
+	if (pPlayerShip->IsBlind())
+		Effects.Insert(CONSTLIT("blind"));
+
+	if (pPlayerShip->IsTimeStopped())
+		Effects.Insert(CONSTLIT("time-stopped"));
+	else if (pPlayerShip->IsParalyzed())
+		Effects.Insert(CONSTLIT("paralyzed by EMP"));
+	else if (pPlayerShip->IsDisarmed())
+		Effects.Insert(CONSTLIT("disarmed"));
+
+	return Effects;
+	}
+
 CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 
 //	CalcEpitaph
@@ -212,17 +237,7 @@ CString CTranscendenceModel::CalcEpitaph (SDestroyCtx &Ctx)
 
 	//	Mention any extra conditions that the player had before dying
 
-	TArray<CString> Effects;
-	if (pShip->IsRadioactive() && Ctx.iCause != killedByRadiationPoisoning)
-		Effects.Insert(CONSTLIT("radioactive"));
-	if (pShip->IsBlind())
-		Effects.Insert(CONSTLIT("blind"));
-	if (pShip->IsParalyzed())
-		Effects.Insert(CONSTLIT("paralyzed by EMP"));
-	if (pShip->IsDisarmed())
-		Effects.Insert(CONSTLIT("disarmed"));
-
-	CString sEffects = strJoin(Effects, CONSTLIT("oxfordComma"));
+	CString sEffects = strJoin(CalcConditionsWhenDestroyed(Ctx, pShip), CONSTLIT("oxfordComma"));
 	if (!sEffects.IsBlank())
 		sEffects = strPatternSubst(CONSTLIT(" while %s"), sEffects);
 
@@ -699,7 +714,6 @@ ALERROR CTranscendenceModel::EndGameDestroyed (bool *retbResurrected)
 	else if (m_iState == statePlayerDestroyed)
 		{
 		//	Generate stats and save to file
-
 		GenerateGameStats(&m_GameStats, true);
 		if (error = SaveGameStats(m_GameStats, true))
 			return error;
@@ -1077,9 +1091,20 @@ void CTranscendenceModel::GenerateGameStats (CGameStats *retStats, bool bGameOve
 		bCleanUp = true;
 		}
 
-	//	Add the game version
+	//	Add the current game version
 
 	retStats->Insert(CONSTLIT("Version"), m_Version.sProductVersion);
+
+	//	If we created the game with a different version, show that too
+
+	CString sCreateVersion = m_GameFile.GetCreateVersion();
+	if (!strEquals(m_Version.sProductVersion, sCreateVersion))
+		{
+		if (sCreateVersion.IsBlank())
+			retStats->Insert(CONSTLIT("Version Created"), CONSTLIT("Unknown"));
+		else
+			retStats->Insert(CONSTLIT("Version Created"), sCreateVersion);
+		}
 
 	//	Some stats we only add at the end of the game
 
@@ -1165,6 +1190,7 @@ ALERROR CTranscendenceModel::Init (const CGameSettings &Settings)
 	m_bNoMissionCheckpoint = Settings.GetBoolean(CGameSettings::noMissionCheckpoint);
 	m_bNoSound = Settings.GetBoolean(CGameSettings::noSound);
     m_bNoCollectionLoad = Settings.GetBoolean(CGameSettings::noCollectionLoad);
+	m_bForcePermadeath = Settings.GetBoolean(CGameSettings::forcePermadeath);
 
 	return NOERROR;
 	}
@@ -1328,7 +1354,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		//	Old game
 
-		if (error = m_GameFile.Open(sFilespec))
+		if (error = m_GameFile.Open(sFilespec, 0))
 			{
 			*retsError = strPatternSubst(CONSTLIT("Unable to open save file: %s"), sFilespec);
 			return error;
@@ -1344,9 +1370,9 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 			return ERR_FAIL;
 			}
 
-		//	If this game is in end game state then we just load the stats.
+		//	If this game is in end game state OR if we are forcing permadeath and this game is over then we just load the stats.
 
-		if (m_GameFile.IsEndGame())
+		if (m_GameFile.IsEndGame() || (m_bForcePermadeath && m_GameFile.IsGameResurrect() && m_GameFile.GetResurrectCount() == 0))
 			{
 			error = m_GameFile.LoadGameStats(&m_GameStats);
 			m_GameFile.Close();
@@ -1453,7 +1479,7 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		//	Log that we loaded a game
 
-		kernelDebugLogPattern("Loaded game file version: %x", m_GameFile.GetCreateVersion());
+		kernelDebugLogPattern("Loaded game file version: %s", m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
 
 		return NOERROR;
 		}
@@ -1479,7 +1505,7 @@ ALERROR CTranscendenceModel::LoadGameStats (const CString &sFilespec, CGameStats
 	//	Open the game file
 
 	CGameFile GameFile;
-	if (error = GameFile.Open(sFilespec))
+	if (error = GameFile.Open(sFilespec, CGameFile::FLAG_NO_UPGRADE))
 		return error;
 
 	//	Load the stats

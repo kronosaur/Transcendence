@@ -21,6 +21,7 @@
 #define NO_LOGO_SWITCH						CONSTLIT("nologo")
 
 #define ADVENTURE_SWITCH					CONSTLIT("adventure")
+#define API_VERSION_SWITCH					CONSTLIT("apiVersion")
 #define ARMOR_TABLE_SWITCH					CONSTLIT("armortable")
 #define ATTRIBUTE_LIST_SWITCH				CONSTLIT("attributelist")
 #define DEBUG_SWITCH						CONSTLIT("debug")
@@ -38,6 +39,7 @@
 #define HEXARC_TEST_SWITCH					CONSTLIT("hexarcTest")
 #define ITEM_FREQUENCY_SWITCH				CONSTLIT("itemsim")
 #define ITEM_TABLE_SWITCH					CONSTLIT("itemtable")
+#define LANGUAGE_SWITCH						CONSTLIT("language")
 #define LOOT_SIM_SWITCH						CONSTLIT("lootsim")
 #define PERF_TEST_SWITCH					CONSTLIT("perftest")
 #define RANDOM_ITEMS_SWITCH					CONSTLIT("randomitems")
@@ -260,7 +262,7 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		const CString sSaveFile = pCmdLine->GetAttribute(GAME_FILE_SWITCH);
 		
 		CGameFile Game;
-		if (error = Game.Open(sSaveFile))
+		if (error = Game.Open(sSaveFile, CGameFile::FLAG_NO_UPGRADE))
 			{
 			printf("ERROR: Can't open %s.\n", (char *)sSaveFile);
 			::kernelSetDebugLog(NULL);
@@ -330,6 +332,8 @@ void AlchemyMain (CXMLElement *pCmdLine)
 		GenerateItemFrequencyTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(ITEM_TABLE_SWITCH))
 		GenerateItemTable(Universe, pCmdLine);
+	else if (pCmdLine->GetAttributeBool(LANGUAGE_SWITCH))
+		GenerateLanguageTable(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(LOOT_SIM_SWITCH))
 		GenerateLootSim(Universe, pCmdLine);
 	else if (pCmdLine->GetAttributeBool(RANDOM_ITEMS_SWITCH))
@@ -503,6 +507,10 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 	else
 		Ctx.bNoResources = true;
 
+	//	API version
+
+	Ctx.dwMinAPIVersion = pCmdLine->GetAttributeIntegerBounded(API_VERSION_SWITCH, 0, API_VERSION, API_VERSION);
+
 	//	Extension
 
 	CString sExtensionFolder = pCmdLine->GetAttribute(EXTENSION_FOLDER_ATTRIB);
@@ -555,6 +563,7 @@ bool IsMainCommandParam (const CString &sAttrib)
 	return (strEquals(sAttrib, CONSTLIT("adventure"))
 			|| strEquals(sAttrib, CONSTLIT("all"))
 			|| strEquals(sAttrib, CONSTLIT("allClasses"))
+			|| strEquals(sAttrib, CONSTLIT("apiVersion"))
 			|| strEquals(sAttrib, CONSTLIT("criteria"))
 			|| strEquals(sAttrib, CONSTLIT("debug"))
 			|| strEquals(sAttrib, CONSTLIT("extensionFolder"))

@@ -112,7 +112,7 @@
 						(= rank 4) "Fleet lieutenant"
 						(= rank 5) "Fleet commander"
 						(= rank 6) "Fleet captain"
-						(cat "ERROR: Fleet rank: " rank)
+						(cat "ERROR: Fleet rank: " (or rank "Nil"))
 						)
 					)
 			</Text>
@@ -698,7 +698,7 @@ PLAYER DATA
 		
 		<Devices>
 			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="355" maxFireArc="175" posAngle="90" posRadius="24" posZ="8"/>
-			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="5" posAngle="-90" posRadius="24" posZ="8"/>
+			<Device deviceID="&itStarCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="5" posAngle="-90" posRadius="24" posZ="8"/>
 			<Device deviceID="&itNAMIHeavyLauncher;" omnidirectional="true"/>
 			<Device deviceID="&itR9Deflector;"/>
 		</Devices>
@@ -975,8 +975,9 @@ PLAYER DATA
 			>
 
 		<RepairerDevice
-				regen=			"10,10,10, 7, 7,  7, 5, 5, 5, 4"
-				powerUse=		"50"
+				regen=				"10,10,10, 7, 7,  7, 5, 5, 5, 4"
+				compartmentRegen=	"10"
+				powerUse=			"50"
 				/>
 
 	</ItemType>

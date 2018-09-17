@@ -76,6 +76,9 @@
 								)
 							)
 
+						;	Copy markerID
+						(msnSetData gSource 'markerID (objGetData aOwnerObj 'markerID))
+
 						;	No intro available
 						(msnSetProperty gSource 'isIntroShown True)
 						)

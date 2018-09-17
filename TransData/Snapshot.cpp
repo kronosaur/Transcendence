@@ -237,7 +237,7 @@ void GenerateSnapshot (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			else
 				{
-				if (error = Output.CopyToClipboard())
+				if (!Output.CopyToClipboard())
 					{
 					printf("ERROR: Unable to copy image to clipboard.\n");
 					return;

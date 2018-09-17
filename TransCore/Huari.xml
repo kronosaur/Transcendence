@@ -46,7 +46,7 @@
 										(= status 'templeDestroyed) "Failed to defend the Huari"
 										(= status 'loser) "Disappointed the Huari"
 										(= status 'friend) "Befriended the Huari"
-										(cat "ERROR: Huari status: " status)
+										(cat "ERROR: Huari status: " (or status "Nil"))
 										)
 									Nil
 									(typTranslate &unidCommonText; 'achievementsAndRegrets)
@@ -65,13 +65,15 @@
 					;	Only care if player was responsible
 					(or (not gPlayerShip) (!= aOrderGiver gPlayerShip))
 						Nil
-
+						
 					;	Sung station destroyed
 					(objMatches aObjDestroyed Nil "t +sungSlavers; +majorStation;")
 						(huaSungDestroyed aObjDestroyed aOrderGiver)
 
 					;	Huari ship or station destroyed
-					(= (objGetSovereign aObjDestroyed) &svHuariEmpire;)
+					(or (objMatches aObjDestroyed Nil "s +huari;")
+							(objMatches aObjDestroyed Nil "T +huari; +populated;")
+							)
 						(huaHuariDestroyed aObjDestroyed aOrderGiver)
 					)
 			</OnGlobalObjDestroyed>

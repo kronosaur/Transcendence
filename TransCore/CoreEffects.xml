@@ -196,6 +196,12 @@
 			</ParticleCloud>
 		</Effect>
 	</OverlayType>
+
+	<OverlayType unid="&ovTimeStop;"
+			attributes=		"effect"
+			timeStop=		"true"
+			>
+	</OverlayType>
 	
 <!-- COMMON SHIELD EFFECTS =====================================================
 
@@ -231,7 +237,7 @@
 				imageHeight="24"
 				imageFrameCount="10"/>
 	</Effect>
-	
+
 <!-- DEFAULT SOUND EFFECTS =====================================================
 
 -->

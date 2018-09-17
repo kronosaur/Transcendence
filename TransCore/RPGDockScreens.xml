@@ -319,6 +319,8 @@
 
 	gData uses the following fields:
 
+	lootLabel: Action label to use.
+
 	nextScreen:	If specified, we navigate to the given screen when we're done.
 		This may also be a list consisting of a screen and a pane.
 						
@@ -343,6 +345,14 @@
 					(block (
 						(thisItem (scrGetItem gScreen))
 						)
+						;	Initialize action label, if necessary
+
+						(if (@ gData 'lootLabel)
+							(scrSetActionLabel gScreen 'actionLootThis (@ gData 'lootLabel))
+							)
+
+						;	Set description
+
 						(switch
 							(not thisItem)
 								(block Nil
@@ -449,6 +459,9 @@
 
 				<OnPaneInit>
 					(block Nil
+						(if (@ gData 'lootLabel)
+							(scrSetActionLabel gScreen 'actionLoot (@ gData 'lootLabel))
+							)
 						(scrSetDescTranslate gScreen 'descLootQuantity)
 						(scrSetCounter gScreen (scrGetData gScreen 'maxCount))
 						)

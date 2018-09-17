@@ -184,6 +184,10 @@
     <!ENTITY efGravitonExplosion		"0x00030043">
 
 	<!ENTITY vtDisintegrationExplosion	"0x00030044">
+
+	<!-- 0080-00BF OVERLAY TYPE -->
+
+	<!ENTITY ovTimeStop					"0x00030080">
 	]>
 	
 <CoreLibrary

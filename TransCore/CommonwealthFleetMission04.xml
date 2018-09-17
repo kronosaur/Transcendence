@@ -153,7 +153,7 @@
 			</Text>
 			<Text id="Summary">
 				(cat
-					(msnTranslate gSource 'textSummary) {
+					(msnTranslate gSource 'textSummary {
 						destName: (objGetName (objGetObjByID (msnGetData gSource 'aresID)) 'article)
 						}) 
 					"\n\n"

@@ -328,6 +328,7 @@
     <ClCompile Include="Hexarc.cpp" />
     <ClCompile Include="ImageChart.cpp" />
     <ClCompile Include="ItemTable.cpp" />
+    <ClCompile Include="LanguageTable.cpp" />
     <ClCompile Include="LootSim.cpp" />
     <ClCompile Include="main.cpp">
       <Optimization Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Disabled</Optimization>
@@ -479,6 +480,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Game\TLisp\GetDistancePerformance.tlisp" />
     <None Include="..\Game\TLisp\LanguageUnitTest.tlisp" />
     <None Include="..\Game\TLisp\ListUnitTest.tlisp" />
     <None Include="..\Game\TransData.xml">

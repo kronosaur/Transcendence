@@ -241,6 +241,15 @@
 					)
 			</GetRumors>
 
+			<OnGlobalUniverseLoad>
+				;	If we're loading because of a resurrect, then update any arena missions
+				(if (= aReason 'resurrect)
+					(enum (msnFind "a +arenaCombat;") theMission
+						(msnFireEvent theMission 'OnPlayerResurrect)
+						)
+					)
+			</OnGlobalUniverseLoad>
+
 			<OnCreate>
 				(block (classList gladiatorList markerObj)
 					; Load the list of standard gladiator classes

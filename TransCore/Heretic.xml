@@ -156,7 +156,7 @@
 		<Invoke key="V">
 			(switch
 				; If we don't have a quantum CPU
-				(not (objGetItems gSource "*I+QuantumCPU"))
+				(not (progHasQuantumCPU gSource))
 					(objSendMessage gSource Nil "Quantum CPU required")
 
 				; Otherwise, we disable any Iocrym sentinels
@@ -758,7 +758,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<AcceptDonation	criteria="*"					priceAdj="100" actualPrice="true"/>
+			<AcceptDonation	criteria="* -ID; -questItem;" priceAdj="100" actualPrice="true"/>
 		</Trade>
 
 		<DockScreens>

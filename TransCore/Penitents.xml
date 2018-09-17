@@ -519,23 +519,9 @@
 				lifetime=			"40"
 				powerUse=			"200"
 
+				effect=				"&efDarkAcidBoltDefault;"
 				sound=				"&snRecoillessCannon;"
-				>
-
-			<Effect>
-				<ParticlePattern
-						style=			"comet"
-						particleCount=	"160"
-						primaryColor=	"0x00, 0xd8, 0xc6"
-						jitterLength=	"80-150"
-
-						width=			"6"
-						length=			"80"
-						/>
-				
-				<Image imageID="&rsMissiles4;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="8" imageTicksPerFrame="1"/>
-			</Effect>
-		</Weapon>
+				/>
 		<Events>
 			<GetGlobalAchievements>
 				(block	(

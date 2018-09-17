@@ -613,7 +613,7 @@ bool OutputImage (CG32bitImage &Image, const CString &sFilespec)
 
 	else
 		{
-		if (Image.CopyToClipboard() != NOERROR)
+		if (!Image.CopyToClipboard())
 			{
 			printf("Unable to copy to clipboard.\n");
 			return false;

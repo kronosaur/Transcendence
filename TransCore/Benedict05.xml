@@ -74,7 +74,7 @@
 		</Events>
 		
 		<Language>
-			<Text id="Name">"Contact Hugo Sandoval"</Text>
+			<Text id="Name">Contact Hugo Sandoval</Text>
 			<Text id="Summary">
 				(cat
 					"Go to " (sysGetName 'C5) " and find Hugo Sandoval. He flies a heavily modified Armstrong-class transport.\n\n"
@@ -84,111 +84,33 @@
 			</Text>
 			<Text id="Intro">
 				(list
-					{
-						desc: (cat
-							"You enter the brightly lit central garden of the New Victoria University Hospital. "
-							"Recovering patients sit on articulated gurneys, while doctors and medtechs pass through, "
-							"heads buried in datapads.\n\n"
-							
-							"Nearby, Fiona rests at a bench, hooked up to a medical bot:\n\n"
-							
-							"\"I'm glad to finally meet you. Thank you for saving my life in Eridani.\""
-							)
-							
-						label: "\"[D]o you remember what happened?\""
+					{	descID: 'descIntro1			labelID: 'actionIntro1
+						data: {
+							systemName: (sysGetName (objGetProperty gPlayerShip 'startingSystem))
+							}
 						}
-					{
-						desc: (cat
-							"Fiona looks around and engages a privacy screen.\n\n"
-							
-							"\"Look, I don't know you, OK? Thanks again, but everything is fine.\""
-							)
-							
-						label: "\"[B]enedict is worried about you.\""
+					{	descID: 'descIntro2			labelID: 'actionIntro2	}
+					{	descID: 'descIntro3		}
+					{	descID: 'descIntro4			labelID: 'actionIntro4	}
+					{	descID: 'descIntro5			labelID: 'actionIntro5	}
+					{	descID: 'descIntro6			labelID: 'actionIntro6
+						data: {
+							systemName: (sysGetName 'C5)
+							}
 						}
-					{
-						desc: (cat
-							"Fiona blinks tears away and looks down.\n\n"
-							
-							"\"You don't want to get involved, OK?\"\n\n"
-							
-							"She pauses for a long time, but seeing your persistence she shakes her head and sighs. A fresh scar "
-							"curves under her left eye and disappears behind her ear."
-							)
-						}
-					{
-						desc: (cat
-							"\"A few months ago, one of our medical ships, the Hand of Solace, was ambushed and "
-							"wrecked by marauders. Sister Elana Ston was in command at the time, and she survived "
-							"along with a medtech. Later, the medtech was found dead&mdash;blasted, actually.\n\n"
-							
-							"\"Sister Ston thought the medtech might have been involved with the marauders and "
-							"then betrayed by them.\""
-							)
-							
-						label: "\"[A] medtech in league with marauders?\""
-						}
-					{
-						desc: (cat
-							"\"Yeah, I know it doesn't make sense, OK? But I couldn't find any other explanation. "
-							"And the Hand of Solace was gone, so there was no evidence.\n\n"
-							
-							"\"But then I got a strange message.\""
-							)
-							
-						label: "\"[L]et me guess, Stormhound, right?\""
-						}
-					{
-						desc: (cat
-							"Fiona arches an eyebrow, impressed.\n\n"
-							
-							"\"Yes! He said it wasn't marauders. He told me to look for the wreckage of the medical ship in the "
-							(sysGetName 'C5) " system. Asked to tell him what I found.\n\n"
-							
-							"\"But I never got there. Penitents attacked me on my way and here I am.\""
-							)
-							
-						label: "\"[W]ho knows about this? Benedict?\""
-						}
-					{
-						desc: (cat
-							"Fiona stares at you.\n\n"
-							
-							"\"No. Not yet. Stormhound told me about his past. I'm questioning everything, OK?\""
-							)
-						
+					{	descID: 'descIntro7
 						actions: (list
-							{
-								label: "\"[Y]ou can trust Benedict.\""
-								nextPage: 'trustBenedict
-								}
-							{
-								label: "\"[D]on't trust Benedict.\""
-								nextPage: 'dontTrustBenedict
-								}
+							{	labelID: 'actionIntro7A		nextPage: 'trustBenedict		}
+							{	labelID: 'actionIntro7B		nextPage: 'dontTrustBenedict	}
 							)
 						}
-					{
-						id: 'trustBenedict
-						desc: (cat
-							"Fiona closes her eyes and smiles.\n\n"
-							
-							"\"I want to believe that, OK? I really do. But I can't take the chance that I'm wrong.\""
-							)
-							
-						label: "\"[W]hat do we do now?\""
-						nextPage: 'exitPane
+
+					{	id: 'trustBenedict
+						descID: 'descIntro8			labelID: 'actionIntro8		nextPage: 'exitPane
 						}
-					{
-						id: 'dontTrustBenedict
-						desc: (cat
-							"Fiona closes her eyes and frowns.\n\n"
-							
-							"\"I don't know anymore. But either way, I can't take the chance that he's turned.\""
-							)
-						
-						label: "\"[W]hat do we do now?\""
-						nextPage: 'exitPane
+
+					{	id: 'dontTrustBenedict
+						descID: 'descIntro9			labelID: 'actionIntro8		nextPage: 'exitPane 
 						}
 					)
 			</Text>
@@ -211,12 +133,119 @@
 						}
 					)
 			</Text>
+
+			<!-- INTRO -->
+
+			<Text id="descIntro1">
+			
+				You enter the brightly lit central garden of the New Victoria 
+				University Hospital. Recovering patients sit on articulated 
+				gurneys, while doctors and medtechs pass through, heads buried 
+				in datapads.
+							
+				Nearby, Fiona rests at a bench, hooked up to a medical bot:
+							
+				"I'm glad to finally meet you. Thank you for saving my life in 
+				%systemName%."
+			
+			</Text>
+			<String id="actionIntro1">"[D]o you remember what happened?"</String>
+			<Text id="descIntro2">
+			
+				Fiona looks around and engages a privacy screen.
+							
+				"Look, I don't know you, OK? Thanks again, but everything is fine."
+
+			</Text>
+			<String id="actionIntro2">"[B]enedict is worried about you."</String>
+			<Text id="descIntro3">
+			
+				Fiona blinks tears away and looks down.
+							
+				"You don't want to get involved, OK?"
+							
+				She pauses for a long time, but seeing your persistence she 
+				shakes her head and sighs. A fresh scar curves under her left 
+				eye and disappears behind her ear.
+
+			</Text>
+			<Text id="descIntro4">
+			
+				"A few months ago, one of our medical ships, the Hand of Solace,
+				was ambushed and wrecked by marauders. Sister Elana Ston was in 
+				command at the time, and she survived along with a medtech. 
+				Later, the medtech was found dead&mdash;blasted, actually.
+							
+				"Sister Ston thought the medtech might have been involved with 
+				the marauders and then betrayed by them."
+
+			</Text>
+			<String id="actionIntro4">"[A] medtech in league with marauders?"</String>
+			<Text id="descIntro5">
+			
+				"Yeah, I know it doesn't make sense, OK? But I couldn't find 
+				any other explanation. And the Hand of Solace was gone, so there 
+				was no evidence.
+							
+				"But then I got a strange message."
+
+			</Text>
+			<String id="actionIntro5">"[L]et me guess, Stormhound, right?"</String>
+			<Text id="descIntro6">
+
+				Fiona arches an eyebrow, impressed.
+							
+				"Yes! He said it wasn't marauders. He told me to look for the 
+				wreckage of the medical ship in the %systemName% system. Asked 
+				to tell him what I found.
+							
+				"But I never got there. Penitents attacked me on my way and 
+				here I am."
+			
+			</Text>
+			<String id="actionIntro6">"[W]ho knows about this? Benedict?"</String>
+			<Text id="descIntro7">
+
+				Fiona stares at you.
+							
+				"No. Not yet. Stormhound told me about his past. I'm questioning 
+				everything, OK?"
+			
+			</Text>
+			<String id="actionIntro7A">"[Y]ou can trust Benedict."</String>
+			<String id="actionIntro7B">"[D]on't trust Benedict."</String>
+			<Text id="descIntro8">
+			
+				Fiona closes her eyes and smiles.
+							
+				"I want to believe that, OK? I really do. But I can't take the 
+				chance that I'm wrong."
+			
+			</Text>
+			<String id="actionIntro8">"[W]hat do we do now?"</String>
+			<Text id="descIntro9">
+
+				Fiona closes her eyes and frowns.
+							
+				"I don't know anymore. But either way, I can't take the chance 
+				that he's turned."
+			
+			</Text>
+
+			<!-- ACCEPT -->
+
 			<String id="AcceptReply">
 				"Good luck, %name%!"
 			</String>
+
+			<!-- DECLINE -->
+
 			<String id="DeclineReply">
 				"Alright, but don't take long. Something tells me we don't have much time."
 			</String>
+
+			<!-- IN PROGRESS -->
+
 			<Text id="InProgress">
 
 				"Something tells me we don't have much time. The sooner you reach 

@@ -542,6 +542,7 @@
 							itemCount: (itmGetCount itemNeeded)
 							itemName: (itmGetName itemNeeded 'actual)
 							itemNames: (itmGetName itemNeeded '(actual plural))
+							itemNamesShort: (itmGetName itemNeeded '(actual plural short))
 							})
 						desc
 						)
@@ -785,7 +786,7 @@
 				Unfortunately, you need %itemCount% more %itemNames%.
 			</Text>
 			<Text id="errorComponentMissing">
-				Unfortunately, you do not have any %itemNames%.
+				Unfortunately, you do not have any %itemNamesShort%.
 			</Text>
 			<Text id="errorMoneyLacking">
 				Unfortunately, you do not have enough credits.
@@ -927,6 +928,11 @@
 							(+ workPrice (@ theRecipe 'extraCost))
 							)
 						)
+
+					;	When looking for components, we ignore attributes of the item that 
+					;	we don't care about.
+
+					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
 						
 					;	For each required component, add up the number of items the player
 					;	actually has. Note that we accept damaged items.
@@ -939,13 +945,13 @@
 								;	Add the number of non-damaged items we have
 								
 								(setq countAvailable (add countAvailable
-									(objHasItem (or theSource gPlayerShip) theComponent 1)
+									(objHasItem (or theSource gPlayerShip) theComponent 1 compareFlags)
 									))
 										
 								;	Now add damaged items
 									
 								(setq countAvailable (add countAvailable
-									(objHasItem (or theSource gPlayerShip) (itmSetProperty theComponent 'damaged True) 1)
+									(objHasItem (or theSource gPlayerShip) (itmSetProperty theComponent 'damaged True) 1 compareFlags)
 									))
 										
 								;	Compose entry
@@ -1068,7 +1074,12 @@
 				))
 				
 			(setq tinkerFabricate (lambda (theRecipe theCost theCount)
-				(block (itemToCreate itemsConsumed)
+				(block (
+					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
+
+					itemToCreate 
+					itemsConsumed
+					)
 				
 					(setq itemToCreate (tinkerCreateItem theRecipe theCount))
 				
@@ -1082,10 +1093,10 @@
 							;	Consume damaged items first
 							
 							(setq damagedItem (itmSetProperty (itmCreate (@ theEntry 'item) 1) 'damaged True))
-							(setq available (min leftToConsume (objHasItem gPlayerShip damagedItem 1)))
+							(setq available (min leftToConsume (objHasItem gPlayerShip damagedItem 1 compareFlags)))
 							(if (gr available 0)
 								(block Nil
-									(objRemoveItem gPlayerShip damagedItem available)
+									(objRemoveItem gPlayerShip damagedItem available compareFlags)
 									(setq leftToConsume (subtract leftToConsume available))
 									(setq itemsConsumed (list (itmSetCount damagedItem available)))
 									)
@@ -1094,10 +1105,10 @@
 							;	Consume good items
 							
 							(setq goodItem (itmCreate (@ theEntry 'item) 1))
-							(setq available (min leftToConsume (objHasItem gPlayerShip goodItem 1)))
+							(setq available (min leftToConsume (objHasItem gPlayerShip goodItem 1 compareFlags)))
 							(if (gr available 0)
 								(block Nil
-									(objRemoveItem gPlayerShip goodItem available)
+									(objRemoveItem gPlayerShip goodItem available compareFlags)
 									(setq leftToConsume (subtract leftToConsume available))
 									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
 									)

@@ -1402,7 +1402,7 @@
 						(needed (scrGetData gScreen 'fuelNeeded))
 						(afford (scrGetData gScreen 'fuelAfford))
 						(descID (switch
-							(and  (gr needed afford) (= (afford) 1))
+							(and  (gr needed afford) (= afford 1))
 								"descRefuelConfirm:onlyAffordOne"
 							(gr needed afford)
 								"descRefuelConfirm:onlyAffordSome"
@@ -1700,6 +1700,7 @@
 			<Text id="actionUpgrade:noItemUpgrade:weapon">We do not have anything better than your level %itemLevel% weapon.</Text>
 			<Text id="actionUpgrade:noItemUpgrade:device">We do not have anything better than your level %itemLevel% device.</Text>
 			<Text id="actionUpgrade:noTech">We do not have the technology to upgrade a level %itemLevel% device.</Text>
+			<Text id="actionUpgrade.noNewItems">We do not have anything better than your %itemName%.</Text>"
 
 			<Text id="descRefuelConfirm:onlyAffordOne">
 				Each %itemSingle% costs %cost%. You can only afford a single one.

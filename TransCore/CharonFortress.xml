@@ -283,7 +283,7 @@
 								(switch
 									(eq theStatus 'destroyed) "Destroyed the Fortress in the Charon system"
 									(eq theStatus 'allDestroyed) "Cleared the Charon system for Korolov Shipping"
-									(cat "ERROR: Charon fortress status: " theStatus)
+									(cat "ERROR: Charon fortress status: " (or theStatus "Nil"))
 									) 
 								Nil 
 								"achievements &amp; regrets"

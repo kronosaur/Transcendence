@@ -93,7 +93,7 @@
 		</Items>
 
 		<Trade currency="credit" max="50000" replenish="2500">
-			<AcceptDonation	criteria="*"					priceAdj="100" actualPrice="true"/>
+			<AcceptDonation	criteria="* -ID; -questItem;" priceAdj="100" actualPrice="true"/>
 		</Trade>
 
 		<StaticData>
@@ -105,19 +105,38 @@
 				; rel =		Points of relationship gained per item
 
 				(	; pattern				attd	rel		text
-					(&itCarvedPrayerStone;	0		20		"We thank you for your offering. These beautiful stones are a fitting tribute to Domina's grace and power.")
-					(&itJewelOfContemplation; 0		35		"We thank you for your offering. These beautiful jewels are a fitting tribute to Domina's grace and power.")
-					(&itHierolithCrystal;	-1		175		"We thank you for your offering. These beautiful crystals are a fitting tribute to Domina's grace and power.")
-					(&itDeathCube;			-1		80		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itAbbasidThanogram;	0		70		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itCDMArchive;			-1		105		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
-					(&itOpticalKnowledgeArray; 0	24		"We thank you for your offering. These intricate devices will help us with our communion.")
-					(&itSlaveCoffin;		-1		100		"We will take care of these lost children and teach them the way of Domina. Trust your fate to Domina.")
+
+					; Level 1-2
+
+					(&itCarvedPrayerStone;	0		30		"We thank you for your offering. These beautiful stones are a fitting tribute to Domina's grace and power.")
+
+					; Level 3-4
+
+					(&itNeuralProcessor;	0		48		"We thank you for your offering. These sophisticated devices will help us commune with Domina.")
+					(&itJewelOfContemplation; 0		48		"We thank you for your offering. These beautiful jewels are a fitting tribute to Domina's grace and power.")
+					(&itAbbasidThanogram;	0		64		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+
+					; Level 5-6
+
+					(&itSlaveCoffin;		-1		40		"We will take care of these lost children and teach them the way of Domina. Trust your fate to Domina.")
+					(&itOpticalKnowledgeArray; 0	80		"We thank you for your offering. These intricate devices will help us with our communion.")
+					(&itDeathCube;			-1		180		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+
+					; Level 7-8
+
+					(&itCDMArchive;			-1		270		"The souls in these receptacles deserve to rejoin Domina. The flesh will perish, but the eternal soul returns to its maker.")
+
+					; Level 9-10
+
+					(&itHierolithCrystal;	-1		360		"We thank you for your offering. These beautiful crystals are a fitting tribute to Domina's grace and power.")
+
+					; Other
+
 					(&itCashCardGold;		500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
 					(&itCashCardPlatinum;	500		0		"We thank you for your sacrifice. Seek us when you are in need of sustenance.")
 					("ad +Illegal;"			0		0		"We shall dispose of this equipment for your own good. Do not give in to its corrupting influence.")
 					("*+ID;"				0		0		"We thank you for your good intentions, but this kind of item is useless to us.")
-					("*+HaloGem;"			-1		200		"We thank you for your offering. These beautiful gems are a fitting tribute to Domina's grace and power.")
+					("*+HaloGem;"			-1		270		"We thank you for your offering. These beautiful gems are a fitting tribute to Domina's grace and power.")
 					("*+Meds;"				500		0		"We thank you for your sacrifice. Seek us when you are in need of healing.")
 					("*+Illegal;"			0		0		"We shall dispose of this poison so that it may do no harm. Cleanse yourself of its influence.")
 					("*+Lux;"				2000	0		"We thank you for your sacrifice. Seek us when you are in need of peace.")
@@ -818,8 +837,17 @@
 
 		<ListOptions
 			dataFrom=	"player"
-			list=		"*U -ID; -questItem;"
-			/>
+			list=		"*"
+			>
+			(scrSetListFilter gScreen (lambda (theItem)
+				(and (itmMatches theItem "*U")
+					(or (itmMatches theItem "* -ID; -questItem;")
+						(itmGetStaticData theItem 'sisters.donation)
+						(itmGetStaticData theItem '00182001_Donation)
+						)
+					)
+				))
+		</ListOptions>
 
 		<Panes>
 			<Default>
@@ -909,11 +937,12 @@
 
 			<Donate noListNavigation="true">
 				<OnPaneInit>
-					(block (table entry criteria)
-					
-						;	Get the donation entry
-						
-						(setq entry (domGetDonationEntry gItem))
+					(block (
+						(entry (domGetDonationEntry gItem))
+						(att (eval (@ entry 1)))
+						(rel (eval (@ entry 2)))
+						(desc (eval (@ entry 3)))
+						)
 						
 						; Deal with the entry that we found
 
@@ -925,8 +954,8 @@
 
 							; If the entry has no increase in att or rel, then we output the message
 							; from the entry
-							(and (eq (item entry 1) 0) (eq (item entry 2) 0))
-								(scrSetDesc gScreen (cat "\"" (item entry 3) "\""))
+							(and (eq att 0) (eq rel 0))
+								(scrSetDesc gScreen (cat "\"" desc "\""))
 
 							; Otherwise, do more calculations
 
@@ -942,24 +971,24 @@
 								
 								(switch
 									; If 0, then we get no increase in attitude
-									(eq (item entry 1) 0)
+									(eq att 0)
 										(setq incAtt 0)
 
 									; If -1, then each item counts for +1 attitude
-									(eq (item entry 1) -1)
+									(eq att -1)
 										(setq incAtt (itmGetCount gItem))
 
 									; Otherwise, depends on the value of the item
-									(setq incAtt (divide totalValue (item entry 1)))
+									(setq incAtt (divide totalValue att))
 									)
 
 								; Calculate the increase in relationship
 								
-								(if (or (eq (item entry 2) 0)
+								(if (or (eq rel 0)
 										(not (eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;))
 										)
 									(setq incRel 0)
-									(setq incRel (multiply (itmGetCount gItem) (item entry 2)))
+									(setq incRel (multiply (itmGetCount gItem) rel))
 									)
 									
 								;	Calculate bonus text
@@ -993,7 +1022,7 @@
 										(scrSetDesc gScreen "\"We thank you for your donation and your good intentions. Go in peace.\"")
 
 									; Otherwise, message specified in table
-									(scrSetDesc gScreen (cat "\"" (item entry 3) "\"" bonusText))
+									(scrSetDesc gScreen (cat "\"" desc "\"" bonusText))
 									)
 
 								; Increase attitude and relationship

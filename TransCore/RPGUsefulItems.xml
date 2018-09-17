@@ -539,7 +539,7 @@
 							(itmTranslate gItem resultDesc {
 								useItem: (itmGetName gItem)
 								dstItem: (itmGetName dstItem '(demonstrative noModifiers))
-								hpRepaired: hpRepaired
+								hpRepaired: (fmtNoun (typTranslate &baStdArmorRepair; 'nounHitPoints) hpRepaired 'countAlways)
 								})
 							)
 						}
@@ -567,14 +567,16 @@
 			<Text id="descResultItemError">ERROR: &lt;RepairHP&gt; static data not found.</Text>
 			<Text id="descResultNotArmor">That is not an armor segment.</Text>
 			<Text id="descResultNotDamaged">That armor segment is not damaged. There is no need to attempt repairs.</Text>
-			<Text id="descResultRepaired">You have successfully repaired %hpRepaired% hit points of damage to your armor.</Text>
+			<Text id="descResultRepaired">You have successfully repaired %hpRepaired% of damage to your armor.</Text>
 			<Text id="descResultArmorTooPrimitive">Unfortunately, %dstItem% is too primitive to be repaired with it.</Text>
 			<Text id="descResultArmorTooAdvanced">Unfortunately, %dstItem% is too advanced to be repaired with it.</Text>
 			<Text id="descResultReusable">
-				You have successfully repaired %hpRepaired% hit points of damage to your armor.
+				You have successfully repaired %hpRepaired% of damage to your armor.
 
 				There is still enough of the %useItem% left to repair other segments.
 			</Text>
+			
+			<Text id="nounHitPoints">hit point(s)</Text>
 		</Language>
 	</Type>
 

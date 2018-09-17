@@ -251,7 +251,7 @@ void CGameKeys::GetCommands (TArray<SCommandKeyDesc> &Result) const
 		}
     }
 
-CGameKeys::Keys CGameKeys::GetGameCommand (const CString &sCmd) const
+CGameKeys::Keys CGameKeys::GetGameCommand (const CString &sCmd)
 
 //	GetGameCommand
 //

@@ -153,9 +153,12 @@
 				;
 				;		'missionDecline: Decline the mission.
 				;
-				;		'nextPage (or Nil): We advance to the next page (by
+				;		'nextPage: We advance to the next page (by
 				;				reloading the pane) or invoke the exitPane
 				;				action (see below) if we're at the last page.
+				;
+				;		Nil: Like 'nextPage, except that we also exit if the
+				;				next page has an ID.
 				;
 				;		'exitPane: We either invoke the (@ options 'onExitPane)
 				;				code (if any) or just exit the screen.
@@ -273,7 +276,7 @@
 									(and translateID (typTranslate translateID (@ pageDesc 'labelID)))
 									(scrTranslate theScreen (@ pageDesc 'labelID))
 									)
-								nextPage: (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane))
+								nextPage: (or (@ pageDesc 'nextPage) (@ pageDesc 'nextPane) 'nextPage)
 								code: (or (@ pageDesc 'code) (@ pageDesc 'nextCode))
 								}))
 						)
@@ -374,10 +377,13 @@
 								;	then we exit.
 								
 								(or (= nextPage 'exitPane)
-										(and atLastPage
-											(or (not nextPage) (= nextPage 'nextPage))
-											)
+									(and atLastPage
+										(or (not nextPage) (= nextPage 'nextPage))
 										)
+									(and (not nextPage)
+										(@ (rpgPageDesc textDesc (+ pageNo 1)) 'id)
+										)
+									)
 									(scrAddAction theScreen actionID Nil actionLabel Nil actionAccel
 										(lambda ()
 											(block Nil

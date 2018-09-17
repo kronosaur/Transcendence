@@ -97,7 +97,9 @@
 				(if (msnGetData gSource 'destroyedByPlayer)
 					(block Nil
 						(typSetGlobalData &unidKorolovShipping; 'level 4)
-						(typSetGlobalData &unidKorolovShipping; 'xp 5000)
+						(if (ls (typGetGlobalData &unidKorolovShipping; 'xp) 5000)
+							(typSetGlobalData &unidKorolovShipping; 'xp 5000)
+							)
 						)
 					)
 			</OnReward>
