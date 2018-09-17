@@ -627,7 +627,9 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 	//	Debug icon
 
-	if (m_pTC->GetOptionBoolean(CGameSettings::debugMode))
+	bool bDebug = m_pTC->GetOptionBoolean(CGameSettings::debugMode);
+
+	if (bDebug)
 		{
 		VI.CreateImageButton(pRoot, CMD_TOGGLE_DEBUG, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageDebugIcon), CONSTLIT("Debug"), 0, &pButton);
 		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_TOGGLE_DEBUG);
@@ -678,8 +680,11 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 	//	Reload
 
-	VI.CreateImageButton(pRoot, CMD_RELOAD, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageCloseIcon), CONSTLIT("Reload"), 0, &pButton);
-	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_RELOAD);
+	if (bDebug)
+		{
+		VI.CreateImageButton(pRoot, CMD_RELOAD, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageCloseIcon), CONSTLIT("Reload"), 0, &pButton);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_RELOAD);
+		}
 
 	x -= (BUTTON_WIDTH + PADDING_LEFT);
 
