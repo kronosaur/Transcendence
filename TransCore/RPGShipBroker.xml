@@ -561,18 +561,30 @@
 							(enum (objGetItems selObj "adI") theItem
 								(itmSetKnown theItem)
 								)
+
+							;	Figure out what to do with the old ship
 							
-							;	The old ship is suspended and possibly available for sale
-							;	(But only if we can sell it).
-							
-							(if (objGetShipSellPrice gSource oldShip)
-								(block ()
-									(setq shipIDList (append shipIDList (objGetID oldShip)))
-									(objSetData gSource 'shipBroker.list shipIDList)
-									(shpCancelOrders oldShip)
-									(objSuspend oldShip)
-									)
+							(switch
+								;	If we have an event handler, then we destroy the ship
+								;	immediately. We need to do this for old wingman ships, which
+								;	might otherwise try to follow the player through a gate.
+
+								(objGetEventHandler oldShip)
+									(block ()
+										(objDestroy oldShip)
+										)
 									
+								;	The old ship is suspended and possibly available for sale
+								;	(But only if we can sell it).
+							
+								(objGetShipSellPrice gSource oldShip)
+									(block ()
+										(setq shipIDList (append shipIDList (objGetID oldShip)))
+										(objSetData gSource 'shipBroker.list shipIDList)
+										(shpCancelOrders oldShip)
+										(objSuspend oldShip)
+										)
+
 								;	Otherwise, we temporarily dock here and eventually leave.
 								
 								(block ()

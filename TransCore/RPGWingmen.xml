@@ -322,7 +322,10 @@
 
 			<OnDestroy>
 				(switch
-					(eq (objGetCharacterData gSource 'status) 'returnedHome)
+					(= aDestroyReason 'removedFromSystem)
+						Nil
+
+					(= (objGetCharacterData gSource 'status) 'returnedHome)
 						Nil
 
 					(and gPlayerShip (eq aOrderGiver gPlayerShip))
