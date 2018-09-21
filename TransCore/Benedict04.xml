@@ -203,13 +203,13 @@
 			<String id="actionFirstIntro1">"[W]hat's going on?"</String>
 			<String id="FirstIntro2">
 
-				"I'm being followed."\n\n
+				"I'm being followed."
 
 			</String>
 			<String id="actionFirstIntro2">"[W]ho's following you?"</String>
 			<String id="FirstIntro3">
 
-				"That's what I'm trying to find out. I need your help."\n\n
+				"That's what I'm trying to find out. I need your help."
 
 			</String>
 			<String id="actionFirstIntro3">"[A]nything."</String>
@@ -217,16 +217,16 @@
 
 				"I've got a contact who says he knows why Fiona was attacked.
 				I can't get to him when I'm being trailed. But you can meet
-				him while I distract my followers."\n\n
+				him while I distract my followers."
 
 			</String>
 			<String id="actionFirstIntro4">"[D]one. Have you heard from Fiona?"</String>
 			<String id="FirstIntro5">
 
-				Benedict looks down uncomfortably.\n\n
+				Benedict looks down uncomfortably.
 
 				"No...I mean she's recovering in St. Kats, but I haven't heard
-				from her yet."\n\n
+				from her yet."
 
 			</String>
 			<String id="actionFirstIntro5">"[I]'m sorry."</String>
@@ -357,7 +357,7 @@
 				Benedict sits down, shoulders hunched: "No. I should have told her."
 
 				He pauses for a while and then rises: "I will tell her, once we figure
-				this out. Did Stormhound tell you anything useful?\"
+				this out. Did Stormhound tell you anything useful?"
 
 			</Text>
 			<String id="actionSuccessDebriefB2a">"[N]o, nothing else."</String>
@@ -368,7 +368,7 @@
 				is the key to the whole thing. If I can just figure it out I'll be
 				able to help her.
 
-				"Go and see her, would you? Maybe she'll remember something useful
+				"Go and see her, would you? Maybe she'll remember something useful.
 				She's at the University Hospital in St. Katharine's Star."
 
 			</Text>
@@ -474,7 +474,7 @@
 
 				Stormhound laughs, "Oh no, of course not!
 
-				"It's the Sisters. It has always been the Sisters. You tell Benedict that."\n\n
+				"It's the Sisters. It has always been the Sisters. You tell Benedict that."
 
 			</Text>
 			<Text id="AchievementSuccess">
