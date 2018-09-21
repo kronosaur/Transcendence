@@ -821,6 +821,14 @@
 							(setq testNum (add testNum 1))
 							(setq result (eval (@ theTest 'code)))
 							(switch
+								(and (@ theTest 'resultCode)
+										(= result (eval (@ theTest 'resultCode)))
+										)
+									(block ()
+										; (print "[" testNum "] PASS")
+										(setq successTests (add successTests 1))
+										)
+
 								(eq result (@ theTest 'result))
 									(block ()
 										; (print "[" testNum "] PASS")

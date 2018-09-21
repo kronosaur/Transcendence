@@ -1,0 +1,64 @@
+;	ArmorUnitTest.tlisp
+;
+;	Regression tests for armor operations
+;	Copyright (c) 2018 by Kronosaur Productions, LLC. All Rights Reserved
+
+(setq NEUTRAL_SOVEREIGN (unvEntity 'svNeutral))
+(setq HEAVY_PLASTEEL_PLATE (itmCreate (unvEntity 'itHeavyPlasteelPlate) 1))
+(setq HEAVY_PLASTEEL_PLATE_E20 (itmSetEnhanced HEAVY_PLASTEEL_PLATE "+hpBonus:20"))
+(setq HEAVY_PLASTEEL_PLATE_DAMAGED (itmSetProperty HEAVY_PLASTEEL_PLATE 'damaged True))
+(setq TEST_SHIP (sysCreateShip (unvEntity 'scMikeno) Nil NEUTRAL_SOVEREIGN))
+
+(setq InstallArmor (lambda (shipObj armorItem armorSeg)
+	(block ()
+		(objAddItem shipObj armorItem)
+		(shpInstallArmor shipObj armorItem (or armorSeg 0))
+		)
+	))
+
+(setq TEST_SUITE (list
+
+	{	code: '(itmGetProperty HEAVY_PLASTEEL_PLATE 'hp)				result: 120 }
+	{	code: '(itmGetProperty HEAVY_PLASTEEL_PLATE_E20 'hp)			result: 144 }
+
+	;	This is not yet working
+	;{	code: '(itmGetProperty HEAVY_PLASTEEL_PLATE_DAMAGED 'hp)		result: 60 }
+
+	;	Install an armor segment and enhance it while installed.
+
+	{	code: '(InstallArmor TEST_SHIP HEAVY_PLASTEEL_PLATE 0)							result: True }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 120 }
+	{	code: '(shpEnhanceItem TEST_SHIP (shpGetArmor TEST_SHIP 0) "+hpBonus:20")		result: 0 }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 144 }
+	{	code: '(objSetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'damaged True)	resultCode: '(shpGetArmor TEST_SHIP 0) }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 120 }
+	{	code: '(objSetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp 80)			resultCode: '(shpGetArmor TEST_SHIP 0) }
+	{	code: '(shpEnhanceItem TEST_SHIP (shpGetArmor TEST_SHIP 0) "+hpBonus:20")		result: 0 }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 96 }
+	{	code: '(objSetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'damaged True)	resultCode: '(shpGetArmor TEST_SHIP 0) }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 80 }
+
+	;	Install an armor segment that is already enhanced.
+
+	{	code: '(InstallArmor TEST_SHIP HEAVY_PLASTEEL_PLATE_E20 0)						result: True }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 144 }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'maxHP)			result: 144 }
+
+	;	Install a damaged armor segment
+
+	{	code: '(InstallArmor TEST_SHIP HEAVY_PLASTEEL_PLATE_DAMAGED 0)					result: True }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 60 }
+	{	code: '(shpEnhanceItem TEST_SHIP (shpGetArmor TEST_SHIP 0) "+hpBonus:20")		result: 0 }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 72 }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'maxHP)			result: 144 }
+
+	;	Damage an enhanced armor segment so it loses enhancement.
+
+	{	code: '(InstallArmor TEST_SHIP HEAVY_PLASTEEL_PLATE_E20 0)						result: True }
+	{	code: '(objSetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'damaged True)	resultCode: '(shpGetArmor TEST_SHIP 0) }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'damaged)		result: Nil }
+	{	code: '(objGetItemProperty TEST_SHIP (shpGetArmor TEST_SHIP 0) 'hp)				result: 120 }
+
+	))
+
+(debugUnitTest "Armor Unit Test" TEST_SUITE)

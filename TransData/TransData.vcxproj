@@ -480,6 +480,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Game\TLisp\ArmorUnitTest.tlisp" />
     <None Include="..\Game\TLisp\GetDistancePerformance.tlisp" />
     <None Include="..\Game\TLisp\LanguageUnitTest.tlisp" />
     <None Include="..\Game\TLisp\ListUnitTest.tlisp" />
