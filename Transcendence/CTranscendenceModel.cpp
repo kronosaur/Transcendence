@@ -1479,7 +1479,20 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		//	Log that we loaded a game
 
-		kernelDebugLogPattern("Loaded game file version: %s", m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
+		::kernelDebugLogPattern("Loaded game file version: %s", m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
+		CDesignCollection &Design = m_Universe.GetDesignCollection();
+		for (int i = 0; i < Design.GetExtensionCount(); i++)
+			{
+			CExtension *pExtension = Design.GetExtension(i);
+			if (pExtension->GetFolderType() == CExtension::folderBase)
+				continue;
+
+			CString sName = pExtension->GetName();
+			if (sName.IsBlank())
+				sName = strPatternSubst(CONSTLIT("Extension %08x"), pExtension->GetUNID());
+
+			::kernelDebugLogPattern("Extension: %s", sName);
+			}
 
 		return NOERROR;
 		}
