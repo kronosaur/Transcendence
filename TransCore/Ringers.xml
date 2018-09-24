@@ -547,7 +547,7 @@
 						
 					; If the player has deviated socially, she is frozen
 					(geq (int (objGetData gPlayerShip "ringerCrimeSeverity")) 2)
-						(list &dsRingerImprison; 8)
+						{	screen:&dsRingerImprison;		priority:8		overrideOnly:true	}
 
 					Nil
 					)

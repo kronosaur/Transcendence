@@ -59,7 +59,7 @@
 						
 					; If the ship is radioactive then we need to decontaminate
 					(shpIsRadioactive gPlayerShip)
-						(list &dsFleetDecon; 10)
+						{	screen:&dsFleetDecon;		priority:10		overrideOnly:true	}
 						
 					; The remaining screens are only invoked if the ship/station
 					; implements Fleet Law (e.g., CSC Antarctica does not).
@@ -68,24 +68,24 @@
 						
 					; If the player has committed a crime, then imprisonment
 					(geq (int (objGetData gPlayerShip "fleetCrimeSeverity")) 2)
-						(list &dsFleetImprison; 8)
+						{	screen:&dsFleetImprison;	priority:8		overrideOnly:true	}
 						
 					; If the player has committed a Commonwealth crime then she
 					; is kicked out of the military.
 					(and (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
 							(leq (objGetData gPlayerShip "fleetLevel") 3))
-						(list &dsFleetDischarge; 8)
+						{	screen:&dsFleetDischarge;	priority:8		overrideOnly:true	}
 						
 					; If the player does not have a military ID, then
 					; refuse dock
 					(not (objGetItems gPlayerShip "*+MilitaryID"))
-						(list &dsFleetRefuseDock; 6)
+						{	screen:&dsFleetRefuseDock;	priority:6		overrideOnly:true	}
 						
 					; If the player has committed a Commonwealth crime but is a
 					; Fleet lieutenant or higher, then she gets a warning.
 					(and (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
 							(not (eq (typGetGlobalData &svCommonwealthFleet; 'commonCrimeWarning) (objGetData gPlayerShip "commonCrime"))))
-						(list &dsFleetCrimeWarning; 5)
+						{	screen:&dsFleetCrimeWarning;	priority:5		overrideOnly:true	}
 
 					Nil
 					)
@@ -1049,7 +1049,7 @@ PLAYER DATA
 				(if	(and (objMatches gSource Nil "sTAV")
 						(objGetData gSource "fleetMissionCargo")
 						)
-					(list &dsFleetDelivery; 4)
+					{	screen:&dsFleetDelivery;		priority:4		overrideOnly:true	}
 					Nil
 					)
 			</GetGlobalDockScreen>

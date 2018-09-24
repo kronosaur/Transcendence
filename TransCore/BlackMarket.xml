@@ -1164,27 +1164,27 @@ PLAYER DATA
 
 			<GetGlobalDockScreen>
 				(switch
-					; This only applies to Black Market stations
+					; This only applies to Black Market stations and ships
 					(not (objMatches gSource Nil "sTAV +blackMarket;"))
 						Nil
 						
 					; If the ship is radioactive then refuse dock
 					(shpIsRadioactive gPlayerShip)
-						(list &dsRefuseContamination; 10)
+						{	screen:&dsRefuseContamination;		priority:10		overrideOnly:true	}
 
 					; If there is a bounty on the player, then the player
 					; has to repay the debt.
 					(objGetData gPlayerShip "blackMarketCrimeCost")
-						(list &dsBlackMarketPayDebt; 8)
+						{	screen:&dsBlackMarketPayDebt;		priority:8		overrideOnly:true	}
 
 					; If the player does not have a black market ID, then
 					; refuse dock
 					(not (objGetItems gPlayerShip "*+BlackMarketID"))
-						(list &dsBlackMarketRefuseDock; 6)
+						{	screen:&dsBlackMarketRefuseDock;	priority:6		overrideOnly:true	}
 
 					; See if the player is promoted
 					(intBlackMarketPromotion)
-						(list &dsBlackMarketPromotion; 4)
+						{	screen:&dsBlackMarketPromotion;		priority:4		overrideOnly:true	}
 						
 					Nil
 					)
