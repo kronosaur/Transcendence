@@ -65,8 +65,8 @@ VS_VERSION_INFO$(MULTIVERSE_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,8,203,3
- PRODUCTVERSION 1,8,203,3
+ FILEVERSION 1,8,203,4
+ PRODUCTVERSION 1,8,203,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -83,13 +83,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.8.203.3"
+            VALUE "FileVersion", "1.8.203.4"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2018 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.8 Beta 3.2"
+            VALUE "ProductVersion", "1.8 Beta 3.3"
         END
     END
     BLOCK "VarFileInfo"
@@ -105,8 +105,8 @@ VS_VERSION_INFO$(STEAM_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,8,203,3
- PRODUCTVERSION 1,8,203,3
+ FILEVERSION 1,8,203,4
+ PRODUCTVERSION 1,8,203,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -123,13 +123,13 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.8.203.3"
+            VALUE "FileVersion", "1.8.203.4"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2018 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
             VALUE "OriginalFilename", "Transcendence.exe"
             VALUE "ProductName", "Transcendence"
-            VALUE "ProductVersion", "1.8 Beta 3.2 Steam"
+            VALUE "ProductVersion", "1.8 Beta 3.3 Steam"
         END
     END
     BLOCK "VarFileInfo"
