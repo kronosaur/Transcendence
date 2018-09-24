@@ -50,10 +50,12 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 		{
 		printf("sample %d", i+1);
 
-		CTopologyNode *pNode = Universe.GetFirstTopologyNode();
-
-		while (true)
+		for (int iNode = 0; iNode < Universe.GetTopologyNodeCount(); iNode++)
 			{
+			CTopologyNode *pNode = Universe.GetTopologyNode(iNode);
+			if (pNode == NULL || pNode->IsEndGame())
+				continue;
+
 			//	Create the system
 
 			CSystem *pSystem;
@@ -79,13 +81,6 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 			for (j = 0; j < iSystemUpdateTime; j++)
 				Universe.Update(Ctx);
 
-			//	Get the next node
-
-			CString sEntryPoint;
-			pNode = pSystem->GetStargateDestination(CONSTLIT("Outbound"), &sEntryPoint);
-			if (pNode == NULL || pNode->IsEndGame())
-				break;
-
 			//	Done with old system
 
 			Universe.DestroySystem(pSystem);
@@ -95,6 +90,12 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		Universe.Reinit();
 		printf("\n");
+
+		if (Universe.InitGame(0, &sError) != NOERROR)
+			{
+			printf("ERROR: %s\n", sError.GetASCIIZPointer());
+			return;
+			}
 		}
 
 	//	Done
