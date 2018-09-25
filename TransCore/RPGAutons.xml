@@ -462,6 +462,18 @@
 						)
 					)
 			</OnCreate>
+
+			<OnDestroyObj>
+				(if (objGetProperty gSource 'playerWingman)
+					(block Nil
+						(if (eq (objGetTarget gSource) aObjDestroyed)
+							(objSendMessage gSender gSource (objTranslate gSource 'DestroyedTarget))
+							)
+						(objSetTypeData gSource 'kills (add (objGetTypeData gSource 'kills)))
+						(objIncData gPlayerShip 'killsByAutons)
+						)
+					)
+			</OnDestroyObj>
 			
 			<OnEnteredGate>
 				;	If we returned to a ship or non-gate station, convert back to an item
@@ -539,6 +551,7 @@
 			<String id="AttackTargetAck">"Auton order acknowledged"</String>
 			<Text id="DeployAck">(objTranslate gSource 'DeployAckString { autonName:(objGetName auton 0x01) } )</Text>
 			<String id="DeployAckString">"%autonName% online"</String>
+			<String id="DestroyedTarget">"Target destroyed"</String>
 			<String id="ErrNoSpaceToReturn">"Not enough space in cargo hold to return to ship"</String>
 			<String id="FormUpAck">"Auton order acknowledged"</String>
 			<String id="NiceShooting"></String>

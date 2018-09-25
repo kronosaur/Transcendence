@@ -38,6 +38,8 @@
 			<Text id="conducts">conducts</Text>
 			<Text id="criminalRecord">criminal record</Text>
 			<Text id="missionsAndActivities">missions &amp; activities</Text>
+			<Text id="notes">notes</Text>
+			<Text id="autonsAndWingmen">autons &amp; wingmen</Text>
 
 			<!-- Basic -->
 

@@ -203,6 +203,7 @@
 					""
 					)
 			</Text>
+			<String id="DestroyedTarget">"Target neutralized"</String>
 			<String id="FormUpAck">"Acknowledged"</String>
 			<String id="IcantAttackFriends">"Unable to comply"</String>
 			<String id="IcantAttackMyself">"Unable to comply"</String>
@@ -225,7 +226,6 @@
 			<String id="WatchYourTargets">"Watch your targets!"</String>
 			<String id="WingmanJoined">"Ready"</String>
 			<String id="WingmanKilled">Wingman killed</String>
-
 			<Text id="msgRefusesToDowngradeShip">
 
 				%name% refuses to switch to an inferior ship.
@@ -319,7 +319,7 @@
 					(sysAddObjRecurringTimerEvent 60 gSource "OnBehavior")
 					)
 			</OnCreate>
-
+			
 			<OnDestroy>
 				(switch
 					(= aDestroyReason 'removedFromSystem)
@@ -337,6 +337,18 @@
 						)
 					)
 			</OnDestroy>
+
+			<OnDestroyObj>
+				(if (objGetProperty gSource 'playerWingman)
+					(block Nil
+						(if (eq (objGetTarget gSource) aObjDestroyed)
+							(objSendMessage gSender gSource (objTranslate gSource 'DestroyedTarget))
+							)
+						(objSetCharacterData gSource 'kills (add (objGetCharacterData gSource 'kills) 1))
+						(objIncData gPlayerShip 'killsByWingmen)
+						)
+					)
+			</OnDestroyObj>
 			
 			<OnEnteredGate>
 				(if (eq (objGetData gSource "behavior") 'goingHome)

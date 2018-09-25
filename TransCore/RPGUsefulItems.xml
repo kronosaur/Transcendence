@@ -207,6 +207,10 @@
 								itemToUseOn: dstItem
 								shipObj: theShip
 								}))
+								
+							(if (not (itmIsKnown dstItem))
+								(typSetData &dsRPGUseItemBase; 'hasUsedUnidentifiedItem True)
+								)
 
 							;	Restore the cursor position
 							(scrSetListCursor gScreen theCursor)
@@ -290,6 +294,13 @@
 
 			<Text id="descCanNotUse">You cannot use %useItem% on %dstItem%.</Text>
 		</Language>
+		<Events>
+			<GetGlobalAchievements>
+				(if (not (typGetData &dsRPGUseItemBase; 'hasUsedUnidentifiedItem))
+					(list (list "Never used any unidentified items" Nil (typTranslate &unidCommonText; 'notes)))
+					)
+			</GetGlobalAchievements>
+		</Events>
 	</DockScreen>
 
 

@@ -39,6 +39,11 @@
 			>
 
 		<Events>
+			<GetGlobalAchievements>
+				(if (typGetData &msBattleArenaChallenger; 'shatteredSlicer)
+					(list (list "Invoked Shatter on The Slicer in the Arena" Nil (typTranslate &unidCommonText; 'notes)))
+					)
+			</GetGlobalAchievements>
 			<OnCreate>
 				(switch
 					;	This mission only works in Rigel Aurelius
@@ -86,6 +91,9 @@
 
 			<OnCompleted>
 				(block Nil
+					(if (eq (msnGetData gSource 'destroyReason) 'shatter)
+						(typSetData &msBattleArenaChallenger; 'shatteredSlicer True)
+						)
 					(msnSetData gSource 'nextSoundTrack &muArenaChampion;)
 					(typFireObjEvent &msBattleArenaFight; gSource 'OnCompleted)
 					(switch

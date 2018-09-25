@@ -54,6 +54,7 @@
 			<Text id="ArmorRepaired">			"\"My ship's as good as new\""</Text>
 			<Text id="AttackTargetAck">			"\"Target acquired\""</Text>
 			<Text id="CancelAttackAck">			"\"Acknowledged\""</Text>
+			<Text id="DestroyedTarget">			"\"Target destroyed\""</Text>
 			<Text id="FormUpAck">				"\"Acknowledged\""</Text>
 			<Text id="IcantAttackFriends">		"\"I won't kill innocents!\""</Text>
 			<Text id="IcantAttackMyself">		"\"Someday, perhaps...\""</Text>
@@ -132,8 +133,9 @@
 		
 		<Events>
 			<GetGlobalAchievements>
-				(block (theList status)
+				(block (theList status kills)
 					(setq status (typGetGlobalData &chRama; "status"))
+					(setq kills (typGetData &chRama; 'kills))
 
 					(if status
 						(setq theList (list
@@ -149,6 +151,12 @@
 								Nil
 								"achievements &amp; regrets"
 								)
+							))
+						)
+						
+					(if kills
+						(setq theList (append theList
+							(list (list "Kills by Rama" kills (typTranslate &unidCommonText; 'autonsAndWingmen) 4))
 							))
 						)
 						

@@ -250,6 +250,13 @@
 				You run the analyzer but are unable to reveal any additional information about %itemName%.
 			</Text>
 		</Language>
+		<Events>
+			<GetGlobalAchievements>
+				(if (not (typGetData &dsRPGAnalyzeItem; 'hasAnalyzedItems))
+					(list (list "Never analyzed any items" Nil (typTranslate &unidCommonText; 'notes)))
+					)
+			</GetGlobalAchievements>
+		</Events>
 	</DockScreen>
 
 <!-- GLOBAL FUNCTIONS ==========================================================
@@ -344,6 +351,8 @@
 						
 						(setq result (objFireItemEvent sourceObj itemToAnalyze 'OnAnalyzeItem))
 							(block Nil
+								(typIncData &dsRPGAnalyzeItem; 'hasAnalyzedItem True)
+								
 								(setq desc (@ result 'desc))
 								(setq modifiedItem (@ result 'modifiedItem))
 								)
@@ -352,6 +361,8 @@
 						
 						(not (itmIsKnown itemToAnalyze))
 							(block Nil
+								(typIncData &dsRPGAnalyzeItem; 'hasAnalyzedItem True)
+								
 								(itmSetKnown itemToAnalyze)
 								(setq desc (typTranslate &dsRPGAnalyzeItem; 'descIdentified {
 												itemName:(itmGetName itemToAnalyze '(article escapeQuotes))

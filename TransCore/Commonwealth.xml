@@ -1609,7 +1609,7 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(block (desc itemToRemove itemsToConfiscate)
+					(block (desc itemToRemove itemsToConfiscate playerData)
 					
 						; If we don't have a smuggler's cargo hold, then we confiscate
 						; all illegal items.
@@ -1627,11 +1627,17 @@
 								))
 							)
 					
-						; Remove items
+						(setq recordList (objGetData gPlayerShip 'totalConfiscatedList))
+						; Remove items (and track losses at the player's expense)
 						(enum itemsToConfiscate itemToRemove
-							(objRemoveItem gPlayerShip itemToRemove)
+							(block (itemName)
+								(setq itemName (itmGetName itemToRemove (list 'plural 'actual)))
+								(set@ recordList itemName (add (@ recordList itemName) (itmGetCount itemToRemove)))
+								(objRemoveItem gPlayerShip itemToRemove)
+								)
 							)
-
+						(objSetData gPlayerShip 'totalConfiscatedList recordList)
+						
 						; Compose text
 						(setq desc "Commonwealth Customs has inspected your ship's cargo hold and confiscated ")
 						(if (eq (count itemsToConfiscate) 1)

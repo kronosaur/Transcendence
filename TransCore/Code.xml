@@ -90,7 +90,9 @@
 				(block (theList 
 						resurrectCount
 						totalGMProfit totalArmsProfit totalEquipProfit totalMedsProfit totalLuxProfit totalIllegalProfit
+						totalItemsConfiscated
 						friendlyShipsDestroyed friendlyStationsDestroyed
+						killsByAutons killsByWingmen
 						systemData neverBacktracked
 						slavesFreed slaveSales
 						neverReachedBA neverReachedStK neverReachedJiangs neverReachedPointJuno neverReachedHeretic)
@@ -118,11 +120,16 @@
 						(plyGetItemStat gPlayer "itemsBoughtValue" "*~wsam +Illegal"))
 						)
 						
+					(setq totalItemsConfiscated (objGetData gPlayerShip 'totalConfiscatedList))
+						
 					; Conducts
 					(setq systemData (plyGetStat gPlayer "systemData"))
 					(setq neverBacktracked (not (filter systemData theData (not (eq (item theData 1) (item theData 2))))))
 					(setq friendlyShipsDestroyed (plyGetStat gPlayer "friendlyShipsDestroyed"))
 					(setq friendlyStationsDestroyed (plyGetStat gPlayer "friendlyStationsDestroyed"))
+					
+					(setq killsByAutons (objGetData gPlayerShip 'killsByAutons))
+					(setq killsByWingmen (objGetData gPlayerShip 'killsByWingmen))
 					
 					; Exploration
 					(setq neverReachedBA (not (find systemData "BA" 0)))
@@ -164,6 +171,13 @@
 								(list (list "Never destroyed friendly stations" Nil "conducts"))
 								)
 							)
+						
+						(if killsByAutons
+							(list (list "Kills by autons" killsByAutons (typTranslate &unidCommonText; 'autonsAndWingmen) -1))
+							)
+						(if killsByWingmen
+							(list (list "Kills by wingmen" killsByWingmen (typTranslate &unidCommonText; 'autonsAndWingmen) -1))
+							)
 							
 						; Exploration
 						(if	neverReachedBA
@@ -204,6 +218,10 @@
 							(list (list "Profit on ship's equipment" totalEquipProfit "commerce"))
 							)
 							
+						(if totalItemsConfiscated
+							(map (@ totalItemsConfiscated) theItemName (list theItemName (@ totalItemsConfiscated theItemName) "items confiscated"))
+							)
+							
 						; Slave sales
 						(if slaveSales
 							(list (list "Profit on slave sales" slaveSales "commerce"))
@@ -214,7 +232,8 @@
 							(list (list "Slaves freed" slavesFreed "missions &amp; activities"))
 							)
 						))
-						
+					
+					
 					theList
 					)
 				))
