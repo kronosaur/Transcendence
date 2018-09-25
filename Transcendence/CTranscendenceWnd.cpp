@@ -340,10 +340,12 @@ void CTranscendenceWnd::ReportCrash (void)
 		{
 		case psAnimating:
 			m_sCrashInfo.Append(CONSTLIT("program state: miscellaneous animation\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psPaintingSRS:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting SRS\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
@@ -353,133 +355,164 @@ void CTranscendenceWnd::ReportCrash (void)
 
 		case psUpdatingEvents:
 			m_sCrashInfo.Append(CONSTLIT("program state: updating events\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashEvent(&m_sCrashInfo);
 			break;
 
 		case psUpdatingBehavior:
 			m_sCrashInfo.Append(CONSTLIT("program state: updating object behavior\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psUpdatingObj:
 			m_sCrashInfo.Append(CONSTLIT("program state: updating object\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psUpdatingHitTest:
 			m_sCrashInfo.Append(CONSTLIT("program state: updating object hit test\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psUpdatingMove:
 			m_sCrashInfo.Append(CONSTLIT("program state: updating object motion\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psUpdatingEncounters:
 			m_sCrashInfo.Append(CONSTLIT("program state: updating random encounters\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psDestroyNotify:
 			m_sCrashInfo.Append(CONSTLIT("program state: handling OnObjDestroy\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psUpdatingReactorDisplay:
 			m_sCrashInfo.Append(CONSTLIT("program state: updating reactor display\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psPaintingMap:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting map\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psPaintingLRS:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting LRS\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psPaintingArmorDisplay:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting armor display\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psPaintingMessageDisplay:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting message display\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psPaintingReactorDisplay:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting reactor display\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psPaintingTargetDisplay:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting target display\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo, (GetPlayer() ? GetPlayer()->GetShip() : NULL));
 			break;
 
 		case psPaintingDeviceDisplay:
 			m_sCrashInfo.Append(CONSTLIT("program state: painting device display\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateEnter:
 			m_sCrashInfo.Append(CONSTLIT("program state: entering stargate\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateEndGame:
 			m_sCrashInfo.Append(CONSTLIT("program state: entering end-game stargate\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateLoadingSystem:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, loading destination system\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateCreatingSystem:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, creating destination system\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateUpdateExtended:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, updating extended\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateTransferringGateFollowers:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, transferring gate followers\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateSavingSystem:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, saving current system\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateFlushingSystem:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, flushing current system\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateGarbageCollecting:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, garbage-collecting images\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psStargateLoadingBitmaps:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate, loading new images\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psLoadingImages:
 			m_sCrashInfo.Append(CONSTLIT("program state: in LoadImages\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psStargateEnterDone:
 			m_sCrashInfo.Append(CONSTLIT("program state: enter stargate done\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			break;
 
 		case psOnObjDestroyed:
 			m_sCrashInfo.Append(CONSTLIT("program state: in OnObjDestroyed\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
 			ReportCrashObj(&m_sCrashInfo);
 			break;
 
 		case psCustomError:
 			if (g_sProgramError)
 				m_sCrashInfo.Append(*g_sProgramError);
+			ReportCrashSystem(&m_sCrashInfo);
 			m_sCrashInfo.Append(CONSTLIT("\r\n"));
 			break;
 
 		default:
 			m_sCrashInfo.Append(CONSTLIT("program state: unknown\r\n"));
+			ReportCrashSystem(&m_sCrashInfo);
+			break;
 		}
 
 	//	Game state
@@ -533,6 +566,58 @@ void CTranscendenceWnd::ReportCrashEvent (CString *retsMessage)
 		{
 		retsMessage->Append(strPatternSubst(CONSTLIT("error obtaining crash info from event: %x\r\n"), g_pProgramEvent));
 		}
+	}
+
+void CTranscendenceWnd::ReportCrashSystem (CString *retsMessage) const
+
+//	ReportCrashSystem
+//
+//	Reports information about the current system.
+
+	{
+	CSystem *pSystem = (g_pUniverse ? g_pUniverse->GetCurrentSystem() : NULL);
+	if (pSystem == NULL)
+		return;
+
+	CString sSystemNode;
+	CString sSystemName;
+	DWORD dwSystemType = 0;
+	CSystem::SDebugInfo DebugInfo;
+
+	try
+		{
+		//	Get some basic data
+
+		CTopologyNode *pNode = pSystem->GetTopology();
+		if (pNode == NULL)
+			sSystemNode = CONSTLIT("none");
+		else
+			sSystemNode = pNode->GetID();
+
+		CSystemType *pType = pSystem->GetType();
+		dwSystemType = (pType ? pType->GetUNID() : 0);
+
+		sSystemName = pSystem->GetName();
+
+		//	Debug info
+
+		pSystem->GetDebugInfo(DebugInfo);
+		}
+	catch (...)
+		{
+		retsMessage->Append(CONSTLIT("error obtaining system data.\r\n"));
+		}
+
+	retsMessage->Append(strPatternSubst(CONSTLIT("system: %s\r\nsystem type: %08x\r\nsystem name: %s\r\n"), sSystemNode, dwSystemType, sSystemName));
+	retsMessage->Append(strPatternSubst(CONSTLIT("total objs: %d\r\ndestroyed: %d\r\ndeleted: %d\r\nbad: %d\r\nstars: %d\r\n"), 
+			DebugInfo.iTotalObjs, 
+			DebugInfo.iDestroyedObjs,
+			DebugInfo.iDeletedObj,
+			DebugInfo.iBadObjs,
+			DebugInfo.iStarObjs));
+
+	if (DebugInfo.bBadStarCache)
+		retsMessage->Append(CONSTLIT("bad star cache\r\n"));
 	}
 
 void CTranscendenceWnd::ShowErrorMessage (const CString &sError)

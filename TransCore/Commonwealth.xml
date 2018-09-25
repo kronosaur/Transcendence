@@ -2655,17 +2655,17 @@
 					; If the player ship is radioactive, then we need to
 					; decontaminate.
 					(shpIsRadioactive gPlayerShip)
-						(list &dsCommonwealthDecon; 10)
+						{	screen:&dsCommonwealthDecon;		priority:10		overrideOnly:true	}
 
 					; If the player has sold slaves then he/she is arrested.
 					(geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
-						(list &dsCommonwealthImprison; 8)
+						{	screen:&dsCommonwealthImprison;		priority:8		overrideOnly:true	}
 						
 					; If the player has slaves then free them
 					(and (objGetItems gPlayerShip "*+Slaves;")
 							(not (objGetData gPlayerShip "00001002_ConfiscateSlaves"))
 							)
-						(list &dsCommonwealthFreeSlaves; 8)
+						{	screen:&dsCommonwealthFreeSlaves;	priority:8		overrideOnly:true	}
 						
 					; If the player has a black market container, then she is imprisoned
 					(and (not (objGetItems gPlayerShip "*I+SmugglersHold;")) 
@@ -2677,7 +2677,7 @@
 							; times, and it is OK if some other screen takes priority.
 							(intCommonwealthCrime 2 "smuggling")
 							
-							(list &dsCommonwealthImprison; 8)
+							{	screen:&dsCommonwealthImprison;	priority:8		overrideOnly:true	}
 							)
 							
 					; If we have illegal items in the cargo hold then we need
@@ -2685,7 +2685,7 @@
 					(and (not (objGetItems gPlayerShip "*I+SmugglersHold"))
 							(or (objGetItems gPlayerShip "*U+Illegal; -ID")
 								(and (objGetItems gPlayerShip "*U+Military") (not (objGetItems gPlayerShip "*+MilitaryID")))))
-						(list &dsCommonwealthConfiscate; 6)
+						{	screen:&dsCommonwealthConfiscate;	priority:6		overrideOnly:true	}
 
 					Nil
 					)

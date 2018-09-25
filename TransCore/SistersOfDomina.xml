@@ -939,10 +939,19 @@
 				<OnPaneInit>
 					(block (
 						(entry (domGetDonationEntry gItem))
-						(att (eval (@ entry 1)))
-						(rel (eval (@ entry 2)))
-						(desc (eval (@ entry 3)))
+						(att (@ entry 1))
+						(rel (@ entry 2))
+						(desc (@ entry 3))
 						)
+						
+						;	Evaluate items if they're functions
+						
+						(enum '(att rel desc) var
+							(errBlock (err)
+								(if (eq (typeOf (eval var)) 'list) (set var (eval (eval var))))
+								(printTo 'log (cat "Domina donation error: " err))
+								)
+							)
 						
 						; Deal with the entry that we found
 
@@ -1267,7 +1276,7 @@
 					; If the player ship is radioactive, then we need to
 					; decontaminate.
 					(shpIsRadioactive gPlayerShip)
-						(list &dsSistersDecon; 10)
+						{	screen:&dsSistersDecon;			priority:10		overrideOnly:true	}
 						
 					Nil
 					)

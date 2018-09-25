@@ -238,7 +238,7 @@
 		<Image imageID="&rsItems1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Armor
-				hitPoints=	"100"
+				hitPoints=	"120"
 				/>
 
 	</ItemType>

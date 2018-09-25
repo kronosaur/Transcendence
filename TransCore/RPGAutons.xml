@@ -21,20 +21,30 @@
 		
 		<Events>
 			<GetName>
-				(block (name)
+				(block (name singularClass pluralClass)
+					(if (find aFlags 'actual)
+						(block Nil
+							(setq singularClass (itmGetName gItem '(noEvent noModifiers actual)))
+							(setq pluralClass (itmGetName gItem '(noEvent noModifiers actual plural)))
+							)
+						(block Nil
+							(setq singularClass (itmGetName gItem '(noEvent noModifiers)))
+							(setq pluralClass (itmGetName gItem '(noEvent noModifiers plural)))
+							)
+						)
 					(if (setq name (@ (itmGetData gItem 'autonConfig) 'name))
 						(typTranslate &baAutonItemBase; 'nameText {
 							autonName:(substitute name "\"" "'")
-							class:(itmGetName gItem 'noEvent)
-							pluralClass:(itmGetName gItem '(plural noEvent))
+							singularClass:singularClass
+							pluralClass:pluralClass
 							})
-						(cat (itmGetName gItem 'noEvent) "|" (itmGetName gItem '(plural noEvent)))
+						(cat singularClass "|" pluralClass)
 						)
 					)
 			</GetName>
 			
 			<OnUpdate>
-				(block (config shieldMaxHP shieldHP shieldItem)
+				(block (config)
 					(if (and (setq config (itmGetData gItem 'autonConfig))
 							(or (isError (scrGetScreen gScreen)) (not (scrGetScreen gScreen)))
 							(@ config 'shieldStatus)
@@ -47,7 +57,7 @@
 		</Events>
 		
 		<Language>
-			<Text id="nameText">%class% named "%autonName%"|%pluralClass% named "%autonName%"</Text>
+			<Text id="nameText">%singularClass% named "%autonName%"|%pluralClass% named "%autonName%"</Text>
 		</Language>
 	</ItemType>
 	

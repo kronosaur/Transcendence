@@ -681,7 +681,14 @@
 						; Find any mission that is completed and not yet debriefed
 
 						(setq missionObj (@ (filter (msnFind gSource "aD") theMission (msnGetProperty theMission 'isCompleted)) 0))
-							(list &dsRPGMission; { missionObj: missionObj } 4)
+							{	
+								screen: &dsRPGMission;
+								priority: 4
+
+								data: {
+									missionObj: missionObj
+									}
+								}
 
 						; Otherwise, nothing
 
@@ -788,7 +795,14 @@
 										)
 									)
 								0))
-							(list &dsRPGDeliveryMission; { missionObj: missionObj } 4)
+							{	
+								screen: &dsRPGDeliveryMission;
+								priority: 4
+
+								data: {
+									missionObj: missionObj
+									}
+								}
 
 						; Otherwise, nothing
 

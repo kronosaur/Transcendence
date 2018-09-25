@@ -37,8 +37,8 @@
 					; If the ship is radioactive then we refuse docking
 					(shpIsRadioactive gPlayerShip)
 						(if (objHasAttribute gSource "corporateDecon")
-							(list &dsCommonwealthDecon; 10)
-							(list &dsRefuseContamination; 10)
+							{	screen:&dsCommonwealthDecon;	priority:10		overrideOnly:true	}
+							{	screen:&dsRefuseContamination;	priority:10		overrideOnly:true	}
 							)
 						
 					; If the player has committed crimes, then she's in trouble
@@ -48,10 +48,10 @@
 							;	compensate victims of the crime (usually)
 
 							(typGetGlobalData &stInsuranceCompany; 'insured)
-								(list &dsInsuranceCriminalLiability; 8)
+								{	screen:&dsInsuranceCriminalLiability;	priority:8		overrideOnly:true	}
 							
 							;	Otherwise, prison
-							(list &dsCorporateImprison; 8)
+							{	screen:&dsCorporateImprison;	priority:8		overrideOnly:true	}
 							)
 						
 					Nil

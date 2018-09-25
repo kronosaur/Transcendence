@@ -790,6 +790,7 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		void PaintSRSSnow (void);
 		void ReportCrash (void);
 		void ReportCrashEvent (CString *retsMessage);
+		void ReportCrashSystem (CString *retsMessage) const;
 		void ShowErrorMessage (const CString &sError);
 
 		void DoCommsMenu (int iIndex);

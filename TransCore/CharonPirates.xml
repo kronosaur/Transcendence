@@ -1163,7 +1163,7 @@
 			<!-- Level 1 -->
 
 			<Ship	levelFrequency="crv-- -----"	class="&scCorsair;"		count="1d4+1"	orders="attack"	sovereign="&svPirates;"/>
-			<Ship	levelFrequency="crv-- -----"	class="&scViking;"		count="2"		orders="attack"	sovereign="&svPirates;"/>
+			<Ship	levelFrequency="crv-- -----"	class="&scViking;"		count="1"		orders="attack"	sovereign="&svPirates;"/>
 
 			<!-- Level 2 -->
 

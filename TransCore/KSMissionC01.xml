@@ -296,11 +296,15 @@
 					)
 			</Text>
 			<Text id="Summary:underAttack">
-					Korolov Shipping is under attack from Charon pirates. Defend the station.
+
+				Korolov Shipping is under attack from Charon pirates. Defend the station.
+
 			</Text>
 			<Text id="Summary:survivedAttack">
-					You have sucessfully defending Korolov Shipping from a Charon pirate attack.
-					Now you need to hunt down and destroy all Charon stations in the system.
+
+				You have successfully defended Korolov Shipping from a Charon pirate attack.
+				Now you need to hunt down and destroy all Charon stations in the system.
+
 			</Text>
 			<Text id="Intro">
 
@@ -372,33 +376,43 @@
 
 			</Text>
 			<Text id="InProgress:strikeBack:oneMore">
+
 				The command center is nearly ruined, but several people are tracking the tactical situation:
 
 				"There is still one Charon station left in the system. Destroy it and you'll be done!"
+
 			</Text>
 			<Text id="InProgress:strikeBack:noFortress">
+
 				The command center is nearly ruined, but several people are tracking the tactical situation:
 
 				"Although the Charon Fortress has been destroyed there are still
 				%pirateStationsLeft% Charon stations in the system."
+
 			</Text>
 			<Text id="InProgress:strikeBack:onlyFortress">
+
 				The command center is nearly ruined, but several people are tracking the tactical situation:
 
 				"All the lesser Charon stations are destroyed, but the Charon Fortress remains.
 				Destroy it and you'll be done!"
+
 			</Text>
 			<Text id="InProgress:strikeBack:onePlusFortress">
+
 				The command center is nearly ruined, but several people are tracking the tactical situation:
 
 				"There are two Charon stations still active in the system:
 				the Fortress of the Charon Pirates and another lesser Charon station."
+
 			</Text>
 			<Text id="InProgress:strikeBack:Fortress">
+
 				The command center is nearly ruined, but several people are tracking the tactical situation:
 
 				"There are %pirateStationsLeft% Charon pirate stations left,
 				in addition to the Fortress of the Charon Pirates."
+
 			</Text>
 			<Text id="FailureDebrief">
 				(list

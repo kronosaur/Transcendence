@@ -203,5 +203,8 @@
     <None Include="..\Game\TLisp\GetDistancePerformance.tlisp">
       <Filter>TLisp Files</Filter>
     </None>
+    <None Include="..\Game\TLisp\ArmorUnitTest.tlisp">
+      <Filter>TLisp Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

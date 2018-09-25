@@ -45,7 +45,7 @@
 							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
 							(not (typGetData &unidBenedictStoryArc; 'firstDockedAtSisters))
 							)
-						(list &dsBenedictIntro; Nil 4)
+						{	screen:&dsBenedictIntro;			priority:4	}
 
 					;	In the Eridani system, if we dock with Bering station, and if
 					;	we started in Eridani, and if we are a pilgrim, then we
@@ -55,7 +55,7 @@
 							(not (objGetProperty gSource 'abandoned))
 							(eq (sysGetNode) (objGetProperty gPlayerShip 'startingSystem))
 							)
-						(list &dsPilgrimBeringStation; Nil 6)
+						{	screen:&dsPilgrimBeringStation;		priority:6	}
 							
 					;	Otherwise, nothing
 
