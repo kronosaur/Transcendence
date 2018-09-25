@@ -190,7 +190,7 @@ PLAYER DATA
 			maxAppearing=		"2-4"
 			unique=				"inSystem"
 			locationCriteria=	"+outerSystem, -planetary"
-			enemyExclusionRadius="50"
+			enemyExclusionRadius="120"
 			>
 
 		<StaticData>
@@ -281,7 +281,7 @@ PLAYER DATA
 			levelFrequency=		"----- ruu-- ----- ----- -----"
 			maxAppearing=		"1"
 			locationCriteria=	"*"
-			enemyExclusionRadius="50"
+			enemyExclusionRadius="120"
 			>
 
 		<Ships>
@@ -314,7 +314,7 @@ PLAYER DATA
 			levelFrequency=		"----- ruu-- ----- ----- -----"
 			maxAppearing=		"1"
 			locationCriteria=	"*"
-			enemyExclusionRadius="50"
+			enemyExclusionRadius="120"
 			>
 
 		<Ships>

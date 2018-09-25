@@ -211,7 +211,7 @@
 			levelFrequency=		"----- ---c- ----- ----- -----"
 			maxAppearing=		"1"
 			locationCriteria=	"+outerSystem, -planetary"
-			enemyExclusionRadius="50"
+			enemyExclusionRadius="120"
 			>
 
 		<Ships>
