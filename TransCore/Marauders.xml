@@ -266,33 +266,49 @@
 	<StationType UNID="&stMarauderOutpost;"
 			name=				"Marauder outpost"
 			sovereign=			"&svMarauders;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itLightPlasteelPlate;"
-			hitPoints=			"160"
-            regen=              "2"
-			fireRateAdj=		"30"
-			explosionType=		"&vtBlastExplosion1;"
-			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, pirates, populated"
-			levelFrequency=		"--uu- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
-			enemyExclusionRadius="100"
+
+			abandonedScreen=	"&dsAbandonedStation;"
+
+			size=				"78"
+			armorID=			"&itLightPlasteelPlate;"
+			hitPoints=			"160"
+			multiHull=			"true"
+            regen=              "2"
+
+			fireRateAdj=		"30"
+
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image			imageID="&rsStations4;" imageX="0" imageY="640" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
+		
+		<Encounter
+				levelFrequency=		"--uu- ----- ----- ----- -----"
+				locationCriteria=	"+asteroids"
+				enemyExclusionRadius="100"
+				/>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbMarauderEncounters;"/>
+		</Encounters>
+
+		<!-- Configuration -->
 
 		<Devices>
 			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
 		</Devices>
 
+		<!-- Ships and Defenses -->
+
 		<Ships>
 			<Ship					count="1"	class="&scMarauderRaidPlatform;"	orders="patrol" patrolDist="150"/>
 		</Ships>
+
+		<!-- Treasure -->
 
 		<Items>
 			<Table chance="70">
@@ -302,10 +318,24 @@
 			</Table>
 		</Items>
 
-		<Encounters frequency="common">
-			<Lookup table="&tbMarauderEncounters;"/>
-		</Encounters>
+		<!-- Image and Effects -->
 
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Image criteria="*ice"			imageID="&rsMarauderOutpostIce;"			imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				<Image criteria="*metallic"		imageID="&rsMarauderOutpostMetallic;"		imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				<Image criteria="*primordial"	imageID="&rsMarauderOutpostPrimordial;"		imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				<Image criteria="*volcanic"		imageID="&rsMarauderOutpostVolcanic;"		imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				
+				<Image criteria="*~"			imageID="&rsMarauderOutpostRocky;"			imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
 	</StationType>
 
 	<!-- Marauder Compound -->
@@ -313,29 +343,43 @@
 	<StationType UNID="&stMarauderCompound;"
 			name=				"Marauder compound"
 			sovereign=			"&svMarauders;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"320"
-            regen=              "6"
-			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderCompound, pirates, populated"
-			levelFrequency=		"--vcr ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
-			enemyExclusionRadius="100"
+
+			abandonedScreen=	"&dsAbandonedStation;"
+
+			size=				"144"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"320"
+			multiHull=			"true"
+            regen=              "6"
+
+			fireRateAdj=		"20"
+
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image			imageID="&rsStations5;" imageX="0" imageY="512" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
+		
+		<Encounter
+				levelFrequency=		"--vcr ----- ----- ----- -----"
+				locationCriteria=	"+asteroids"
+				enemyExclusionRadius="100"
+				/>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbMarauderEncounters;"/>
+		</Encounters>
+
+		<!-- Configuration -->
 
 		<Devices>
 			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
 		</Devices>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<LevelTable>
@@ -353,6 +397,16 @@
 			<Ship					count="1"	class="&scMarauderRaidPlatform;"	orders="patrol" patrolDist="150"/>
 		</Ships>
 
+		<Reinforcements minShips="4">
+			<Table>
+				<Ship chance="25"	count="1"	class="&scBarbary;"		orders="guard"/>
+				<Ship chance="65"	count="1"	class="&scViking-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<!-- Treasure -->
+
 		<Items>
 			<Lookup count="1d3" table="&trStationSupplies;"/>
 			<Table>
@@ -362,18 +416,24 @@
 			</Table>
 		</Items>
 
-		<Reinforcements minShips="4">
-			<Table>
-				<Ship chance="25"	count="1"	class="&scBarbary;"		orders="guard"/>
-				<Ship chance="65"	count="1"	class="&scViking-II;"	orders="guard"/>
-				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
-			</Table>
-		</Reinforcements>
+		<!-- Image and Effects -->
 
-		<Encounters frequency="common">
-			<Lookup table="&tbMarauderEncounters;"/>
-		</Encounters>
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Image criteria="*ice"			imageID="&rsMarauderCompoundIce;"			imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				<Image criteria="*metallic"		imageID="&rsMarauderCompoundMetallic;"		imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				<Image criteria="*primordial"	imageID="&rsMarauderCompoundPrimordial;"	imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				<Image criteria="*volcanic"		imageID="&rsMarauderCompoundVolcanic;"		imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+				
+				<Image criteria="*~"			imageID="&rsMarauderCompoundRocky;"			imageWidth="220" imageHeight="220"	viewportRatio="0.02375"/>
+			</LocationCriteriaTable>
+		</ImageVariants>
 
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
 	</StationType>
 
 	<!-- Marauder Stronghold -->
@@ -381,29 +441,43 @@
 	<StationType UNID="&stMarauderStronghold;"
 			name=				"Marauder stronghold"
 			sovereign=			"&svMarauders;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"400"
-            regen=              "6"
-			fireRateAdj=		"20"
-			explosionType=		"&vtBlastExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, lombardMarauders, marauderStronghold, pirates,populated"
-			levelFrequency=		"---ru v---- ----- ----- -----"
-			locationCriteria=	"+lifeZone, -planetary"
-			enemyExclusionRadius="100"
+
+			abandonedScreen=	"&dsAbandonedStation;"
+
+			size=				"251"
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"400"
+			multiHull=			"true"
+            regen=              "6"
+
+			fireRateAdj=		"20"
+
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image			imageID="&rsStations5;" imageX="0" imageY="512" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
+		
+		<Encounter
+				levelFrequency=		"---ru v---- ----- ----- -----"
+				locationCriteria=	"+lifeZone, -planetary"
+				enemyExclusionRadius="100"
+				/>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbMarauderEncounters;"/>
+		</Encounters>
+
+		<!-- Configuration -->
 
 		<Devices>
 			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
 		</Devices>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Table>
@@ -430,13 +504,6 @@
 			</Ship>
 		</Ships>
 
-		<Items>
-			<Lookup count="1d3" table="&trStationSupplies;"/>
-			<Group value="standard:level=5:x=2.5">
-				<Lookup table="&trStdTreasure;"/>
-			</Group>
-		</Items>
-
 		<Reinforcements minShips="6">
 			<Table>
 				<Ship chance="25"	count="1"	class="&scBarbary;"		orders="guard"/>
@@ -445,9 +512,33 @@
 			</Table>
 		</Reinforcements>
 
-		<Encounters frequency="common">
-			<Lookup table="&tbMarauderEncounters;"/>
-		</Encounters>
+		<!-- Treasure -->
+
+		<Items>
+			<Lookup count="1d3" table="&trStationSupplies;"/>
+			<Group value="standard:level=5:x=2.5">
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Image criteria="*ice"			imageID="&rsMarauderStrongholdIce;"			imageWidth="260" imageHeight="260"	viewportRatio="0.03375"/>
+				<Image criteria="*metallic"		imageID="&rsMarauderStrongholdMetallic;"	imageWidth="260" imageHeight="260"	viewportRatio="0.03375"/>
+				<Image criteria="*primordial"	imageID="&rsMarauderStrongholdPrimordial;"	imageWidth="260" imageHeight="260"	viewportRatio="0.03375"/>
+				<Image criteria="*volcanic"		imageID="&rsMarauderStrongholdVolcanic;"	imageWidth="260" imageHeight="260"	viewportRatio="0.03375"/>
+				
+				<Image criteria="*~"			imageID="&rsMarauderStrongholdRocky;"		imageWidth="260" imageHeight="260"	viewportRatio="0.03375"/>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"150"
+				>
+		</DockingPorts>
 	</StationType>
 	
 	<ShipTable UNID="&tbMarauderEncounters;">
@@ -484,6 +575,24 @@
 	</ShipTable>
 
 	<!-- Resources -->
+
+	<Image UNID="&rsMarauderOutpostIce;"			bitmap="Resources\MarauderOutpostIce.jpg"			bitmask="Resources\MarauderOutpostIceMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderOutpostMetallic;"		bitmap="Resources\MarauderOutpostMetallic.jpg"		bitmask="Resources\MarauderOutpostMetallicMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderOutpostPrimordial;"		bitmap="Resources\MarauderOutpostPrimordial.jpg"	bitmask="Resources\MarauderOutpostPrimordialMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderOutpostRocky;"			bitmap="Resources\MarauderOutpostRocky.jpg"			bitmask="Resources\MarauderOutpostRockyMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderOutpostVolcanic;"		bitmap="Resources\MarauderOutpostVolcanic.jpg"		bitmask="Resources\MarauderOutpostVolcanicMask.bmp"  	loadOnUse="true"/>
+
+	<Image UNID="&rsMarauderCompoundIce;"			bitmap="Resources\MarauderCompoundIce.jpg"			bitmask="Resources\MarauderCompoundIceMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderCompoundMetallic;"		bitmap="Resources\MarauderCompoundMetallic.jpg"		bitmask="Resources\MarauderCompoundMetallicMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderCompoundPrimordial;"		bitmap="Resources\MarauderCompoundPrimordial.jpg"	bitmask="Resources\MarauderCompoundPrimordialMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderCompoundRocky;"			bitmap="Resources\MarauderCompoundRocky.jpg"			bitmask="Resources\MarauderCompoundRockyMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderCompoundVolcanic;"		bitmap="Resources\MarauderCompoundVolcanic.jpg"		bitmask="Resources\MarauderCompoundVolcanicMask.bmp"  	loadOnUse="true"/>
+
+	<Image UNID="&rsMarauderStrongholdIce;"			bitmap="Resources\MarauderStrongholdIce.jpg"			bitmask="Resources\MarauderStrongholdIceMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderStrongholdMetallic;"		bitmap="Resources\MarauderStrongholdMetallic.jpg"		bitmask="Resources\MarauderStrongholdMetallicMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderStrongholdPrimordial;"		bitmap="Resources\MarauderStrongholdPrimordial.jpg"	bitmask="Resources\MarauderStrongholdPrimordialMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderStrongholdRocky;"			bitmap="Resources\MarauderStrongholdRocky.jpg"			bitmask="Resources\MarauderStrongholdRockyMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsMarauderStrongholdVolcanic;"		bitmap="Resources\MarauderStrongholdVolcanic.jpg"		bitmask="Resources\MarauderStrongholdVolcanicMask.bmp"  	loadOnUse="true"/>
 
 	<Image UNID="&rsTripoli;"			bitmap="Resources\Tripoli.jpg"		bitmask="Resources\TripoliMask.bmp"  	loadOnUse="true"/>
 	<Image UNID="&rsBarbaryHD;"			bitmap="Resources\BarbaryHD.jpg"	bitmask="Resources\BarbaryHDMask.bmp"	loadOnUse="true"/>

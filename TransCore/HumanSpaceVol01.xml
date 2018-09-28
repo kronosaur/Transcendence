@@ -1710,8 +1710,23 @@
 	<!ENTITY rsCorsairHero				"0x00100107">
 	<!ENTITY rsVikingHero				"0x00100108">
 	<!ENTITY rsBarbaryHero				"0x00100109">
-
 	<!ENTITY etPirateAmbush				"0x0010010A">
+
+	<!ENTITY rsMarauderOutpostIce		"0x0010010B">
+	<!ENTITY rsMarauderOutpostMetallic	"0x0010010C">
+	<!ENTITY rsMarauderOutpostPrimordial	"0x0010010D">
+	<!ENTITY rsMarauderOutpostRocky		"0x0010010E">
+	<!ENTITY rsMarauderOutpostVolcanic	"0x0010010F">
+	<!ENTITY rsMarauderCompoundIce		"0x00100110">
+	<!ENTITY rsMarauderCompoundMetallic	"0x00100111">
+	<!ENTITY rsMarauderCompoundPrimordial	"0x00100112">
+	<!ENTITY rsMarauderCompoundRocky	"0x00100113">
+	<!ENTITY rsMarauderCompoundVolcanic	"0x00100114">
+	<!ENTITY rsMarauderStrongholdIce	"0x00100115">
+	<!ENTITY rsMarauderStrongholdMetallic	"0x00100116">
+	<!ENTITY rsMarauderStrongholdPrimordial	"0x00100117">
+	<!ENTITY rsMarauderStrongholdRocky		"0x00100118">
+	<!ENTITY rsMarauderStrongholdVolcanic	"0x00100119">
 
 	<!-- 0120-013F SUNG SLAVERS -->
 	
