@@ -1626,31 +1626,20 @@
 			<Text id="actionReplace:cannotReplace">The device cannot be replaced.</Text>
 			<Text id="actionReplace:defaultAbility">
 				(switch
-					(and (= (@ gData 'category) 'armor) (@ gData 'maxLevel))
-						(scrTranslate gScreen "actionReplace:defaultAbility:armorLimited" gData)
-
-					(@ gData 'maxLevel)
-						(scrTranslate gScreen "actionReplace:defaultAbility:deviceLimited" gData)
-						
 					(= (@ gData 'category) 'armor)
-						(scrTranslate gScreen "actionReplace:defaultAbility:armor" gData)
+						(scrTranslate gScreen "actionReplace.armor" gData)
 						
-					(scrTranslate gScreen "actionReplace:defaultAbility:device" gData)
+					(scrTranslate gScreen "actionReplace.device" gData)
 					)
 			</Text>
-			<Text id="actionReplace:defaultAbility:armorLimited">
-				We install armor up to tech level %maxTech%
+			<String id="actionReplace.itemLimited">
 				(but you don't have anything better than level %maxLevel% in your cargo hold).
+			</String>
+			<Text id="actionReplace.armor">
+				We install armor up to tech level %maxLevel%
 			</Text>
-			<Text id="actionReplace:defaultAbility:armor">
-				We install armor up to tech level %maxTech%
-			</Text>
-			<Text id="actionReplace:defaultAbility:deviceLimited">
-				We install devices up to tech level %maxTech%
-				(but you don't have anything better than level %maxLevel% in your cargo hold).
-			</Text>
-			<Text id="actionReplace:defaultAbility:device">
-				We install devices up to tech level %maxTech%
+			<Text id="actionReplace.device">
+				We install devices up to tech level %maxLevel%
 			</Text>
 			<Text id="actionReplace:noArmorItemInCargo">There is nothing in your cargo hold to replace this armor segment with.</Text>
 			<Text id="actionReplace:noDeviceItemInCargo">There is nothing in your cargo hold to replace this device with.</Text>

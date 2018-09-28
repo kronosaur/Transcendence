@@ -736,16 +736,20 @@
 									{
 										visible: True
 										enabled: True
-										desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxLevel maxTech:maxTech })
-												(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxLevel maxTech:maxTech })
+										desc: (cat
+												(or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxTech })
+													(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxTech })
+													)
+												" "
+												(scrTranslate gScreen 'actionReplace.itemLimited { maxLevel:maxLevel })
 												)
 										}
 										
 								{
 									visible: True
 									enabled: True
-									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxTech:maxTech })
-											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxTech:maxTech })
+									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxTech })
+											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxTech })
 											)
 									}
 								)
@@ -828,16 +832,20 @@
 									{
 										visible: True
 										enabled: True
-										desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxLevel maxTech:maxTech })
-												(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxLevel maxTech:maxTech })
+										desc: (cat
+												(or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxTech })
+													(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxTech })
+													)
+												" "
+												(scrTranslate gScreen 'actionReplace.itemLimited { maxLevel:maxLevel })
 												)
 										}
 										
 								{
 									visible: True
 									enabled: True
-									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxTech:maxTech })
-											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxTech:maxTech })
+									desc: (or (objTranslate dockObj "dockServices:installAbility" { category:(@ options 'category) maxLevel:maxTech })
+											(scrTranslate gScreen "actionReplace:defaultAbility" { category:(@ options 'category) dockObj:dockObj maxLevel:maxTech })
 											)
 									}
 								)
