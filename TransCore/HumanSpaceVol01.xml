@@ -1983,6 +1983,13 @@
 	<!-- 0490-04AF HIMAL SEPERATISTS -->
 
 	<!ENTITY rsHimalInterceptorHD		"0x00100490">
+	<!ENTITY rsHimalRefugeIce			"0x00100491">
+	<!ENTITY rsHimalRefugeMetallic		"0x00100492">
+	<!ENTITY rsHimalRefugePrimordial	"0x00100493">
+	<!ENTITY rsHimalRefugeRocky			"0x00100494">
+	<!ENTITY rsHimalRefugeVolcanic		"0x00100495">
+	<!ENTITY rsHimalInterceptor			"0x00100496">
+	<!ENTITY rsHimalInterceptorHero		"0x00100497">
 
 	<!-- 04B0-04CF COMMONWEALTH FLEET II -->
 

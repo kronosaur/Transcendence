@@ -3433,5 +3433,6 @@
 	<Image UNID="&rsT31ArmedTransport;"	obsolete="41" bitmap="Resources\T31Transport.jpg"		bitmask="Resources\T31TransportMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsT55ArmedTransport;"	obsolete="41" bitmap="Resources\T55Transport.jpg"		bitmask="Resources\T55TransportMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsIAVHeavy;"	obsolete="41"				bitmap="Resources\IAVHeavy.jpg" bitmask="Resources\IAVHeavyMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsHimalInterceptorHD;"	obsolete="43"		bitmap="Resources\HimalInterceptorHD.jpg"		bitmask="Resources\HimalInterceptorHDMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

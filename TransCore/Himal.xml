@@ -14,84 +14,62 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Himal Interceptor -->
+<!-- ENCOUNTERS -->
 
-	<ShipClass UNID="&scHimalInterceptor;"
-			manufacturer=		"Himal"
-			class=				""
-			type=				"interceptor"
-			defaultSovereign=	"&svHimalSeparatists;"
-
-			mass=				"20"
-			cargoSpace=			"5"
-			thrustRatio=		"11"
-			maxSpeed=			"30"
-
-			attributes=			"genericClass,himalSettlers"
-			>
-
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumCasing;"/>
-			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumCasing;"/>
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itBlaster;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"2.0"
-			/>
-
-		<Image imageID="&rsHimalInterceptorHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" rotationOffset="5" />
-
-		<AISettings
-			fireRateAdj=		"40"
-			fireRangeAdj=		"40"
-			fireAccuracy=		"75"
-			perception=			"4"
-			
-			combatStyle=		"flyby"
-			/>
-		
-		<Effects>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="16"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="16"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-	</ShipClass>
-
-	<!-- Himal Refuge -->
+	<!-- Level 1: Himal Refuge -->
 
 	<StationType UNID="&stHimalRefuge;"
 			name=				"Himal refuge"
 			sovereign=			"&svHimalSeparatists;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, himal, human, populated"
+
+			abandonedScreen=	"&dsAbandonedStation;"
+
+			size=				"78"
 			armorID=			"&itLightPlasteelPlate;"
 			hitPoints=			"40"
-			fireRateAdj=		"30"
-			explosionType=		"&vtKineticExplosion2;"
-			ejectaType=			"&vtIceAsteroidEjecta;"
+			multiHull=			"true"
+			regen=				"1"
 
-			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, populated"
-			levelFrequency=		"curv- ----- ----- ----- -----"
-			locationCriteria=	"+outerSystem, -planetary"
+			fireRateAdj=		"30"
+
+			canAttack=			"true"
+			explosionType=		"&vtKineticExplosion1;"
+			ejectaType=			"&vtIceAsteroidEjecta;"
 			>
 
-		<Image			imageID="&rsStations1;" imageX="384" imageY="256" imageWidth="96" imageHeight="128"/>
+		<!-- Encounter Info -->
+		
+		<Encounter
+				levelFrequency=		"curv- ----- ----- ----- -----"
+				locationCriteria=	"+outerSystem, -planetary"
+				enemyExclusionRadius="50"
+				/>
+
+		<Encounters frequency="uncommon">
+			<LevelTable>
+				<Ship levelFrequency="ccccc ccccc" count="1"	class="&scHimalInterceptor;" eventHandler="&evStdZoneEncounterBehavior;">
+					<Escorts>
+						<Ship					   count="1d2"	class="&scHimalInterceptor;" orders="escort"/>
+					</Escorts>
+				</Ship>
+			</LevelTable>
+		</Encounters>
+
+		<!-- Configuration -->
 
 		<Devices>
 			<Device deviceID="&itBlaster;"	omnidirectional="true"/>
 		</Devices>
 
+		<!-- Ships and Defenses -->
+
 		<Ships>
 			<Ship			count="1d3"	class="&scHimalInterceptor;"	orders="patrol" patrolDist="15"/>
 		</Ships>
+
+		<!-- Treasure -->
 
 		<Items>
 			<Table count="1d6">
@@ -104,20 +82,93 @@
 			</Table>
 		</Items>
 
-		<Encounters frequency="common">
-			<LevelTable>
-				<Ship levelFrequency="ccccc ccccc" count="1"	class="&scHimalInterceptor;" eventHandler="&evStdZoneEncounterBehavior;">
-					<Escorts>
-						<Ship					   count="1d2"	class="&scHimalInterceptor;" orders="escort"/>
-					</Escorts>
-				</Ship>
-			</LevelTable>
-		</Encounters>
+		<!-- Image and Effects -->
 
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Image criteria="*ice"			imageID="&rsHimalRefugeIce;"			imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				<Image criteria="*metallic"		imageID="&rsHimalRefugeMetallic;"		imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				<Image criteria="*primordial"	imageID="&rsHimalRefugePrimordial;"		imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				<Image criteria="*volcanic"		imageID="&rsHimalRefugeVolcanic;"		imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				
+				<Image criteria="*~"			imageID="&rsHimalRefugeRocky;"			imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
 	</StationType>
 
-	<!-- Resources -->
+<!-- SHIP CLASSES -->
 
-	<Image UNID="&rsHimalInterceptorHD;"		bitmap="Resources\HimalInterceptorHD.jpg"		bitmask="Resources\HimalInterceptorHDMask.bmp"  loadOnUse="true"/>
+	<!-- Level 2: Himal Interceptor -->
+
+	<ShipClass UNID="&scHimalInterceptor;"
+			manufacturer=		"Himal"
+			class=				""
+			type=				"interceptor"
+			defaultSovereign=	"&svHimalSeparatists;"
+
+			attributes=			"genericClass, himal, himalSettlers"
+
+			size=				"31"
+			mass=				"20"
+			thrustRatio=		"10"
+			maxSpeed=			"30"
+			cargoSpace=			"5"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itUltraLightTitaniumCasing;"
+			count=				"2"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itBlaster;"	posAngle="0" posRadius="30" posZ="0"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsHimalInterceptor;"	imageWidth="56" imageHeight="56" rotationCount="120" rotationColumns="12" rotationOffset="5" viewportRatio="0.004375"/>
+		<HeroImage imageID="&rsHimalInterceptorHero;" imageWidth="320" imageHeight="320"/>
+
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireRangeAdj=		"40"
+			fireAccuracy=		"75"
+			perception=			"4"
+			
+			combatStyle=		"flyby"
+			/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="21"	posZ="10"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="22"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="22"	posZ="0"	rotation="180"/>
+		</Effects>
+	</ShipClass>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsHimalInterceptor;"			bitmap="Resources\HimalInterceptor.jpg"		bitmask="Resources\HimalInterceptorMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsHimalInterceptorHero;"		bitmap="Resources\HimalInterceptorLarge.jpg"		bitmask="Resources\HimalInterceptorLargeMask.bmp"  loadOnUse="true"/>
+
+	<Image UNID="&rsHimalRefugeIce;"			bitmap="Resources\HimalRefugeIce.jpg"		bitmask="Resources\HimalRefugeIceMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsHimalRefugeMetallic;"		bitmap="Resources\HimalRefugeMetallic.jpg"		bitmask="Resources\HimalRefugeMetallicMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsHimalRefugePrimordial;"		bitmap="Resources\HimalRefugePrimordial.jpg"		bitmask="Resources\HimalRefugePrimordialMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsHimalRefugeRocky;"			bitmap="Resources\HimalRefugeRocky.jpg"		bitmask="Resources\HimalRefugeRockyMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsHimalRefugeVolcanic;"		bitmap="Resources\HimalRefugeVolcanic.jpg"		bitmask="Resources\HimalRefugeVolcanicMask.bmp"  loadOnUse="true"/>
 
 </TranscendenceModule>

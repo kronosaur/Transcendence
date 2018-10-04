@@ -261,7 +261,7 @@
 
 	</ShipClass>
 
-	<!-- Marauder Outpost -->
+	<!-- Level 4: Marauder Outpost -->
 
 	<StationType UNID="&stMarauderOutpost;"
 			name=				"Marauder outpost"
