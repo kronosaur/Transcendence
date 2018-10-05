@@ -15,6 +15,7 @@
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"9"
 			mass=				"1"
 			thrustRatio=		"5"
 			maxSpeed=			"25"
@@ -73,6 +74,7 @@
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"9"
 			mass=				"2"
 			thrustRatio=		"8"
 			maxSpeed=			"25"
@@ -158,6 +160,7 @@
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"9"
 			mass=				"2"
 			thrustRatio=		"8"
 			maxSpeed=			"25"
@@ -234,6 +237,7 @@
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"9"
 			mass=				"2"
 			thrustRatio=		"8"
 			maxSpeed=			"25"
@@ -295,6 +299,7 @@
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"15"
 			mass=				"2"
 			thrustRatio=		"6"
 			maxSpeed=			"20"
@@ -403,6 +408,7 @@
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"10"
 			mass=				"4"
 			thrustRatio=		"8"
 			maxSpeed=			"25"
@@ -491,6 +497,7 @@
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"10"
 			mass=				"4"
 			thrustRatio=		"8"
 			maxSpeed=			"25"
@@ -551,6 +558,7 @@
 			attributes=			"auton, genericClass, taikon"
 			inherit=			"&baStdAutonBase;"
 			   
+			size=				"10"
 			mass=				"2"
 			thrustRatio=		"8"
 			maxSpeed=			"25"
