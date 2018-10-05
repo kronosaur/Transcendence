@@ -20,7 +20,8 @@
 			type=				"sentinel"
 			defaultSovereign=	"&svUrakWarlords;"
 
-			mass=				"100"
+			size=				"14"
+			mass=				"5"
 			cargoSpace=			"5"
 			thrustRatio=		"4"
 			maxSpeed=			"16"
