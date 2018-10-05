@@ -250,7 +250,6 @@
 							theMission
 							)
 							(objAddItem gPlayerShip (msnGetData gSource 'rewardItem))
-							(dbgoutput (msnGetData gSource 'rewardItem) (objGetName (msnGetData gSource 'rewardItem) 0x100))
 							(setq theMission (msnCreate &msKorolovAtCharonRevenge; korolovObj))
 							(if theMission (msnAccept theMission))
 							)

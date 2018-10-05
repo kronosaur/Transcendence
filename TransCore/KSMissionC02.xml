@@ -32,7 +32,7 @@
 						)
 						(enum pirateStations theObj (msnRegisterForEvents gSource theObj))
 						(msnSetData gSource 'stationsLeft (count pirateStations))
-						(dbgOutput "creating mission")
+						;(dbgOutput "creating mission")
 						
 						(msnSetData gSource 'reward 0)
 						(msnSetData gSource 'missionXP 500)

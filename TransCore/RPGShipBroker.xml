@@ -134,7 +134,6 @@
 									(block ()
 										(scrEnableAction gScreen 'actionBuyShip Nil)
 										(scrSetActionDesc gScreen 'actionBuyShip canUpgradeResult)
-										(dbgOutput "Fail: " canUpgradeResult)
 										)
 
 								(!= (setq canUpgradeResult (objFireEvent selObj 'CanUpgradeFrom { oldShipObj:gPlayerShip })) True)
@@ -1097,9 +1096,6 @@
 							)
 						)
 					)
-
-					(dbgOutput createCriteria)
-					(dbgOutput allClasses)
 
 					;	Create a list of ships to sell
 					

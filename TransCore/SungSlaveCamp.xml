@@ -308,7 +308,6 @@
 							;	Otherwise, we add slave coffins to the station
 
 							(block ()
-								(dbgOutput "slaveCoffins = " slaveCoffins)
 								(objAddItem gSource (itmCreate &itSlaveCoffin; slaveCoffins))
 								(objSetData slaverObj 'sungState 'coffins)
 								)

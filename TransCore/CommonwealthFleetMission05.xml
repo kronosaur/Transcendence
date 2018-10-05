@@ -103,7 +103,7 @@
 					
 					;	Calculate travel time for setting ambush
 					(setq travelTime (sysCalcTravelTime (objGetDistance cscObj gateObj) (shpGetMaxSpeed shipObj)))
-					(dbgOutput "trabvel time: " travelTime)
+					;(dbgOutput "travel time: " travelTime)
 					;	Variant specific setup
 					(switch
 						(= variant 'ares)
@@ -186,7 +186,7 @@
 					(shipObj (objGetObjByID (msnGetData gSource 'freighterID)))
 					(dist (objGetDistance cscObj shipObj))
 					)
-					(dbgOutput dist)
+					;(dbgOutput dist)
 					(switch
 						(not shipObj)
 							(msnCancelTimerEvent gSource 'OnSuicideRunCheck)

@@ -1652,7 +1652,7 @@
 										(or (@ data 'totalPrice) (@ data 'installPriceAdj))
 										)
 									(block Nil
-										(dbgOutput "API: " (getAPIVersion))
+										;(dbgOutput "API: " (getAPIVersion))
 										(setq stationCannotInstall Nil)
 										)
 

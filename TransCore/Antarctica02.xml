@@ -605,7 +605,7 @@
 		<Events>
 			<OnBehaviorStart>
 				(block ()
-					(dbgOutput "OnBehaviorStart status: " (typGetData &msEscapeFromDantalion; 'status) " behavior: " (objGetData gSource 'behavior))
+					;(dbgOutput "OnBehaviorStart status: " (typGetData &msEscapeFromDantalion; 'status) " behavior: " (objGetData gSource 'behavior))
 					(shpCancelOrders gSource)
 					(shpOrder gSource 'hold)
 

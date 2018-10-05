@@ -294,7 +294,7 @@
 								(shpOrder minerObj 'approach (@ gData 'depositObj) 20)
 								(shpOrder minerObj 'mine gSource)
 								(objSetData minerObj 'depositID (objGetID (@ gData 'depositObj)))
-								(dbgOutput "Sent miner " (objGetID minerObj) " to " (objGetID (@ gData 'depositObj)))
+								;(dbgOutput "Sent miner " (objGetID minerObj) " to " (objGetID (@ gData 'depositObj)))
 								)
 							)
 							
