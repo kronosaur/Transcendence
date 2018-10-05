@@ -979,8 +979,8 @@
 
 			attributes=			"auton, genericClass"
 
-			size=				"4"
-			mass=				"3"
+			size=				"13"
+			mass=				"2"
 			thrustRatio=		"3"
 			maxSpeed=			"5"
 			cargoSpace=			"0"
