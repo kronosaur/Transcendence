@@ -1931,7 +1931,7 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 	if (!m_Service.HasCapability(ICIService::loginUser))
 		m_Multiverse.SetDisabled();
 	else if (m_Service.HasCapability(ICIService::cachedUser))
-		m_Multiverse.SetUsername(m_Service.GetUsername());
+		m_Multiverse.SetUsername(m_Service.GetDefaultUsername());
 
 	//	Add a timer so that services can do some background processing.
 
