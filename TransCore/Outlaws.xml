@@ -9,16 +9,16 @@
 	<ShipClass UNID="&scOromo;"
 			manufacturer=		"United African States"
 			class=				"Oromo"
-			type=				"gunship"
+			type=				"heavy gunship"
 			defaultSovereign=	"&svOutlaw;"
 
 			attributes=			"genericClass, outlaws"
 			   
 			size=				"53"
-			mass=				"200"
-			thrustRatio=		"4"
+			mass=				"100"
+			thrust=				"475"
 			maxSpeed=			"20"
-			cargoSpace=			"25"
+			cargoSpace=			"100"
 			>
 
 		<!-- Configuration -->
@@ -71,10 +71,11 @@
 
 			attributes=			"genericClass, outlaws"
 			   
-			mass=				"100"
-			thrustRatio=		"4"
+			size=				"45"
+			mass=				"120"
+			thrust=				"950"
 			maxSpeed=			"18"
-			cargoSpace=			"25"
+			cargoSpace=			"200"
 			>
 
 		<!-- Configuration -->
