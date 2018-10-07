@@ -1496,11 +1496,21 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		return NOERROR;
 		}
+	catch (CException e)
+		{
+		m_pPlayer = NULL;
+		m_GameFile.Close();
+		*retsError = strPatternSubst(CONSTLIT("Unable to load game: %s"), e.GetErrorMessage());
+		::kernelDebugLogString(*retsError);
+
+		return ERR_FAIL;
+		}
 	catch (...)
 		{
 		m_pPlayer = NULL;
 		m_GameFile.Close();
 		*retsError = CONSTLIT("Crash loading game.");
+		::kernelDebugLogString(*retsError);
 
 		return ERR_FAIL;
 		}
@@ -1930,7 +1940,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 				SetProgramError(sError);
 				//g_pTrans->DisplayMessage(sError);
 				//kernelDebugLogString(sError);
-				throw CException(ERR_FAIL);
+				throw CException(ERR_FAIL, sError);
 				}
 			}
 
@@ -1945,7 +1955,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 
 				g_pTrans->DisplayMessage(sError);
 				kernelDebugLogString(sError);
-				throw CException(ERR_FAIL);
+				throw CException(ERR_FAIL, sError);
 				}
 			}
 		}
@@ -1979,7 +1989,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 					NullVector,
 					NULL_STR,
 					&pMarker) != NOERROR)
-				throw CException(ERR_FAIL);
+				throw CException(ERR_FAIL, CONSTLIT("Unable to create marker."));
 
 			pStart = pMarker;
 			}
