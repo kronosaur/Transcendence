@@ -202,22 +202,19 @@ bool IDockScreenDisplay::EvalBool (const CString &sCode, bool *retbResult, CStri
 	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(m_pData);
 
-	char *pPos = sCode.GetPointer();
-	ICCItem *pExp = Ctx.Link(sCode, 1, NULL);
+	CCodeChain::SLinkOptions Options;
+	Options.iOffset = 1;
 
-	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-	Ctx.Discard(pExp);
+	ICCItemPtr pExp = Ctx.LinkCode(sCode, Options);
+	ICCItemPtr pResult = Ctx.RunCode(pExp);	//	LATER:Event
 
 	if (pResult->IsError())
 		{
 		*retsError = pResult->GetStringValue();
-		Ctx.Discard(pResult);
 		return false;
 		}
 
 	*retbResult = !pResult->IsNil();
-	Ctx.Discard(pResult);
-
 	return true;
 	}
 
@@ -239,15 +236,15 @@ CSpaceObject *IDockScreenDisplay::EvalListSource (const CString &sString, CStrin
 		Ctx.SaveAndDefineSourceVar(m_pLocation);
 		Ctx.SaveAndDefineDataVar(m_pData);
 
-		ICCItem *pExp = Ctx.Link(sString, 1, NULL);
+		CCodeChain::SLinkOptions Options;
+		Options.iOffset = 1;
 
-		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-		Ctx.Discard(pExp);
+		ICCItemPtr pExp = Ctx.LinkCode(sString, Options);
+		ICCItemPtr pResult = Ctx.RunCode(pExp);	//	LATER:Event
 
 		if (pResult->IsError())
 			{
 			*retsError = pResult->GetStringValue();
-			Ctx.Discard(pResult);
 			return NULL;
 			}
 
@@ -262,7 +259,6 @@ CSpaceObject *IDockScreenDisplay::EvalListSource (const CString &sString, CStrin
 		else
 			pSource = Ctx.AsSpaceObject(pResult);
 
-		Ctx.Discard(pResult);
 		return pSource;
 		}
 

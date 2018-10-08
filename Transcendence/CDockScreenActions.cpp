@@ -375,7 +375,7 @@ void CDockScreenActions::Execute (int iAction, CDockScreen *pScreen)
 		{
 		//	Link the code
 
-		ICCItem *pExp = g_pUniverse->GetCC().Link(pAction->sCode, 0);
+		ICCItem *pExp = g_pUniverse->GetCC().Link(pAction->sCode);
 
 		//	Execute
 

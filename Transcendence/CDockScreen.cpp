@@ -247,7 +247,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		//	Load the text code
 
 		const CString &sCode = pDesc->GetContentText(0);
-		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), IMAGE_TAG))
 		{
@@ -281,7 +281,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		//	Load the code that returns the image
 
 		const CString &sCode = pDesc->GetContentText(0);
-		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), CANVAS_TAG))
 		{
@@ -294,7 +294,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		//	Load the draw code
 
 		const CString &sCode = pDesc->GetContentText(0);
-		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode) : NULL);
 		}
 	else if (strEquals(pDesc->GetTag(), GROUP_TAG))
 		{
@@ -315,7 +315,7 @@ void CDockScreen::AddDisplayControl (CXMLElement *pDesc,
 		//	Load the text code
 
 		const CString &sCode = pDesc->GetContentText(0);
-		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode, 0, NULL) : NULL);
+		pDControl->pCode = (!sCode.IsBlank() ? CC.Link(sCode) : NULL);
 		}
 
 	//	Done
@@ -826,19 +826,16 @@ bool CDockScreen::EvalBool (const CString &sCode)
 	Ctx.SaveAndDefineSourceVar(m_pLocation);
 	Ctx.SaveAndDefineDataVar(m_pData);
 
-	char *pPos = sCode.GetPointer();
-	ICCItem *pExp = Ctx.Link(sCode, 1, NULL);
+	CCodeChain::SLinkOptions Options;
+	Options.iOffset = 1;
 
-	ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-	Ctx.Discard(pExp);
+	ICCItemPtr pExp = Ctx.LinkCode(sCode, Options);
+	ICCItemPtr pResult = Ctx.RunCode(pExp);	//	LATER:Event
 
 	if (pResult->IsError())
 		ReportError(pResult->GetStringValue());
 
-	bool bResult = !pResult->IsNil();
-	Ctx.Discard(pResult);
-
-	return bResult;
+	return !pResult->IsNil();
 	}
 
 CString CDockScreen::EvalInitialPane (void)
@@ -875,17 +872,14 @@ CString CDockScreen::EvalInitialPane (CSpaceObject *pSource, ICCItem *pData)
 		Ctx.SaveAndDefineSourceVar(pSource);
 		Ctx.SaveAndDefineDataVar(pData);
 
-		ICCItem *pExp = Ctx.Link(sCode, 0, NULL);
-
-		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-		Ctx.Discard(pExp);
+		ICCItemPtr pExp = Ctx.LinkCode(sCode);
+		ICCItemPtr pResult = Ctx.RunCode(pExp);	//	LATER:Event
 
 		if (pResult->IsError())
 			ReportError(pResult->GetStringValue());
 		else
 			sPane = pResult->GetStringValue();
 
-		Ctx.Discard(pResult);
 		return sPane;
 		}
 	else
@@ -961,21 +955,17 @@ ALERROR CDockScreen::FireOnScreenInit (CSpaceObject *pSource, ICCItem *pData, CS
 		Ctx.SaveAndDefineSourceVar(pSource);
 		Ctx.SaveAndDefineDataVar(pData);
 
-		ICCItem *pExp = Ctx.Link(sCode, 0, NULL);
-
-		ICCItem *pResult = Ctx.Run(pExp);	//	LATER:Event
-		Ctx.Discard(pExp);
+		ICCItemPtr pExp = Ctx.LinkCode(sCode);
+		ICCItemPtr pResult = Ctx.RunCode(pExp);	//	LATER:Event
 
 		if (pResult->IsError())
 			{
 			*retsError = pResult->GetStringValue();
 
-			Ctx.Discard(pResult);
 			m_bInOnInit = false;
 			return ERR_FAIL;
 			}
 
-		Ctx.Discard(pResult);
 		m_bInOnInit = false;
 		}
 
@@ -1493,12 +1483,15 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	if (pOnUpdate)
 		{
 		CCodeChainCtx Ctx;
-		m_pOnScreenUpdate = Ctx.Link(pOnUpdate->GetContentText(0), 0, NULL);
-		if (m_pOnScreenUpdate->IsError())
+		ICCItemPtr pCode = Ctx.LinkCode(pOnUpdate->GetContentText(0));
+		if (pCode->IsError())
 			{
-			kernelDebugLogPattern("Unable to parse OnScreenUpdate: %s.", m_pOnScreenUpdate->GetStringValue());
-			Ctx.Discard(m_pOnScreenUpdate);
+			kernelDebugLogPattern("Unable to parse OnScreenUpdate: %s.", pCode->GetStringValue());
 			m_pOnScreenUpdate = NULL;
+			}
+		else
+			{
+			m_pOnScreenUpdate = pCode->Reference();
 			}
 		}
 

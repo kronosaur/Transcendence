@@ -66,17 +66,14 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 	else if (!sCommand.IsBlank() && !strEquals(sCommand, CONSTLIT("True")))
 		{
 		CCodeChainCtx Ctx;
-		ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItemPtr pCode = Ctx.LinkCode(sCommand);
+		ICCItemPtr pResult = Ctx.RunCode(pCode);
 
 		CString sOutput;
 		if (pResult->IsIdentifier())
 			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 		else
 			sOutput = CC.Unlink(pResult);
-
-		Ctx.Discard(pResult);
-		Ctx.Discard(pCode);
 
 		//	Output result
 
@@ -134,17 +131,14 @@ void Run (CUniverse &Universe, CXMLElement *pCmdLine)
 			else
 				{
 				CCodeChainCtx Ctx;
-				ICCItem *pCode = Ctx.Link(sCommand, 0, NULL);
-				ICCItem *pResult = Ctx.Run(pCode);
+				ICCItemPtr pCode = Ctx.LinkCode(sCommand);
+				ICCItemPtr pResult = Ctx.RunCode(pCode);
 
 				CString sOutput;
 				if (pResult->IsIdentifier())
 					sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 				else
 					sOutput = CC.Unlink(pResult);
-
-				Ctx.Discard(pResult);
-				Ctx.Discard(pCode);
 
 				//	Output result
 
@@ -183,26 +177,25 @@ void RunFile (const CString &sFilespec, bool bNoLogo)
 
 	CString sInputFile(InputFile.GetPointer(0), InputFile.GetLength(), TRUE);
 	CString sOutput;
-	int iOffset = 0;
+
+	CCodeChain::SLinkOptions Options;
 
 	while (true)
 		{
-		int iCharCount;
-		ICCItem *pCode = Ctx.Link(sInputFile, iOffset, &iCharCount);
+		ICCItemPtr pCode = Ctx.LinkCode(sInputFile, Options);
 		if (pCode->IsNil())
 			break;
 		else if (pCode->IsError())
 			{
 			printf("error : %s\n", pCode->GetStringValue().GetASCIIZPointer());
-			Ctx.Discard(pCode);
 			return;
 			}
 
-		iOffset += iCharCount;
+		Options.iOffset += Options.iLinked;
 
 		//	Execute
 
-		ICCItem *pResult = Ctx.Run(pCode);
+		ICCItemPtr pResult = Ctx.RunCode(pCode);
 
 		//	Compose output
 
@@ -210,11 +203,6 @@ void RunFile (const CString &sFilespec, bool bNoLogo)
 			sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 		else
 			sOutput = CC.Unlink(pResult);
-
-		//	Free
-
-		Ctx.Discard(pResult);
-		Ctx.Discard(pCode);
 		}
 
 	//	Output result

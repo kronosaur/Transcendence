@@ -402,17 +402,14 @@ void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 				InputEnter();
 
 				CCodeChainCtx Ctx;
-				ICCItem *pCode = Ctx.Link(sInput, 0, NULL);
-				ICCItem *pResult = Ctx.Run(pCode);
+				ICCItemPtr pCode = Ctx.LinkCode(sInput);
+				ICCItemPtr pResult = Ctx.RunCode(pCode);
 
 				CString sOutput;
 				if (pResult->IsIdentifier())
 					sOutput = pResult->Print(&CC, PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);
 				else
 					sOutput = CC.Unlink(pResult);
-
-				Ctx.Discard(pResult);
-				Ctx.Discard(pCode);
 
 				Output(sOutput);
 				}

@@ -36,7 +36,7 @@ ALERROR CDockScreenCustomList::OnInitList (SInitCtx &Ctx, const SDisplayOptions 
 	//	Get the list to show
 
 	CCodeChain &CC = g_pUniverse->GetCC();
-	ICCItem *pExp = CC.Link(Options.sCode, 0, NULL);
+	ICCItem *pExp = CC.Link(Options.sCode);
 
 	//	Evaluate the function
 
