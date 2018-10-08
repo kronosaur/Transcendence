@@ -14,28 +14,58 @@
 
 	NOTES
 	
-		
+		This is a reference for mission types. All events and parameters are
+		defined.
+
 	======================================================================== -->
 	
 	<MissionType UNID="&msDestroyThreatToSlums;"
-			name=				"Destroy Threat to Commonwealth Habitat"
-			attributes=			"commonwealth, commonwealthHabitat"
+			name=						"Destroy Threat to Commonwealth Habitat"
+			attributes=					"commonwealth, commonwealthHabitat"
 
-			level=				"1-4"
-			scope=				"system"
+			level=						"1-4"
+			scope=						"system"
+			priority=					"1"
+			maxAppearing=				"-1"
+			expireTime=					"-1"
+
+			allowPlayerDelete=			"false"
+			debriefAfterOutOfSystem=	"false"
+			failureAfterOutOfSystem=	"false"
+			forceUndockAfterDebrief=	"false"
+			noDebrief=					"false"
+			noDecline=					"false"
+			noFailureOnOwnerDestroyed=	"false"
+			noStats=					"false"
+			recordNonPlayer=			"false"
 			>
 
 		<Events>
+			<!-- CREATE MISSION -->
+
+			<CanCreate>
+
+				;	Called from inside msnCreate and msnCanCreate.
+				;	If defined, then return either true or nil to indicate that
+				;	the mission can or cannot be created.
+				;
+				;	gData: Data passed in to msnCreate.
+				;	aOwnerObj: Object that create the mission (or nil)
+
+			</CanCreate>
+
 			<OnCreate>
-				; Called when mission object is created. This adds the mission
-				; to the list of available missions, but it does not necessarily
-				; start the mission.
+
+				;	Called when mission object is created. This adds the mission
+				;	to the list of available missions, but it does not 
+				;	necessarily start or accept the mission.
 				;
-				; The script may call msnDestroy to abort creation of the mission.
+				;	The script may call msnDestroy to abort creation of the 
+				;	mission (but a better mechanism is to implement CanCreate).
 				;
-				; gSource is mission object
-				; gData is arbitrary data passed in to msnCreate
-				; aOwnerObj is the object that created the mission (or nil)
+				;	gSource: Mission object
+				;	gData: Arbitrary data passed in to msnCreate
+				;	aOwnerObj: Object that created the mission (or nil)
 
 				(block (enemyStations)
 
@@ -75,38 +105,89 @@
 					)
 			</OnCreate>
 
-			<OnAccepted>
-				; Called if the player accepts the mission. The mission is 
-				; already running (OnStarted has been called).
+			<!-- BRIEFING, ACCEPTING, DECLINING -->
+
+			<OnCanBrief>
+
+				;	Called just before the player is briefed on the mission. We
+				;	can return true to indicate the mission should proceed. Or
+				;	we can return a text string to explain why the mission is 
+				;	not currently available.
 				;
-				; gSource is mission object
+				;	gSource: Mission object.
+
+			</OnCanBrief>
+
+			<OnGetNextScreen>
+
+				;	Called during dock screens to control briefing and 
+				;	debriefing.
+				;
+				;	gSource: Mission object.
+				;	aScreenType:
+				;		'NoBriefing
+				;		'AcceptFollowUp
+				;		'DeclineFollowUp
+				;		'InProgressFollowUp
+				;		'SuccessFollowUp
+				;		'FailureFollowUp
+				;
+				;	The event may return a struct indicating the next screen to
+				;	show. The struct has the following fields:
+				;
+				;	nextScreen: The screen to show after debrief, OR
+				;		'forceUndock
+				;	nextScreenData: Data to pass to scrShowScreen.
+
+			</OnGetNextScreen>
+
+			<OnAccepted>
+
+				;	Called if the player accepts the mission.
+				;
+				;	gSource: Mission object.
 
 			</OnAccepted>
 
-			<OnDeclined>
-				; Called if the player rejects the mission. The mission is already
-				; running (OnStarted has been called).
+			<OnAcceptedUndock>
+
+				;	Called after the player undocks after having accepted the
+				;	mission. 
 				;
-				; gSource is mission object.
+				;	gSource: Mission object.
+				;	aDockTarget: Object that we were docked with.
+
+			</OnAcceptedUndock>
+
+			<OnDeclined>
+
+				;	Called if the player rejects the mission. The mission is 
+				;	already running (OnStarted has been called).
+				;
+				;	gSource is mission object.
 
 			</OnDeclined>
 
+			<!-- RUNNING THE MISSION -->
+
 			<OnStarted>
-				; Called when the mission starts. This is called if the mission
-				; starts running (either because the player accepted or some other
-				; reason).
+
+				;	Called when the mission starts. This is called if the 
+				;	mission	starts running (either because the player accepted 
+				;	or some other reason).
 				;
-				; gSource is mission object.
+				;	gSource: Mission object.
 
 			</OnStarted>
 
 			<OnSetPlayerTarget>
-				; Called to refresh the player's target. Always called right after
-				; the player accepts the mission. May be called at other times
-				; (e.g., after the player returns to the system).
+
+				;	Called to refresh the player's target. Always called right 
+				;	after the player accepts the mission. May be called at 
+				;	other times (e.g., after the player returns to the system).
 				;
-				; gSource is mission object
-				; aReason is:
+				;	gSource: Mission object.
+				;	aReason:
 				;		'accepted: Mission has been accepted
 				;		'debriefed: Player has been debriefed
 				;		'failure: Mission failed
@@ -115,50 +196,180 @@
 				;		'success: Mission completed successfully
 
 				(rpgSetTarget gSource aReason (objGetObjByID (msnGetData gSource 'targetID)))
+
 			</OnSetPlayerTarget>
 
+			<OnInProgress>
+
+				;	If the player docks with the mission-giver before the 
+				;	mission is complete, we get this event to help us compute
+				;	any values needed for the InProgress text.
+				;
+				;	gSource: Mission object.
+
+			</OnInProgress>
+
+			<OnInProgressUndock>
+
+				;	Called after the player undocks after getting the InProgress
+				;	message.
+				;
+				;	gSource: Mission object.
+
+			</OnInProgressUndock>
+
 			<OnObjDestroyed>
+
+				;	Called when an object is destroyed, but only if we have 
+				;	called msnRegisterForEvents on the object.
+				;
+				;	gSource: Mission object.
+				;	aObjDestroyed: Object that was destroyed
+				;	aDestroy: True if object was destroyed (as opposed to left 
+				;		system)
+				;	aDestroyReason:
+				;		'ascended
+				;		'custom
+				;		'damage
+				;		'disintegration
+				;		'ejecta
+				;		'enteredStargate
+				;		'explosion
+				;		'gravity
+				;		'playerCreatedExplosion
+				;		'powerFailure
+				;		'radiationPoisoning
+				;		'removedFromSystem
+				;		'runningOutOfFuel
+				;		'self
+				;		'shatter
+				;		'weaponMalfunction
+				;	aDestroyer: Object that destroyed it.
+				;	aOrderGiver: Object that controlled destroyer, e.g.,
+				;		if destroyer is an auton.
+				;	aWreckObj: Wreck left behind (may be nil)
+				
 				(switch
 					(eq (objGetID aObjDestroyed) (msnGetData gSource 'targetID))
 						(msnSuccess gSource)
 					)
 			</OnObjDestroyed>
 
-			<OnCompleted>
-				; Called when the mission ends (generally because msnSuccess or
-				; msnFailure were called).
+			<OnObjDocked>
+
+				;	Called when an object docks with another object. Call
+				;	msnRegisterForEvents on the object to receive this event.
 				;
-				; gSource is mission object
-				; gData is arbitrary data passed in to msnSuccess or msnFailure
-				; aReason is:
+				;	gSource: Mission object.
+				;	aObjDocked: Object that docked
+				;	aDockTarget: Object that it docked with
+
+			</OnObjDocked>
+
+			<OnObjEnteredGate>
+
+				;	Called when an object enters a stargate. Call 
+				;	msnRegisterForEvents on the object to receive this event.
+				;
+				;	NOTE: After this call, you will also receive an 
+				;	OnObjDestroyed event on the object.
+				;
+				;	gSource: Mission object.
+				;	aObj: Object that entered the gate
+				;	aGateObj: Gate object
+				;	aDestNodeID: Destinate system (may be nil)
+				;	aDestEntryPoint: Gate name in other system (may be nil)
+
+			</OnObjEnteredGate>
+
+			<OnUpdate>
+
+				;	This event is called once every 30 ticks while the mission
+				;	is active.
+				;
+				;	gSource: Mission object.
+
+			</OnUpdate>
+
+			<!-- MISSION COMPLETE -->
+
+			<OnCanDebrief>
+
+				;	After the mission has completed (successfully or not) we 
+				;	call this event to see if we are ready to debrief. The event
+				;	can return true to indicate that a debrief should proceed
+				;	as normal, or it can return a text string to display to the
+				;	player explaining why debriefing cannot happen yet.
+				;
+				;	Generally we use this when we want to wait for an NPC
+				;	to complete some task (e.g., dock) before debriefing.
+
+			</OnCanDebrief>
+
+			<OnCompleted>
+
+				;	Called when the mission ends (generally because msnSuccess 
+				;	or msnFailure were called).
+				;
+				;	gSource: Mission object.
+				;	gData: Arbitrary data passed in to msnSuccess or msnFailure
+				;	aReason:
 				;		'failure: Mission failed
 				;		'success: Mission completed successfully
 
 			</OnCompleted>
 
 			<OnReward>
-				; Called by msnReward, generally during debrief.
+
+				;	Called when the mission was successful, just before showing
+				;	the debriefing screen.
 				;
-				; gSource is mission object
-				; gData is data passed to msnReward
+				;	gSource: Mission object.
+				;	gData: Arbitrary data passed to msnReward
+				;
+				;	This event can return an optional structure to control 
+				;	debriefing. The struct has the following fields:
+				;
+				;	nextScreen: The screen to show after debrief, OR
+				;		'forceUndock
+				;	nextScreenData: Data to pass to scrShowScreen.
 
 				(rpgMissionRewardPayment (msnGetData gSource 'reward))
+
 			</OnReward>
 
+			<OnDebriefed>
+
+				;	Called after the player has been debriefed.
+				;
+				;	gSource: Mission object.
+
+			</OnDebriefed>
+
+			<OnDebriefedUndock>
+			
+				;	Called after the player has undocked after a debriefing.
+				;
+				;	gSource: Mission object.
+
+			</OnDebriefedUndock>
+
 			<OnDestroy>
-				; Called when mission object is destroyed (generally only non-player
-				; missions are removed when the player changes system. Player
-				; missions are not normally destroyed)
+
+				;	Called when mission object is destroyed (generally only 
+				;	non-player missions are removed when the player changes 
+				;	system. Player missions are not normally destroyed).
 				;
-				; gSource is mission object
+				;	gSource: Mission object.
 				;
-				; NOTE: No need to unregister for events because we automatically
-				; unregister when the mission is complete.
+				;	NOTE: No need to unregister for events because we 
+				;	automatically unregister when the mission is complete.
 
 			</OnDestroy>
 		</Events>
 
 		<Language>
+
 			<!-- Code Points -->
 
 			<Text id="Summary">

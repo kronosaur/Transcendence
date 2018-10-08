@@ -22,7 +22,7 @@
 	like promotions. If it has data "rewardNextScreenData", it's passed as data to that screen.
 
 	We fire OnCanBrief just before the player receives a briefing (the first time 
-	and all subsequent times). The even may return Nil to continue with the briefing
+	and all subsequent times). The event may return Nil to continue with the briefing
 	or return a message to cancel the briefing.
 
 	We fire OnAcceptedUndock after the mission has been accepted and the player has
