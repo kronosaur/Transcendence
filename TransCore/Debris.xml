@@ -347,6 +347,222 @@
 
 <!-- Ship Wrecks ========================================================== -->
 
+	<!-- Shipwreck 1 -->
+
+	<StationType UNID="&stShipwreck1;"
+			name=				"(shipwreck I)"
+			sovereign=			"&svUnknownEnemy;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"ucccu rrvv- ----- ----- -----"
+			locationCriteria=	"-planetary"
+			>
+		<ImageVariants>
+			<Shipwreck class="&scCorsair;"/>
+			<Shipwreck class="&scBorer;"/>
+			<Shipwreck class="&scEarthzone;"/>
+			<Shipwreck class="&scRoninA;"/>
+		</ImageVariants>
+		
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem2;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck 2 -->
+
+	<StationType UNID="&stShipwreck2;"
+			name=				"(shipwreck II)"
+			sovereign=			"&svUnknownEnemy;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"-uccc urrvv ----- ----- -----"
+			locationCriteria=	"-planetary"
+
+			ejectaType=			"&vtWreckEjecta;"
+			>
+		<ImageVariants>
+			<Shipwreck class="&scRoninB;"/>
+			<Shipwreck class="&scSotho;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scT31ArmedTransport;"/>
+		</ImageVariants>
+		
+		<Items>
+			<Table count="2">
+				<Null	chance="10"/>
+				<Lookup chance="15" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="20" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables3;"/>
+				<Lookup chance="15" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="10" count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem2;"/>
+				<Lookup chance="5"  count="1"	table="&trMajorItem3;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck 3 -->
+
+	<StationType UNID="&stShipwreck3;"
+			name=				"(shipwreck III)"
+			sovereign=			"&svUnknownEnemy;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"--ucc currv v---- ----- -----"
+			locationCriteria=	"-planetary"
+
+			ejectaType=			"&vtWreckEjecta;"
+			>
+		<ImageVariants>
+			<Shipwreck class="&scRepentant;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scBarbary;"/>
+		</ImageVariants>
+		
+		<Items>
+			<Table count="1d4">
+				<Null	chance="5"/>
+				<Lookup chance="5"  count="1d3" table="&trConsumables2;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables3;"/>
+				<Lookup chance="16" count="1"	table="&trConsumables4;"/>
+				<Lookup chance="10" count="1"	table="&trConsumables5;"/>
+				<Lookup chance="10" count="1"	table="&trMinorItem2;"/>
+				<Lookup chance="15" count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="8"  count="1"	table="&trMinorItem4;"/>
+				<Lookup chance="8"  count="1"	table="&trMajorItem2;"/>
+				<Lookup chance="5"  count="1"	table="&trMajorItem3;"/>
+				<Lookup chance="3"  count="1"	table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+	<!-- Shipwreck, Radioactive -->
+
+	<StationType UNID="&stRadioactiveShipwreck;"
+			name=				"(radioactive shipwreck)"
+			sovereign=			"&svUnknownEnemy;"
+			dockScreen=			"&dsAbandonedShip;"
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+			radioactive=		"true"
+
+			attributes=			"debris,friendly,shipwreck"
+			levelFrequency=		"-rccc urv-- ----- ----- -----"
+			locationCriteria=	"-planetary"
+
+			ejectaType=			"&vtWreckEjecta;"
+			>
+		<ImageVariants>
+			<Shipwreck class="&scPlague;"/>
+			<Shipwreck class="&scEI100;"/>
+			<Shipwreck class="&scRevelations;"/>
+		</ImageVariants>
+		
+		<Items>
+			<Table count="1d4">
+				<Null	chance="5"/>
+				<Item   chance="13"	count="1d4" item="&itHeavyWater;"/>
+				<Item	chance="10"	count="1d4" item="&itFusionTrigger;"/>
+				<Item	chance="10"	count="1d4"	item="&itRadioactiveWaste;"/>
+				<Item	chance="15"	count="1d4"	item="&itHardenedReactiveArmor;"/>
+				<Item	chance="6"	count="1d4" item="&itHardenedPlasteelPlate;"/>
+				<Lookup chance="5"  count="1d3" table="&trConsumables3;"/>
+				<Lookup chance="10" count="1"	table="&trConsumables4;"/>
+				<Lookup chance="10" count="1"	table="&trConsumables5;"/>
+				<Lookup chance="5"  count="1"	table="&trMinorItem3;"/>
+				<Lookup chance="5"  count="1"	table="&trMinorItem4;"/>
+				<Lookup chance="3"  count="1"	table="&trMajorItem3;"/>
+				<Lookup chance="3"  count="1"	table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
 	<!-- Centurion wreck -->
 
 	<StationType UNID="&stCenturionWreck;"
