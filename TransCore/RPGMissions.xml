@@ -112,7 +112,9 @@
 								
 							;	If cannot yet debrief, tell the player to wait
 
-							(setq delayDebriefMsg (msnFireEvent missionObj "OnCanDebrief"))
+							(and (setq delayDebriefMsg (msnFireEvent missionObj "OnCanDebrief"))
+									(!= delayDebriefMsg True)
+									)
 								(block Nil
 									(scrSetData gScreen 'DelayDebriefMsg delayDebriefMsg)
 									"DelayDebrief"
