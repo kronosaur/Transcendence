@@ -1460,6 +1460,7 @@ void CIntroSession::SetState (EStates iState)
 			StopAnimations();
 			m_HighScoreDisplay.StartPerformance(Reanimator, ID_HIGH_SCORES_PERFORMANCE, g_pTrans->m_rcIntroMain);
 			break;
+
 		case isIntroHelp:
 			{
 			StopAnimations();
@@ -1470,6 +1471,7 @@ void CIntroSession::SetState (EStates iState)
 			Reanimator.StartPerformance(dwPerformance, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 			break;
 			}
+
 		case isNews:
 			{
 			CMultiverseNewsEntry *pNews = g_pTrans->m_pTC->GetMultiverse().GetNextNewsEntry();
@@ -1497,9 +1499,19 @@ void CIntroSession::SetState (EStates iState)
 
 		case isShipStats:
 			{
-			CShip *pShip = g_pUniverse->GetPOV()->AsShip();
-			if (pShip == NULL)
+			CSpaceObject *pPOV = g_pUniverse->GetPOV();
+			if (pPOV == NULL)
+				{
+				SetState(isBlank);
 				return;
+				}
+
+			CShip *pShip = pPOV->AsShip();
+			if (pShip == NULL)
+				{
+				SetState(isBlank);
+				return;
+				}
 
 			StopAnimations();
 
