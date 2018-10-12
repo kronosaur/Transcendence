@@ -70,6 +70,8 @@
 								)
 
 							{
+							actionDoneID: 'actionContinue
+
 							onExitPane: (lambda (theScreen pageDesc options)
 								(block (charType screenData)
 									(setq charType (objGetProperty gSource 'character))
