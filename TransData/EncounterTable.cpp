@@ -134,7 +134,7 @@ void GenerateEncounterTable (CUniverse &Universe, CXMLElement *pCmdLine)
 	if (pCmdLine->GetAttributeBool(FIELD_TOTAL_COUNT)
 			|| pCmdLine->GetAttributeBool(FIELD_COUNT_DISTRIBUTION))
 		{
-		if (error = LoadDesignTypeStats(&TotalCount))
+		if (error = LoadDesignTypeStats(Universe.GetDesignCollection().GetAdventureUNID(), &TotalCount))
 			return;
 		}
 

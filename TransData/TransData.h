@@ -82,7 +82,7 @@ char *FrequencyChar (int iFreq);
 void ShowHelp (CXMLElement *pCmdLine);
 void MarkItemsKnown (CUniverse &Universe);
 bool OutputImage (CG32bitImage &Image, const CString &sFilespec);
-ALERROR LoadDesignTypeStats (CDesignTypeStats *retStats);
+ALERROR LoadDesignTypeStats (DWORD dwAventureUNID, CDesignTypeStats *retStats);
 
 void Decompile (const CString &sDataFile, CXMLElement *pCmdLine);
 void DoEffectPerformanceTest (CUniverse &Universe, CXMLElement *pCmdLine);
