@@ -513,9 +513,16 @@ ICCItem *CGSelectorArea::GetEntryAtCursor (void)
 		case typeInstalledItem:
 			{
 			pStruct->SetStringValue(CC, CONSTLIT("type"), CONSTLIT("installedItem"));
+
 			ICCItem *pItem = ::CreateListFromItem(CC, Entry.pItemCtx->GetItem());
 			pStruct->SetValue(CC, CONSTLIT("item"), pItem);
 			pItem->Discard(&CC);
+
+			pStruct->SetStringAt(CC, CONSTLIT("category"), GetItemCategoryID(Entry.pItemCtx->GetItem().GetType()->GetCategory()));
+
+			if (!Entry.sSlotID.IsBlank())
+				pStruct->SetStringAt(CC, CONSTLIT("id"), Entry.sSlotID);
+
 			break;
 			}
 
@@ -1088,6 +1095,7 @@ void CGSelectorArea::SetRegionsFromArmor (CSpaceObject *pSource)
                 {
                 pEntry->iType = typeInstalledItem;
                 pEntry->pItemCtx = new CItemCtx(pShip, pShields);
+				pEntry->sSlotID = pShields->GetID();
                 }
             else
                 {
@@ -1163,6 +1171,7 @@ void CGSelectorArea::SetRegionsFromDevices (CSpaceObject *pSource)
 		SEntry *pEntry = m_Regions.Insert();
 		pEntry->iType = typeInstalledItem;
 		pEntry->pItemCtx = new CItemCtx(pShip, pDevice);
+		pEntry->sSlotID = pDevice->GetID();
 
 		pEntry->iSlotPosIndex = iIndex;
 		pEntry->rcRect.left = pLayout->xLeft;
@@ -1356,6 +1365,7 @@ void CGSelectorArea::SetRegionsFromMiscDevices (CSpaceObject *pSource)
 			SEntry *pEntry = m_Regions.Insert();
 			pEntry->iType = typeInstalledItem;
 			pEntry->pItemCtx = new CItemCtx(pShip, pDevice);
+			pEntry->sSlotID = pDevice->GetID();
 
 			pEntry->iSlotPosIndex = iIndex;
 			pEntry->rcRect.left = pLayout->xLeft;
@@ -1550,6 +1560,7 @@ void CGSelectorArea::SetRegionsFromWeapons (CSpaceObject *pSource)
 		SEntry *pEntry = m_Regions.Insert();
 		pEntry->iType = typeInstalledItem;
 		pEntry->pItemCtx = new CItemCtx(pShip, pDevice);
+		pEntry->sSlotID = pDevice->GetID();
 
 		pEntry->iSlotPosIndex = iIndex;
 		pEntry->rcRect.left = pLayout->xLeft;

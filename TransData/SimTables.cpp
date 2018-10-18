@@ -9,7 +9,7 @@
 #include "XMLUtil.h"
 #include "TransData.h"
 
-#define TYPE_COUNT_FILENAME				CONSTLIT("TransData_TypeCount.txt")
+#define TYPE_COUNT_PATTERN				CONSTLIT("TransData_TypeCount_%08x.txt")
 
 #define DEFAULT_SYSTEM_SAMPLE				100
 
@@ -54,7 +54,7 @@ struct STypeInfo
 	};
 
 void AccumulateSystem (CTopologyNode *pNode, CSystem *pSystem, TSortMap<DWORD, STypeInfo> &AllTypes);
-ALERROR OutputTypeTable (TSortMap<DWORD, STypeStats> &AllStats, int iSystemSample);
+ALERROR OutputTypeTable (DWORD dwAdventureUNID, TSortMap<DWORD, STypeStats> &AllStats, int iSystemSample);
 
 void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
@@ -141,7 +141,7 @@ void GenerateSimTables (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Output
 
-	if (error = OutputTypeTable(AllStats, iSystemSample))
+	if (error = OutputTypeTable(Universe.GetDesignCollection().GetAdventureUNID(), AllStats, iSystemSample))
 		return;
 
 	//	Create a table with the sum of all items for the game
@@ -165,8 +165,18 @@ void AccumulateSystem (CTopologyNode *pNode, CSystem *pSystem, TSortMap<DWORD, S
 			{
 			//	Add this encounter to the table
 
+			CDesignType *pEncounterType;
+			if (pEncounterType = pObj->GetEncounterInfo())
+				{
+				STypeInfo *pInfo = AllTypes.SetAt(pEncounterType->GetUNID());
+				pInfo->iTotalCount++;
+				pInfo->PerLevel[iSystemLevel]++;
+				}
+
+			//	Add the object itself, if different from the encounter
+
 			CDesignType *pType;
-			if ((pType = pObj->GetEncounterInfo()) || (pType = pObj->GetType()))
+			if ((pType = pObj->GetType()) && pType != pEncounterType)
 				{
 				STypeInfo *pInfo = AllTypes.SetAt(pType->GetUNID());
 				pInfo->iTotalCount++;
@@ -192,17 +202,19 @@ void AccumulateSystem (CTopologyNode *pNode, CSystem *pSystem, TSortMap<DWORD, S
 		}
 	}
 
-ALERROR OutputTypeTable (TSortMap<DWORD, STypeStats> &AllStats, int iSystemSample)
+ALERROR OutputTypeTable (DWORD dwAdventureUNID, TSortMap<DWORD, STypeStats> &AllStats, int iSystemSample)
 	{
 	ALERROR error;
 	int i, j;
 
+	CString sFilespec = strPatternSubst(TYPE_COUNT_PATTERN, dwAdventureUNID);
+
 	//	Output all items to a well-known file
 
-	CTextFileLog Output(TYPE_COUNT_FILENAME);
+	CTextFileLog Output(sFilespec);
 	if (error = Output.Create(FALSE))
 		{
-		printf("ERROR: Unable to create output file: %s\n", TYPE_COUNT_FILENAME.GetASCIIZPointer());
+		printf("ERROR: Unable to create output file: %s\n", sFilespec.GetASCIIZPointer());
 		return error;
 		}
 
@@ -225,7 +237,7 @@ ALERROR OutputTypeTable (TSortMap<DWORD, STypeStats> &AllStats, int iSystemSampl
 
 	if (error = Output.Close())
 		{
-		printf("ERROR: Unable to create output file: %s\n", TYPE_COUNT_FILENAME.GetASCIIZPointer());
+		printf("ERROR: Unable to create output file: %s\n", sFilespec.GetASCIIZPointer());
 		return error;
 		}
 
@@ -259,12 +271,14 @@ void ReadLine (char *pPos, char *pEndPos, TArray<int> *retValues, char **retpPos
 		*retpPos = pPos;
 	}
 
-ALERROR LoadDesignTypeStats (CDesignTypeStats *retStats)
+ALERROR LoadDesignTypeStats (DWORD dwAdventureUNID, CDesignTypeStats *retStats)
 	{
 	ALERROR error;
 	int i;
 
-	CFileReadBlock Input(TYPE_COUNT_FILENAME);
+	CString sFilespec = strPatternSubst(TYPE_COUNT_PATTERN, dwAdventureUNID);
+
+	CFileReadBlock Input(sFilespec);
 	if (error = Input.Open())
 		{
 		printf("ERROR: Unable to open total count file. Use /generateSimTables.");

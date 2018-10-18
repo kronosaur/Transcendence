@@ -514,6 +514,7 @@ class CGSelectorArea : public AGArea
 			ETypes iType;					//	Type of entry
 			CItemCtx *pItemCtx;				//	Item represented (may be NULL)
 			DeviceNames iSlotType;			//	Type of slot (if empty)
+			CString sSlotID;				//	ID of slot (may be NULL_STR)
             CString sSlotName;              //  If empty
 
 			int iSlotPosIndex;				//	Position index

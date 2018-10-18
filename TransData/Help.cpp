@@ -355,6 +355,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		{
 		printf("  /typeTable            Generates sample of all systems.\n");
 		printf("      [/adventure:n]		Load the given adventure (by UNID).\n");
+		printf("      [/apiVersion:n]		Include obsolete types at this version.\n");
 		printf("      [/criteria:xxx]       Type of given criteria.\n");
 		printf("\n");
 		printf("      criteria:\n");

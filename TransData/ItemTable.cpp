@@ -225,7 +225,7 @@ bool CalcColumns (SItemTableCtx &Ctx, CXMLElement *pCmdLine)
 
 	if (pCmdLine->GetAttributeBool(FIELD_TOTAL_COUNT))
 		{
-		if (LoadDesignTypeStats(&Ctx.TotalCount) != NOERROR)
+		if (LoadDesignTypeStats(Ctx.pUniverse->GetDesignCollection().GetAdventureUNID(), &Ctx.TotalCount) != NOERROR)
 			return false;
 		}
 

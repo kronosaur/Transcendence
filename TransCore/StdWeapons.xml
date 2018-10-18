@@ -1644,6 +1644,39 @@
 		</Weapon>
 	</ItemType>
 
+	<!-- Level 6: SAR/10 Cannon -->
+
+	<ItemType UNID="&itSAR10Cannon;"
+			name=				"SAR/10 cannon"
+			attributes=			"commonwealth, majorItem, military, pacificDefense"
+			  
+			level=				"6"
+			frequency=			"rare"
+
+			value=				"20000"
+			mass=				"3000"
+			  
+			description=		"The SAR/10 was developed in the 2360s as an alternative to the TeV 9."
+			>
+
+		<Image imageID="&rsItems6;" imageX="96" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"thermo:2d8; momentum:1; WMD:1"
+				fireRate=			"10"
+				missileSpeed=		"70"
+				hitPoints=			"5"
+				lifetime=			"60"
+				powerUse=			"300"
+
+				effect=				"&efThermoShellDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
 	<!-- TeV 9 Blaster -->
 
 	<ItemType UNID="&itTeV9Blaster;"
