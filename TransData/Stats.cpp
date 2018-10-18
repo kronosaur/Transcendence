@@ -254,7 +254,8 @@ void GenerateStats (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (Stats.Extensions[i]->GetUNID() == 0)
 			continue;
 
-		printf("%08x\t%s\n", Stats.Extensions[i]->GetUNID(), (LPSTR)Stats.Extensions[i]->GetName());
+		CString sVersion = (Stats.Extensions[i]->GetVersion().IsBlank() ? NULL_STR : strPatternSubst(CONSTLIT(" [%s]"), Stats.Extensions[i]->GetVersion()));
+		printf("%08x\t%s%s\n", Stats.Extensions[i]->GetUNID(), (LPSTR)Stats.Extensions[i]->GetName(), (LPSTR)sVersion);
 		}
 	}
 
