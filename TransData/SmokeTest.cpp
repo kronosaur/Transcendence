@@ -43,6 +43,9 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 	Ctx.bForceEventFiring = true;
 	Ctx.bForcePainted = true;
 
+	DWORD dwUpdateTime = 0;
+	DWORD dwUpdateCount = 0;
+
 	//	Generate systems for multiple games
 
 	CSymbolTable AllSystems(TRUE, TRUE);
@@ -79,7 +82,14 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 			//	Update for a while
 
 			for (j = 0; j < iSystemUpdateTime; j++)
+				{
+				dwUpdateCount++;
+				DWORD dwStart = ::GetTickCount();
+
 				Universe.Update(Ctx);
+
+				dwUpdateTime += ::sysGetTicksElapsed(dwStart);
+				}
 
 			//	Done with old system
 
@@ -96,6 +106,15 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 			printf("ERROR: %s\n", sError.GetASCIIZPointer());
 			return;
 			}
+		}
+
+	//	Print update performance
+
+	if (dwUpdateCount > 0)
+		{
+		Metric rTime = (Metric)dwUpdateTime / dwUpdateCount;
+		CString sUpdates = strFormatInteger((int)dwUpdateCount, -1, FORMAT_THOUSAND_SEPARATOR);
+		printf("Average time per update: %.2f ms [%s updates]\n", rTime, (LPSTR)sUpdates);
 		}
 
 	//	Done
