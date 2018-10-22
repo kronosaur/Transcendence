@@ -569,7 +569,7 @@
 			maxNonWeapons=		"4"
 
 			stdArmor=			"4000"
-			maxArmor=			"12000"
+			maxArmor=			"9000"
 			maxArmorSpeed=		"22"
 			/>
 
@@ -1098,15 +1098,15 @@
 
 			stdArmor=			"5000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"16"
-			minArmorSpeed=		"20"
+			maxArmorSpeedAdj=	"-1"
+			minArmorSpeedAdj=	"+1"
 
 			valueAdj=			"-2.0"
 			/>
 
 		<Drive
-			maxSpeed=			"18"
-			thrust=				"300"
+			maxSpeed=			"20"
+			thrust=				"600"
 			powerUse=			"20"
 			/>
 
