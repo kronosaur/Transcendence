@@ -313,8 +313,8 @@
 			level=				"4"
 			frequency=			"uncommon"
 
-			value=				"2100"
-			mass=				"1000"
+			value=				"5000"
+			mass=				"2000"
 			  
 			description=		"This is a scan-shielded secret cargo hold. The customs inspections of most stations will not detect illegal items when this cargo hold is installed on your ship."
 			>
