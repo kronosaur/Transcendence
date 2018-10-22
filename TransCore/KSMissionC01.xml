@@ -255,22 +255,6 @@
 							)
 					)
 			</OnDebriefed>
-
-			<GetGlobalAchievements>
-				(block (theList)
-					(if (msnFind "r +unid:&msKorolovAtCharon;; +property:isSuccess;")
-						(setq theList (list
-							(list
-								(typTranslate &msKorolovAtCharon; 'achievement.success)
-								Nil
-								(typTranslate &unidCommonText; 'achievementsAndRegrets)
-								)
-							))
-						)
-
-					theList
-					)
-			</GetGlobalAchievements>
 		</Events>
 
 		<Language>

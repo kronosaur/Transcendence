@@ -700,6 +700,32 @@
 						)
 					)
 			</GetGlobalDockScreen>
+
+			<GetGlobalAchievements>
+				(block (desc)
+					(map (msnFind "r") 'excludeNil theMission
+						(switch
+							;	Successful mission
+
+							(msnGetProperty theMission 'isSuccess)
+								(if (setq desc (msnTranslate theMission 'achievement.success))
+									{
+									desc: desc
+									section: (typTranslate &unidCommonText; 'achievementsAndRegrets)
+									})
+
+							;	Failed mission
+
+							(msnGetProperty theMission 'isFailure)
+								(if (setq desc (msnTranslate theMission 'achievement.failure))
+									{
+									desc: desc
+									section: (typTranslate &unidCommonText; 'achievementsAndRegrets)
+									})
+							)
+						)
+					)
+			</GetGlobalAchievements>
 		</Events>
 		
 		<Language>

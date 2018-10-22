@@ -82,22 +82,6 @@
 					(korGiveReward gSource)
 					)
 			</OnReward>
-
-			<GetGlobalAchievements>
-				(block (theList)
-					(if (msnFind "r +unid:&msKorolovAtCharonRevenge;; +property:isSuccess;")
-						(setq theList (list
-							(list 
-								(typTranslate &msKorolovAtCharonRevenge; 'achievement.success)
-								Nil
-								(typTranslate &unidCommonText; 'achievementsAndRegrets)
-								)
-							))
-						)
-
-					theList
-					)
-			</GetGlobalAchievements>
 		</Events>
 
 		<Language>
