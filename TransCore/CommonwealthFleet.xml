@@ -550,8 +550,8 @@ PLAYER DATA
 
 			stdArmor=			"10000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"18"
-			minArmorSpeed=		"21"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"+1"
 
 			valueAdj=			"+2.0"
 			/>

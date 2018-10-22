@@ -42,8 +42,8 @@ PLAYER DATA
 
 			stdArmor=			"4000"
 			maxArmor=			"16000"
-			maxArmorSpeed=		"20"
-			minArmorSpeed=		"22"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"0"
 			/>
 
 		<Drive

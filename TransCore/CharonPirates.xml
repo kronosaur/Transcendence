@@ -274,8 +274,8 @@
 
 			stdArmor=			"5000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"18"
-			minArmorSpeed=		"20"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"0"
 			/>
 
 		<Drive
@@ -352,8 +352,8 @@
 
 			stdArmor=			"5000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"18"
-			minArmorSpeed=		"20"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"0"
 			/>
 
 		<Drive

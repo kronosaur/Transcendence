@@ -26,8 +26,8 @@
 
 			stdArmor=			"4000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"10"
-			minArmorSpeed=		"13"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"+1"
 			/>
 
 		<Drive
@@ -104,8 +104,8 @@
 
 			stdArmor=			"3000"
 			maxArmor=			"6000"
-			maxArmorSpeed=		"18"
-			minArmorSpeed=		"22"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"+2"
 			/>
 
 		<Drive
@@ -224,8 +224,8 @@
 
 			stdArmor=			"5000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"14"
-			minArmorSpeed=		"17"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"+1"
 			/>
 
 		<Drive
@@ -416,8 +416,8 @@
 
 			stdArmor=			"5000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"16"
-			minArmorSpeed=		"19"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"+1"
 			/>
 
 		<Drive
@@ -570,7 +570,8 @@
 
 			stdArmor=			"4000"
 			maxArmor=			"9000"
-			maxArmorSpeed=		"22"
+			maxArmorSpeedAdj=	"-3"
+			minArmorSpeedAdj=	"0"
 			/>
 
 		<Drive
@@ -1022,8 +1023,8 @@
 
 			stdArmor=			"5000"
 			maxArmor=			"20000"
-			maxArmorSpeed=		"15"
-			minArmorSpeed=		"17"
+			maxArmorSpeedAdj=	"-1"
+			minArmorSpeedAdj=	"+1"
 			/>
 
 		<Drive
