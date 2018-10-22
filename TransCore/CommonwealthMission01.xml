@@ -348,7 +348,9 @@
 
 			<OnDebriefedUndock>
 			
-				;	Called after the player has undocked after a debriefing.
+				;	Called after the player has undocked after a debriefing, but
+				;	only if forceUndockAfterDebrief="true" is set or if we
+				;	'forceUndock in the dialog tree.
 				;
 				;	gSource: Mission object.
 
