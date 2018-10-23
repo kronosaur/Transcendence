@@ -18,7 +18,8 @@
 			name=			"The Kronosaurus"
 			attributes=		"korolov, special"
 
-			maxAppearing=		"1"
+			level=			"4"
+			maxAppearing=	"1"
 			>
 	
 		<Events>

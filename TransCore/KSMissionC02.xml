@@ -16,6 +16,7 @@
 			name=			"Korolov At Charon"
 			attributes=		"special"
 
+			level=			"3"
 			maxAppearing=	"1"
 			noFailureOnOwnerDestroyed=	"true"
 			>

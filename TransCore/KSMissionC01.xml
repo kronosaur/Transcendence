@@ -23,8 +23,9 @@
 			name=			"Korolov At Charon"
 			attributes=		"korolov, special"
 
-			maxAppearing=				"1"
-			noDecline=					"true"
+			level=			"3"
+			maxAppearing=	"1"
+			noDecline=		"true"
 			noFailureOnOwnerDestroyed=	"true"
 			>
 
