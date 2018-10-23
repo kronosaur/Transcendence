@@ -384,7 +384,6 @@
 			timeStopImmune=		"true"
 
 			explosionType=		"&vtPlasmaExplosion3;"
-			structuralHitPoints="50000"
 			>
 
 		<!-- Configuration -->
