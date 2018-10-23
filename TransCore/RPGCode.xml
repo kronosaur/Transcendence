@@ -367,7 +367,7 @@
 							{
 								visible: True
 								enabled: True
-								desc: (scrTranslate gScreen "actionMiscDevices:defaultInstall" { items:itemsToInstall maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								desc: (scrTranslate gScreen "actionMiscDevices:defaultInstall" { maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
 								}
 								
 						;	If we can remove something for the player
@@ -377,6 +377,19 @@
 								visible: True
 								enabled: True
 								desc: (scrTranslate gScreen "actionMiscDevices:defaultRemove" { items:itemsToRemove maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+								}
+
+						;	If we can install something without an upgrade, then say so
+						;	(even though we don't have anything to install).
+
+						(objHasTradeService dockObj 'installDevice {
+								itemCriteria: "d~ws"
+								fullInstallOnly: true
+								})
+							{
+								visible: True
+								enabled: True
+								desc: (scrTranslate gScreen "actionMiscDevices:defaultInstall" { maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
 								}
 								
 						;	Otherwise, nothing
@@ -1188,16 +1201,22 @@
 										(scrTranslate gScreen "actionWeapons:defaultRemove" { items:itemsToRemove maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
 										)
 								}
+
+						;	If we can install something without an upgrade, then we
+						;	advertise that.
 								
-						;	No upgrades for player
-						
-						itemsForSale
+						(objHasTradeService dockObj 'installDevice {
+								itemCriteria: "w"
+								fullInstallOnly: true
+								})
 							{
 								visible: True
-								enabled: Nil
-								desc: (scrTranslate gScreen "actionWeapons:noBetterUpgrades" { maxLevel:maxLevel })
+								enabled: True
+								desc: (or (objTranslate dockObj "dockServices:installAbility" { maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										(scrTranslate gScreen "actionWeapons:defaultInstall" { maxLevel:(objGetProperty dockObj 'installDeviceMaxLevel) })
+										)
 								}
-								
+
 						;	Otherwise, nothing
 						
 						{

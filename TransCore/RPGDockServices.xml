@@ -295,9 +295,9 @@
 		<Language>
 			<Text id="actionDone">"[Escape] Done"</Text>
 			
-			<Text id="actionMiscDevices">"[M]iscellaneous Devices"</Text>
-			<Text id="actionMiscDevices:nothing">"We don't upgrade or install miscellaneous devices."</Text>
-			<Text id="actionMiscDevices:shipConfig">"View and manage your reactor, drive upgrade, cargo expansion, and other devices."</Text>
+			<Text id="actionMiscDevices">[M]iscellaneous Devices</Text>
+			<Text id="actionMiscDevices:nothing">We don't have miscellaneous devices to install.</Text>
+			<Text id="actionMiscDevices:shipConfig">View and manage your reactor, drive upgrade, cargo expansion, and other devices.</Text>
 			<Text id="actionMiscDevices:defaultInstall">
 
 				We install miscellaneous devices up to level %maxLevel%.
