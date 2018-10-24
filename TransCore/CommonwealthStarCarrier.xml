@@ -77,7 +77,7 @@
 			<Item count="1d4"	item="&itR1Deflector;"/>
 		</Items>
 
-		<Image imageID="&rsCSC;" imageX="0" imageY="0" imageWidth="370" imageHeight="370" />
+		<Image imageID="&rsCSCHD;" imageWidth="370" imageHeight="370" rotationCount="120" rotationColumns="12" viewportRatio="0.03"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -588,7 +588,7 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCSC;" imageX="0" imageY="0" imageWidth="370" imageHeight="370" />
+		<Image imageID="&rsCSCHD;" imageWidth="370" imageHeight="370" rotationCount="120" rotationColumns="12" viewportRatio="0.03"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="166"	posRadius="116"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -1048,5 +1048,10 @@
 			</OnOrdersCompleted>
 		</Events>
 	</Type>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsCSCHD;"					bitmap="Resources\CSCHD.jpg" bitmask="Resources\CSCHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsFleetEmblems;"			bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

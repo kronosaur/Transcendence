@@ -1541,11 +1541,7 @@ PLAYER DATA
 
 	<Image UNID="&rsAquila;"				bitmap="Resources\Aquila.jpg" bitmask="Resources\AquilaMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsBritannia;"				bitmap="Resources\Britannia.jpg" bitmask="Resources\BritanniaMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsCSC;"					bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsBritanniaHD;"			bitmap="Resources\BritanniaHD.jpg" bitmask="Resources\BritanniaHDMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsCenturionHD;"			bitmap="Resources\CenturionHD.jpg"	bitmask="Resources\CenturionHDMask.bmp" 	loadOnUse="true" />
-
-	<Image UNID="&rsCSCBkgnd;"		bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
-	<Image UNID="&rsFleetEmblems;"	bitmap="Resources\FleetEmblems.jpg" bitmask="Resources\FleetEmblemsMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>

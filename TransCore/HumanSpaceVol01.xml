@@ -1494,7 +1494,15 @@
 	<!ENTITY scGaianProcessor			"0x08040141">
 	<!ENTITY itGaianDemolitionCannon	"0x08040142">
 	<!ENTITY svGaianTerraformers		"0x08040143">
+
+	<!-- HUMAN SPACE HD LIBRARY 
 	
+		We've moved the following images from the HD library to Core.
+
+	-->
+	
+	<!ENTITY rsCSCHD					"0x0083001D">
+
 	<!-- LIBRARIES -->
 	
 	<!ENTITY unidCoreTypesLibrary		"0x00030000">
