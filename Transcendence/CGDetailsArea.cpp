@@ -34,6 +34,8 @@ void CGDetailsArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint the detail.
 
 	{
+	DEBUG_TRY
+
 	CCodeChain &CC = g_pUniverse->GetCC();
 
 	//	Colors and metrics
@@ -117,4 +119,6 @@ void CGDetailsArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 			BORDER_RADIUS,
 			1,
 			CG32bitPixel(80,80,80));
+
+	DEBUG_CATCH
 	}

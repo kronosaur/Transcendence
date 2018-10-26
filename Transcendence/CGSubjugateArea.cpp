@@ -741,6 +741,8 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 //	Dest.Fill(rcRect.left, rcRect.top, RectWidth(rcRect), RectHeight(rcRect), CG32bitPixel(128, 128, 255, 0x40));
@@ -794,6 +796,8 @@ void CGSubjugateArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	//	Paint the info pane on top of everything
 
 	m_InfoPane.Paint(Dest);
+
+	DEBUG_CATCH
 	}
 
 void CGSubjugateArea::PaintCoreStats (CG32bitImage &Dest) const
@@ -989,6 +993,8 @@ void CGSubjugateArea::Update (void)
 //	Update
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	//	Update all our components
@@ -1070,4 +1076,6 @@ void CGSubjugateArea::Update (void)
 				}
 			}
 		}
+
+	DEBUG_CATCH
 	}

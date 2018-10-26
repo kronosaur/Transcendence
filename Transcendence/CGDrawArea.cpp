@@ -32,6 +32,8 @@ void CGDrawArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Handle paint
 
 	{
+	DEBUG_TRY
+
 	Dest.Blt(0,
 			0,
 			m_Image.GetWidth(),
@@ -40,4 +42,6 @@ void CGDrawArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 			m_Image,
 			rcRect.left,
 			rcRect.top);
+
+	DEBUG_CATCH
 	}

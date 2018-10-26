@@ -192,6 +192,8 @@ void CGCarouselArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint the area
 
 	{
+	DEBUG_TRY
+
 	const CG16bitFont &LargeBold = m_VI.GetFont(fontLargeBold);
 
 	//	Figure out where the horizonal selector list will paint
@@ -253,6 +255,8 @@ void CGCarouselArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	rcContent.top += m_cySelectorArea;
 
 	PaintContent(Dest, rcContent);
+
+	DEBUG_CATCH
 	}
 
 void CGCarouselArea::PaintContent (CG32bitImage &Dest, const RECT &rcRect) const

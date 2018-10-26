@@ -648,6 +648,8 @@ void CGSelectorArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint the area
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	const int iCornerRadius = 4;
@@ -722,6 +724,8 @@ void CGSelectorArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 					m_VI.GetColor(colorTextFade));
 			}
 		}
+
+	DEBUG_CATCH
 	}
 
 void CGSelectorArea::PaintEmptySlot (CG32bitImage &Dest, const RECT &rcRect, const SEntry &Entry)

@@ -194,6 +194,8 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint the area
 
 	{
+	DEBUG_TRY
+
 	int i;
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 
@@ -317,6 +319,8 @@ void CGItemListDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 				CG16bitFont::SmartQuotes,
 				&cyHeight);
 		}
+
+	DEBUG_CATCH
 	}
 
 void CGItemListDisplayArea::SetItemList (CSpaceObject *pSource, const CItemList &ItemList) 

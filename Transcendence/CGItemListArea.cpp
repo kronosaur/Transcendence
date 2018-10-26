@@ -492,6 +492,8 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint the area
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	//	Can't paint if we are not properly initialized
@@ -736,6 +738,8 @@ void CGItemListArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 				SELECTION_WIDTH,
 				m_VI.GetColor(colorAreaDialogHighlight));
 		}
+
+	DEBUG_CATCH
 	}
 
 void CGItemListArea::PaintCustom (CG32bitImage &Dest, const RECT &rcRect, bool bSelected)

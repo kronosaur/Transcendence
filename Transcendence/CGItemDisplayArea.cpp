@@ -83,6 +83,8 @@ void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint the area
 
 	{
+	DEBUG_TRY
+
 	const CVisualPalette &VI = g_pHI->GetVisuals();
 
 	//	Draw background
@@ -141,4 +143,6 @@ void CGItemDisplayArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 				CG16bitFont::SmartQuotes,
 				&cyHeight);
 		}
+
+	DEBUG_CATCH
 	}

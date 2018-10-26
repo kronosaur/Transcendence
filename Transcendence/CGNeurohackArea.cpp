@@ -248,6 +248,8 @@ void CGNeurohackArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 //	Paint event
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	//	Erase background
@@ -284,6 +286,8 @@ void CGNeurohackArea::Paint (CG32bitImage &Dest, const RECT &rcRect)
 	int yCenter = rcRect.top + RectHeight(rcRect) / 2;
 	CG32bitPixel rgbColor = (m_iWillpower > 0 ? CG32bitPixel(255,255,255) : CG32bitPixel(128,255,128));
 	PaintSphere(Dest, xCenter, yCenter, 40, rgbColor);
+
+	DEBUG_CATCH
 	}
 
 void CGNeurohackArea::PaintBranch (CG32bitImage &Dest, SNode *pNode, SNode *pNext)
@@ -361,6 +365,8 @@ void CGNeurohackArea::Update (void)
 //	Update event
 
 	{
+	DEBUG_TRY
+
 	int i;
 
 	if (m_pNetwork)
@@ -403,4 +409,6 @@ void CGNeurohackArea::Update (void)
 		if (m_iActiveCount < m_iActiveAlloc)
 			m_pActiveNodes[m_iActiveCount++] = m_pRootNodes[mathRandom(0, m_iRootCount-1)];
 		}
+
+	DEBUG_CATCH
 	}

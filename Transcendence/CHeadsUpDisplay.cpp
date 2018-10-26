@@ -162,6 +162,8 @@ void CHeadsUpDisplay::Paint (CG32bitImage &Screen, bool bInDockScreen)
 //  Paint
 
     {
+	DEBUG_TRY
+
     CPlayerShipController *pPlayer = m_Model.GetPlayer();
     if (pPlayer == NULL)
         return;
@@ -215,6 +217,8 @@ void CHeadsUpDisplay::Paint (CG32bitImage &Screen, bool bInDockScreen)
         }
 
     SetProgramState(psAnimating);
+
+	DEBUG_CATCH
     }
 
 void CHeadsUpDisplay::SetArmorSelection (int iSelection)
@@ -239,6 +243,8 @@ void CHeadsUpDisplay::Update (int iTick)
 //  Update displays
 
     {
+	DEBUG_TRY
+
     CPlayerShipController *pPlayer = m_Model.GetPlayer();
     if (pPlayer == NULL)
         return;
@@ -258,4 +264,6 @@ void CHeadsUpDisplay::Update (int iTick)
 
     if (m_pWeaponsPainter)
         m_pWeaponsPainter->Update(UpdateCtx);
+
+	DEBUG_CATCH
     }
