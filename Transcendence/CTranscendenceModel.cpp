@@ -1999,6 +1999,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	//	(Obviously, we need to call this before we change the current system.
 	//	Note also that at this point the player is already gone.)
 
+	m_Universe.GetMissions().FireOnSystemStopped();
 	m_Universe.GetDesignCollection().FireOnGlobalSystemStopped();
 
 	//	Set the new system
@@ -2025,6 +2026,7 @@ void CTranscendenceModel::OnPlayerTraveledThroughGate (void)
 	//	before the player has entered the system.
 
 	m_Universe.GetDesignCollection().FireOnGlobalSystemStarted(dwElapsedTime);
+	m_Universe.GetMissions().FireOnSystemStarted(dwElapsedTime);
 
 	//	Garbage-collect images and load those for the new system
 
