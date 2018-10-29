@@ -1987,6 +1987,11 @@
 	<!-- 0470-048F FERIANS -->
 
 	<!ENTITY rsFerianMinerHD			"0x00100470">
+	<!ENTITY rsFerianColonyIce			"0x00100471">
+	<!ENTITY rsFerianColonyMetallic		"0x00100472">
+	<!ENTITY rsFerianColonyPrimordial	"0x00100473">
+	<!ENTITY rsFerianColonyRocky		"0x00100474">
+	<!ENTITY rsFerianColonyVolcanic		"0x00100475">
 
 	<!-- 0490-04AF HIMAL SEPERATISTS -->
 

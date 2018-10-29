@@ -58,6 +58,7 @@
 	<StationType UNID="&stFerianColony;"
 			name=				"Ferian colony|Ferian colonies"
 			sovereign=			"&svFerianMiners;"
+			inherit=			"&unidCommonText;"
 				 
 			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, ferian, generic, neoHuman, miners, populated, zoanthrope"
 				 
@@ -101,19 +102,39 @@
 
 		<!-- Image and Effects -->
 		
-		<Image			imageID="&rsStations5;" imageX="0" imageY="384" imageWidth="128" imageHeight="128"/>
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Image criteria="*ice"			imageID="&rsFerianColonyIce;"			imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				<Image criteria="*metallic"		imageID="&rsFerianColonyMetallic;"		imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				<Image criteria="*primordial"	imageID="&rsFerianColonyPrimordial;"	imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				<Image criteria="*volcanic"		imageID="&rsFerianColonyVolcanic;"		imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+				
+				<Image criteria="*~"			imageID="&rsFerianColonyRocky;"			imageWidth="260" imageHeight="260"	viewportRatio="0.0325"/>
+			</LocationCriteriaTable>
+		</ImageVariants>
 
-		<DockingPorts>
-			<Port x="0"		y="90" />
-			<Port x="0"		y="-90" />
-			<Port x="60"	y="60" />
-			<Port x="60"	y="-60" />
-			<Port x="90"	y="0" />
-			<Port x="-90"	y="0" />
-			<Port x="-60"	y="60" />
-			<Port x="-60"	y="-60" />
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
 		</DockingPorts>
+
+		<!-- Dock Screens -->
 		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default descID="descWelcome">
+						<Actions>
+							<Action id="actionUndock" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
 		<!-- Events and Behavior -->
 
 		<Events>
@@ -325,32 +346,19 @@
 					)
 			</OnMinerDestroyed>
 		</Events>
-		
-		<DockScreens>
-			<Main>
 
-				<Panes>
-					<Default>
-						<OnPaneInit>
-							(scrSetDesc gScreen
-								"You enter into a vast chamber, only partially pressurized. Large metal maws "
-								"consume a small fortune in rocks and ores delivered by Ferian miners.\n\n"
-								"Beneath them you see various vessels shrouded by the cranes and girders of a shipyard. "
-								"Most of the vessels are new Ferian miners being created out of raw materials. "
-								"A few are much larger and have a more sinister shape."
-								)
-						</OnPaneInit>
+		<Language>
+			<Text id="descWelcome">
+			
+				You enter into a vast chamber, only partially pressurized. Large metal maws 
+				consume a small fortune in rocks and ores delivered by Ferian miners.
 
-						<Actions>
-							<Action name="Undock" cancel="1" key="U">
-								<Exit/>
-							</Action>
-						</Actions>
+				Beneath them you see various vessels shrouded by the cranes and girders of a shipyard.
+				Most of the vessels are new Ferian miners being created out of raw materials. 
+				A few are much larger and have a more sinister shape.
 
-					</Default>
-				</Panes>
-			</Main>
-		</DockScreens>
+			</Text>
+		</Language>		
 	</StationType>
 
 <!-- SHIP CLASSES -->
@@ -550,7 +558,13 @@
 
 <!-- RESOURCES & EFFECTS -->
 	
-	<Image UNID="&rsFerianWarrior;"	bitmap="Resources\FerianWarrior.jpg"	bitmask="Resources\FerianWarriorMask.bmp"	loadOnUse="true"/>
-	<Image UNID="&rsFerianMinerHD;"	bitmap="Resources\FerianMinerHD.jpg"	bitmask="Resources\FerianMinerHDMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsFerianColonyIce;"			bitmap="Resources\FerianColonyIce.jpg"	bitmask="Resources\FerianColonyIceMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsFerianColonyMetallic;"		bitmap="Resources\FerianColonyMetallic.jpg"	bitmask="Resources\FerianColonyMetallicMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsFerianColonyPrimordial;"	bitmap="Resources\FerianColonyPrimordial.jpg"	bitmask="Resources\FerianColonyPrimordialMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsFerianColonyRocky;"			bitmap="Resources\FerianColonyRocky.jpg"	bitmask="Resources\FerianColonyRockyMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsFerianColonyVolcanic;"		bitmap="Resources\FerianColonyVolcanic.jpg"	bitmask="Resources\FerianColonyVolcanicMask.bmp"	loadOnUse="true"/>
+
+	<Image UNID="&rsFerianWarrior;"				bitmap="Resources\FerianWarrior.jpg"	bitmask="Resources\FerianWarriorMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsFerianMinerHD;"				bitmap="Resources\FerianMinerHD.jpg"	bitmask="Resources\FerianMinerHDMask.bmp"	loadOnUse="true"/>
 
 </TranscendenceModule>
