@@ -243,7 +243,9 @@
 						; dock with the base and get repaired
 
 						(and (eq behavior 'escorting)
-								(geq (setq armorDamage (objGetVisibleDamage gSource)) 10)
+								(or (geq (setq armorDamage (objGetVisibleDamage gSource)) 10)
+									(objGetCondition gSource 'radioactive)
+									)
 								(not (objIsUnderAttack gSource))
 								)
 							(switch
@@ -370,6 +372,16 @@
 					(if (eq behavior 'repairingArmor)
 						(block Nil
 							(intArmorRepairAll gSource)
+							(shpDecontaminate gSource)
+							
+							;	Remove any overlays that shouldn't be there (e.g., pteravores)
+							
+							(enum (objGetOverlays gSource) theOverlay
+								(objFireOverlayEvent gSource theOverlay 'OnRemoveAtDockServices)
+								)
+							
+							;	Tell player what happened
+							
 							(objSendMessageTranslate gPlayerShip gSource 'ArmorRepaired)
 							)
 						)

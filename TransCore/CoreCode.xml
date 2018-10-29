@@ -21,6 +21,9 @@
 
 			(setq intArmorRepairAll (lambda (theShip repairTech minHPPercent)
 				(block (repaired wasDamage tooMuchDamage noTech)
+				
+					;	Repair all armor segments
+					
 					(objEnumItems theShip "aI" theItem
 						(block (
 							(armorSeg (itmGetArmorInstalledLocation theItem))
@@ -53,6 +56,8 @@
 								)
 							)
 						)
+						
+					;	Result
 
 					(switch
 						repaired
