@@ -2095,11 +2095,16 @@ void CDockScreen::UpdateCredits (void)
 			));
 
 	//	Cargo space
-
-	int iCargoTons = (int)m_pPlayer->GetShip()->GetCargoSpaceLeft();
-	int iCargoKg = (int) ((m_pPlayer->GetShip()->GetCargoSpaceLeft() - iCargoTons) * 1000);		//The kg left after taking the tons
-	if(iCargoTons > 0)
-		m_pCargoSpace->SetText(strPatternSubst("%d.%d ton%p", iCargoTons, iCargoKg / 100));			//Truncate kg to one decimal
+	Metric rCargoSpace = m_pPlayer->GetShip()->GetCargoSpaceLeft();
+	if(rCargoSpace == 1.0)
+		m_pCargoSpace->SetText(CONSTLIT("1 ton"));
 	else
-		m_pCargoSpace->SetText(strPatternSubst("%d kg", iCargoKg));
+		{
+		int iCargoTons = (int) rCargoSpace;
+		int iCargoKg = (int) ((rCargoSpace - iCargoTons) * 1000);		//The kg left after taking the tons
+		if(iCargoTons > 0)
+			m_pCargoSpace->SetText(strPatternSubst("%d.%d tons", iCargoTons, iCargoKg / 100));			//Truncate kg to one decimal
+		else
+			m_pCargoSpace->SetText(strPatternSubst("%d kg", iCargoKg));
+		}
 	}
