@@ -4,6 +4,33 @@
 	<Globals>
 		(block Nil
 
+			(setq rpgAddRouteEncounters (lambda (fromVec toVec targetObj encounterTable encounterCount)
+				(block (
+					(speed (objGetProperty targetObj 'maxSpeed))
+					(totalTime (sysCalcTravelTime (sysVectorDistance fromVec toVec) speed))
+					(frac (if (gr encounterCount 0) (/ 1 (+ encounterCount 1)) 0))
+					i
+					)
+					(dbgOutput "Creating " encounterCount " encounter(s)")
+					(for i 1 encounterCount
+						(block (
+							(encounterTime (* frac i totalTime))
+							(encounterID
+								(switch
+									(= (typeof encounterTable) 'list)
+										(random encounterTable)
+
+									encounterTable
+									)
+								)
+							)
+							(sysAddEncounterEventAtDist encounterTime targetObj	encounterID	110)
+							(dbgOutput "Created encounter " encounterID " in " encounterTime " ticks.")
+							)
+						)
+					)
+				))
+
 			(setq rpgAdjustInstallPrice (lambda (theObj theItem thePriceAdj theCurrency)
 				(switch
 					(isInt thePriceAdj)
