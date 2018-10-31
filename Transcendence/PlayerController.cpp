@@ -103,6 +103,7 @@ void CPlayerShipController::AddOrder (OrderTypes Order, CSpaceObject *pTarget, c
 			break;
 
 		case orderDock:
+		case orderGate:
 			SetDestination(pTarget);
 			if (pTarget)
 				pTarget->SetShowHighlight();
