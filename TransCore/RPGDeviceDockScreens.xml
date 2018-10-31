@@ -132,6 +132,9 @@
 
 							(= resultCode 'armorTooHeavy)
 								(setq descID 'descArmorTooHeavy)
+								
+							(= resultCode 'armorTooLight)
+								(setq descID 'descArmorTooLight)
 
 							(= resultCode 'cannotInstall)
 								(setq desc (@ result 2))
@@ -252,6 +255,7 @@
 
 			<Text id="descNoArmorHere">The station doesn't have any armor segments to install.</Text>
 			<Text id="descArmorTooHeavy">%ArmorPlural% are too heavy for your ship's hull.</Text>
+			<Text id="descArmorTooLight">%ArmorPlural% are too light for your ship's hull.</Text>
 			<Text id="descNeedMilitaryID">You must have a military ID to install %armorShort%.</Text>
 			<Text id="descArmorIllegal">We do not install illegal armor.</Text>
 			<Text id="descCannotInstall">This armor segment cannot be installed.</Text>
