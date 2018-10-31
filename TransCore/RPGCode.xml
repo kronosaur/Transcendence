@@ -4,8 +4,9 @@
 	<Globals>
 		(block Nil
 
-			(setq rpgAddRouteEncounters (lambda (fromVec toVec targetObj encounterTable encounterCount)
+			(setq rpgAddRouteEncounters (lambda (fromVec toVec targets encounterTable encounterCount)
 				(block (
+					(targetObj (@ targets 0))
 					(speed (objGetProperty targetObj 'maxSpeed))
 					(totalTime (sysCalcTravelTime (sysVectorDistance fromVec toVec) speed))
 					(frac (if (gr encounterCount 0) (/ 1 (+ encounterCount 1)) 0))
@@ -15,16 +16,9 @@
 					(for i 1 encounterCount
 						(block (
 							(encounterTime (* frac i totalTime))
-							(encounterID
-								(switch
-									(= (typeof encounterTable) 'list)
-										(random encounterTable)
-
-									encounterTable
-									)
-								)
+							(encounterID (random encounterTable))
 							)
-							(sysAddEncounterEventAtDist encounterTime targetObj	encounterID	110)
+							(sysAddEncounterEventAtDist encounterTime targets encounterID 110)
 							(dbgOutput "Created encounter " encounterID " in " encounterTime " ticks.")
 							)
 						)
