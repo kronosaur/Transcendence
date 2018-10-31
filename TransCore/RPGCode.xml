@@ -12,14 +12,12 @@
 					(frac (if (gr encounterCount 0) (/ 1 (+ encounterCount 1)) 0))
 					i
 					)
-					(dbgOutput "Creating " encounterCount " encounter(s)")
 					(for i 1 encounterCount
 						(block (
 							(encounterTime (* frac i totalTime))
 							(encounterID (random encounterTable))
 							)
 							(sysAddEncounterEventAtDist encounterTime targets encounterID 110)
-							(dbgOutput "Created encounter " encounterID " in " encounterTime " ticks.")
 							)
 						)
 					)
