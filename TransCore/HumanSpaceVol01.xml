@@ -1678,6 +1678,8 @@
 	<!ENTITY rsAresAdvancedSentry		"0x001000AD">
 	<!ENTITY rsAresAdvancedSentryHero	"0x001000AE">
 	<!ENTITY tbAresFreighterTreasure	"0x001000AF">
+	<!ENTITY smAresSpace				"0x001000B0">
+	<!ENTITY smSpawnCompatibility		"0x001000B1">
 	
 	<!-- 00C0-00CF SALVAGERS -->
 	

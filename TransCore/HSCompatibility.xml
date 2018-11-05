@@ -3426,6 +3426,21 @@
 			)
 	</Globals>
 
+	<!-- Starting in API 43 we add attributes to system nodes to decide where 
+		various sovereigns can spawn. But to handle old extensions (e.g., TSB)
+		we add some compatibility code here. -->
+
+	<SystemMap unid="&smSpawnCompatibility;"
+			displayOn="&smHumanSpace;"
+			obsoleteVersion="43"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System attributes="aresSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+	<!-- Old Image -->
+
 	<Image UNID="&rsEI100Image;"	obsoleteVersion="40" bitmap="Resources\EI100.jpg" 		bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsEI200Image;"		obsoleteVersion="40" bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsSapphireYachtHD;"	obsoleteVersion="41" bitmap="Resources\SapphireYachtHD.jpg" bitmask="Resources\SapphireYachtHDMask.bmp" loadOnUse="true"/>
