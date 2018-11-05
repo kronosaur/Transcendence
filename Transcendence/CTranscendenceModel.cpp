@@ -1477,23 +1477,6 @@ ALERROR CTranscendenceModel::LoadGame (const CString &sSignedInUsername, const C
 
 		m_bDebugMode = m_Universe.InDebugMode();
 
-		//	Log that we loaded a game
-
-		::kernelDebugLogPattern("Loaded game file version: %s", m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
-		CDesignCollection &Design = m_Universe.GetDesignCollection();
-		for (int i = 0; i < Design.GetExtensionCount(); i++)
-			{
-			CExtension *pExtension = Design.GetExtension(i);
-			if (pExtension->GetFolderType() == CExtension::folderBase)
-				continue;
-
-			CString sName = pExtension->GetName();
-			if (sName.IsBlank())
-				sName = strPatternSubst(CONSTLIT("Extension %08x"), pExtension->GetUNID());
-
-			::kernelDebugLogPattern("Extension: %s", sName);
-			}
-
 		return NOERROR;
 		}
 	catch (CException e)
@@ -2614,6 +2597,15 @@ ALERROR CTranscendenceModel::StartGame (bool bNewGame)
 //	This is called after either creating a new game or loading an old one
 
 	{
+	//	Log that we started a game
+
+	if (bNewGame)
+		::kernelDebugLogPattern("Started game version: %s", m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
+	else
+		::kernelDebugLogPattern("Loaded game file version: %s", m_GameFile.GetCreateVersion(CGameFile::FLAG_VERSION_NUMBERS | CGameFile::FLAG_VERSION_STRING));
+
+	m_Universe.GetDesignCollection().DebugOutputExtensions();
+
 	//	Tell the universe to focus on the ship
 
 	m_Universe.SetPlayerShip(m_pPlayer->GetShip());
