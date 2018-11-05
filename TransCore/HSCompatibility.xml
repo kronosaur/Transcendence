@@ -19,7 +19,7 @@
 	<!-- Cargo Crate -->
 
 	<StationType UNID="&stCargoCrate;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"abandoned cargo crate"
 			sovereign=			"&svNeutral;"
 			dockScreen=			"&dsAbandonedCrate;"
@@ -60,7 +60,7 @@
 	</StationType>
 
 	<StationType UNID="&stNavSign;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"(navigational beacon)"
 			sovereign=			"&svIndependent;"
 			dockScreen=			"&dsNavSign;"
@@ -84,7 +84,7 @@
 	<!-- Fleet Dock Services -->
 
 	<DockScreen UNID="&dsFleetDockServices;"	nestedScreen="true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 		<Panes>
 			<Default>
@@ -159,7 +159,7 @@
 	<!-- Battle Arena Wall -->
 
 	<StationType UNID="&stBattleArenaWall;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"(arena wall segment)"
 			sovereign=			"&svCommonwealth;"
 			attributes=			"battleArenaSegment"
@@ -208,10 +208,10 @@
 	</StationType>
 
 	<Image UNID="&rsBattleArena;"	bitmap="Resources\BattleArena.jpg"	bitmask="Resources\BattleArenaMask.bmp"  loadOnUse="true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			/>
 	<Image UNID="&rsBattleArenaExtra;"	bitmap="Resources\BattleArenaExtra.jpg" bitmask="Resources\BattleArenaExtraMask.bmp" loadOnUse="true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			/>
 	
 	<!-- Install weapon screen
@@ -226,7 +226,7 @@
 	<DockScreen UNID="&dsInstallWeapon;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -292,7 +292,7 @@
 	<DockScreen UNID="&dsRemoveWeapon;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -378,7 +378,7 @@
 	<DockScreen UNID="&dsExchangeBuy;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -687,7 +687,7 @@
 	<DockScreen UNID="&dsInstallDevice;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -762,7 +762,7 @@
 	<DockScreen UNID="&dsRepairArmor;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -850,7 +850,7 @@
 	<DockScreen UNID="&dsReplaceArmor;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -974,7 +974,7 @@
 
 	<DockScreen UNID="&dsSistersIntro;"
 			nestedScreen=	"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<Panes>
@@ -1189,7 +1189,7 @@
 		-->
 
 	<DockScreen UNID="&dsContemplateDomina;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<Panes>
@@ -1378,7 +1378,7 @@
 	-->
 
 	<StationType UNID="&stKorolovAtCharon;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				": Korolov Shipping"
 			sovereign=			"&svCorporate;"
 			dockScreen=			"Dispatch"
@@ -1839,7 +1839,7 @@
 	-->
 
 	<StationType UNID="&stDantalionSettlement;"
-			obsolete=			"38"
+			obsoleteVersion=			"38"
 			name=				"Commonwealth settlement"
 			sovereign=			"&svCommonwealth;"
 			inherit=			"&baCommonwealthStation;"
@@ -2124,7 +2124,7 @@
 	<!-- CSC America Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAmericaEncounter;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"(CSC America)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -2160,7 +2160,7 @@
 	<!-- CSC Atlantica Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAtlanticaEncounter;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"(CSC Atlantica)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -2187,7 +2187,7 @@
 	<!-- CSC Asia Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAsiaEncounter;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"(CSC Asia)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -2214,7 +2214,7 @@
 	<!-- CSC India Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCIndiaEncounter;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"(CSC India)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -2241,7 +2241,7 @@
 	<!-- CSC Pacifica Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCPacificaEncounter;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			name=				"(CSC Pacifica)"
 			sovereign=			"&svCommonwealthFleet;"
 
@@ -2268,7 +2268,7 @@
 	<!-- CSC Antarctica Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stCSCAntarcticaEncounter;"
-			obsolete=			"38"
+			obsoleteVersion=			"38"
 			name=				"(CSC Antarctica)"
 			sovereign=			"&svCSCAntarctica;"
 
@@ -2291,7 +2291,7 @@
 	<!-- Svalbard Explorer Encounter (DEPRECATED) -->
 
 	<EncounterType UNID="&stSvalbardEncounter;"
-			obsolete=			"39"
+			obsoleteVersion=			"39"
 			name=				"(Svalbard Explorer)"
 			sovereign=			"&svCorporate;"
 
@@ -2308,13 +2308,13 @@
 	<!-- Sister Maryam's Archive (moved to StarsOfThePilgrim in 1.8) -->
 
 	<StationType unid="&stMaryamsArchiveObsolete;"
-			obsolete="39">
+			obsoleteVersion="39">
 	</StationType>
 
 	<!-- Abandoned crate looting screen (DEPRECATED) -->
 	
 	<DockScreen UNID="&dsAbandonedCrateObsolete;"
-			obsolete=			"1"
+			obsoleteVersion=			"1"
 			inherit=			"&dsDockScreenBase;"
 			>
 		<Panes>
@@ -2350,7 +2350,7 @@
 	<!-- Abandoned ship looting screen (DEPRECATED) -->
 	
 	<DockScreen UNID="&dsAbandonedShipObsolete;"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			inherit=			"&dsDockScreenBase;"
 			>
 		<Panes>
@@ -2386,7 +2386,7 @@
 	<!-- Abandoned station looting screen (DEPRECATED) -->
 
 	<DockScreen UNID="&dsAbandonedStationObsolete;"
-			obsolete=			"1"
+			obsoleteVersion=			"1"
 			>
 		<Panes>
 			<Default>
@@ -2433,61 +2433,61 @@
 	</DockScreen>
 
 	<StationType unid="&baBattleArenaSegmentObsolete;"
-			obsolete="1">
+			obsoleteVersion="1">
 	</StationType>
 	
 	<StationType unid="&baBlackMarketStationObsolete;"
-			obsolete="1">
+			obsoleteVersion="1">
     </StationType>
 
 	<StationType unid="&baCommonwealthStationObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</StationType>
 
 	<ShipClass UNID="&baCSCBaseObsolete;"
-			obsolete="1">
+			obsoleteVersion="1">
 	</ShipClass>
 
 	<StationType unid="&baCorporateStationObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</StationType>
 
 	<ShipClass UNID="&baZoanthropeBaseObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</ShipClass>
 	
 	<ShipClass UNID="&baCharonBusterObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</ShipClass>
 
 	<StationType unid="&baOutlawMineObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</StationType>
 	
 	<StationType unid="&baRingersStationObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</StationType>
 
 	<StationType UNID="&baStKatsArcologyBaseObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</StationType>
 	
 	<StationType UNID="&baTeratonNestBaseObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</StationType>
 	
 	<!-- Rowena's Weapons and Armor: Vol 1 -->
 
 	<ItemType UNID="&itRowenaVol1;"
-			obsolete=			"1"
+			obsoleteVersion=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume I"
 			level=				"1"
 			value=				"50"
@@ -2522,7 +2522,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 2 -->
 
 	<ItemType UNID="&itRowenaVol2;"
-			obsolete=			"1"
+			obsoleteVersion=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume II"
 			level=				"4"
 			value=				"500"
@@ -2557,7 +2557,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 3 -->
 
 	<ItemType UNID="&itRowenaVol3;"
-			obsolete=			"1"
+			obsoleteVersion=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume III"
 			level=				"8"
 			value=				"2500"
@@ -2592,7 +2592,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 4 -->
 
 	<ItemType UNID="&itRowenaVol4;"
-			obsolete=			"1"
+			obsoleteVersion=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume IV"
 			level=				"12"
 			value=				"10000"
@@ -2628,7 +2628,7 @@
 	<!-- Rowena's Weapons and Armor: Vol 5 -->
 
 	<ItemType UNID="&itRowenaVol5;"
-			obsolete=			"1"
+			obsoleteVersion=			"1"
 			name=				"[ROM(s) of ]Rowena's Weapons and Armor: Volume V"
 			level=				"16"
 			value=				"30000"
@@ -2664,7 +2664,7 @@
 	<!-- Centauri Commandship (Obsolete) -->
 
 	<ShipClass UNID="&scCentauriCommandShip;"
-			obsolete=			"39"
+			obsoleteVersion=			"39"
 			manufacturer=		"Centauri"
 			class=				""
 			type=				"command ship"
@@ -2706,7 +2706,7 @@
 	<!-- EI500-class Freighter Base Class -->
 
 	<ShipClass UNID="&scPlayerEI500Base;"
-			obsolete=			"40"
+			obsoleteVersion=			"40"
 			class=				"(player EI500 base class)"
 			virtual=			"true" 
 			
@@ -2782,7 +2782,7 @@
 	<!-- Sapphire-class Yacht Base Class -->
 
 	<ShipClass UNID="&scPlayerSapphireBase;"
-			obsolete=			"40"
+			obsoleteVersion=			"40"
 			class=				"(player Sapphire base class)"
 			virtual=			"true" 
 			
@@ -2861,7 +2861,7 @@
 	<!-- Wolfen-class Gunship Base Class -->
 
 	<ShipClass UNID="&scPlayerWolfenBase;"
-			obsolete=			"40"
+			obsoleteVersion=			"40"
 			class=				"(player Wolfen base class)"
 			virtual=			"true" 
 			
@@ -2937,7 +2937,7 @@
 	<!-- Dry dock screen -->
 
 	<DockScreen UNID="&dsDryDock;"
-			obsolete=			"40"
+			obsoleteVersion=			"40"
 			inherit=			"&dsDockScreenBase;"
 			>
 		
@@ -2965,7 +2965,7 @@
 	<!-- Black Market Station in Rigel Aurelius -->
 
 	<StationType UNID="&stBlackMarketRigelAurelius;"
-			obsolete=			"40"
+			obsoleteVersion=			"40"
 			name=				"Black Market station"
 			sovereign=			"&svBlackMarket;"
 			inherit=			"&baBlackMarketStation;"
@@ -3148,7 +3148,7 @@
 	-->
 
 	<ShipClass UNID="&scKateMorgentalCruiserArena;"
-			obsolete=			"40"
+			obsoleteVersion=			"40"
 			manufacturer=		"Rasiermesser"
 			class=				"corporate cruiser"
 			type=				""
@@ -3426,15 +3426,15 @@
 			)
 	</Globals>
 
-	<Image UNID="&rsEI100Image;"	obsolete="40" bitmap="Resources\EI100.jpg" 		bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsEI200Image;"		obsolete="40" bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsSapphireYachtHD;"	obsolete="41" bitmap="Resources\SapphireYachtHD.jpg" bitmask="Resources\SapphireYachtHDMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsMolotok;"		obsolete="41"	bitmap="Resources\Molotok.jpg" bitmask="Resources\MolotokMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsT31ArmedTransport;"	obsolete="41" bitmap="Resources\T31Transport.jpg"		bitmask="Resources\T31TransportMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsT55ArmedTransport;"	obsolete="41" bitmap="Resources\T55Transport.jpg"		bitmask="Resources\T55TransportMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsIAVHeavy;"	obsolete="41"				bitmap="Resources\IAVHeavy.jpg" bitmask="Resources\IAVHeavyMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsHimalInterceptorHD;"	obsolete="43"		bitmap="Resources\HimalInterceptorHD.jpg"		bitmask="Resources\HimalInterceptorHDMask.bmp"  loadOnUse="true"/>
-	<Image UNID="&rsCSC;"			obsolete="43"		bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
-	<Image UNID="&rsCSCBkgnd;"		obsolete="43" bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
+	<Image UNID="&rsEI100Image;"	obsoleteVersion="40" bitmap="Resources\EI100.jpg" 		bitmask="Resources\EI100Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI200Image;"		obsoleteVersion="40" bitmap="Resources\EI200.jpg" bitmask="Resources\EI200Mask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsSapphireYachtHD;"	obsoleteVersion="41" bitmap="Resources\SapphireYachtHD.jpg" bitmask="Resources\SapphireYachtHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMolotok;"		obsoleteVersion="41"	bitmap="Resources\Molotok.jpg" bitmask="Resources\MolotokMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsT31ArmedTransport;"	obsoleteVersion="41" bitmap="Resources\T31Transport.jpg"		bitmask="Resources\T31TransportMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsT55ArmedTransport;"	obsoleteVersion="41" bitmap="Resources\T55Transport.jpg"		bitmask="Resources\T55TransportMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsIAVHeavy;"	obsoleteVersion="41"				bitmap="Resources\IAVHeavy.jpg" bitmask="Resources\IAVHeavyMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsHimalInterceptorHD;"	obsoleteVersion="43"		bitmap="Resources\HimalInterceptorHD.jpg"		bitmask="Resources\HimalInterceptorHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCSC;"			obsoleteVersion="43"		bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsCSCBkgnd;"		obsoleteVersion="43" bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
 
 </TranscendenceModule>

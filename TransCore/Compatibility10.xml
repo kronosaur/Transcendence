@@ -14,7 +14,7 @@
 		-->
 
 	<DockScreen UNID="&dsRingerBuy;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			type=				"itemPicker"
 			>
 
@@ -175,7 +175,7 @@
 	-->
 
 	<DockScreen UNID="&dsRingerInstallDevice;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			type=				"itemPicker"
 			>
 
@@ -234,7 +234,7 @@
 	-->
 
 	<DockScreen UNID="&dsRingerInstallSpecificDevice;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			>
 
 		<Panes>
@@ -295,7 +295,7 @@
 		-->
 
 	<DockScreen UNID="&dsRingerRefuel;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			>
 
 		<Panes>
@@ -386,7 +386,7 @@
 	<!-- Ringer Remove device screen -->
 
 	<DockScreen UNID="&dsRingerRemoveDevice;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			type=				"itemPicker"
 			>
 
@@ -497,7 +497,7 @@
 	-->
 
 	<DockScreen UNID="&dsRingerRepairArmor;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			type=				"itemPicker"
 			>
 
@@ -586,7 +586,7 @@
 	<!-- Ringer Replace armor screen -->
 
 	<DockScreen UNID="&dsRingerReplaceArmor;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			type=				"itemPicker"
 			>
 
@@ -702,7 +702,7 @@
 		-->
 
 	<DockScreen UNID="&dsRingerSell;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			type=				"itemPicker"
 			>
 
@@ -1401,7 +1401,7 @@
 	<!-- Segment of Neutronium Plate -->
 
 	<ItemType UNID="&itNeutroniumPlate;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			name=				"[segment(s) of ]neutronium armor"
 			level=				"11"
 			value=				"100000"
@@ -1434,7 +1434,7 @@
 	<!-- Segment of Dark Matter Plate -->
 
 	<ItemType UNID="&itDarkMatterPlate;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			name=				"[segment(s) of ]dark matter armor"
 			level=				"15"
 			value=				"2000000"
@@ -1463,7 +1463,7 @@
 	<!-- Segment of Hierosteel Plate -->
 
 	<ItemType UNID="&itHierosteelPlate;"
-			obsolete=			"41"
+			obsoleteVersion=			"41"
 			name=				"[segment(s) of ]hierosteel armor"
 			level=				"21"
 			value=				"20000000"

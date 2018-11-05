@@ -1655,6 +1655,6 @@
 	<Image UNID="&rsSandstormHD;"				bitmap="Resources\SandstormHD.jpg" bitmask="Resources\SandstormHDMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsTundraHD;"					bitmap="Resources\TundraHD.jpg" bitmask="Resources\TundraHDMask.bmp" loadOnUse="true" />
 	
-	<Image UNID="&rsAresSentryHD;" obsolete="39" bitmap="Resources\AresSentryHD.jpg" bitmask="Resources\AresSentryHDMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsAresSentryHD;" obsoleteVersion="39" bitmap="Resources\AresSentryHD.jpg" bitmask="Resources\AresSentryHDMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>
