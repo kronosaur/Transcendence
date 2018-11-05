@@ -181,6 +181,8 @@
     <Xml Include="Antarctica01.xml" />
     <Xml Include="Antarctica02.xml" />
     <Xml Include="AntarcticaD01.xml" />
+    <Xml Include="AresItems.xml" />
+    <Xml Include="AresShips.xml" />
     <Xml Include="Barricades.xml" />
     <Xml Include="BattleArenaChallenger.xml" />
     <Xml Include="BattleArenaFight.xml" />

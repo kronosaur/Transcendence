@@ -2161,7 +2161,9 @@
 	<Module filename="Antarctica01.xml"/>
 	<Module filename="Antarctica02.xml"/>
 	<Module filename="AntarcticaD01.xml"/>
+	<Module filename="AresItems.xml"/>
 	<Module filename="AresOrthodoxy.xml"/>
+	<Module filename="AresShips.xml"/>
 	<Module filename="BlackMarket.xml"/>
 	<Module filename="BlackMarketMission00.xml"/>
 	<Module filename="BlackMarketMission01.xml"/>
