@@ -12,358 +12,14 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Centauri CLAW cannon -->
-
-	<ItemType UNID="&itCentauriCLAW;"
-			name=				"CLAW cannon"
-			level=				"3"
-			value=				"1700"
-			mass=				"6000"
-			frequency=			"rare"
-			attributes=			"centauriWarlords; MajorItem; NotForSale"
-			showReference=		"true"
-
-			description=		"Centauri warlords create these weapons by linking together two DK10 Arbalest cannons. The CLAW cannon requires two device slots to install."
-
-			sortName=			"CLAW cannon, Centauri"
+	<SystemMap unid="&smCentauriWarlordsSpace;"
+			displayOn="&smHumanSpace;"
 			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+newBeyond;"	attributes="centauriWarlordsSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-		<Image imageID="&rsItems3;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"missile"
-				deviceSlots=		"2"
-
-				repeating=			"3"
-				damage=				"kinetic:1d6+1; momentum:1"
-				fireRate=			"24"
-				missileSpeed=		"40"
-				interaction=		"50"
-				lifetime=			"30"
-				powerUse=			"100"
-
-				effect=				"&efKineticBoltDefault;"
-				sound=				"&snRecoillessCannon;"
-				>
-
-			<Configuration aimTolerance="5">
-				<Shot posAngle="90" posRadius="13" />
-				<Shot posAngle="270" posRadius="13" />
-			</Configuration>
-		</Weapon>
-	</ItemType>
-
-	<!-- Centauri Heavy CLAW cannon -->
-
-	<ItemType UNID="&itCentauriHeavyCLAW;"
-			name=				"heavy CLAW cannon"
-			level=				"3"
-			value=				"1800"
-			mass=				"6000"
-			frequency=			"rare"
-			attributes=			"centauriWarlords; MajorItem; NotForSale"
-			showReference=		"true"
-
-			description=		"The Centauri warlord's favorite weapon is a massive dual kinetic-cannon. The heavy CLAW cannon requires two device slots to install."
-
-			sortName=			"CLAW cannon, Centauri heavy"
-			>
-
-		<Image imageID="&rsItems3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"missile"
-				deviceSlots=		"2"
-
-				damage=				"kinetic:2d8+1; momentum:1; WMD:5"
-				fireRate=			"16"
-				missileSpeed=		"50"
-				interaction=		"50"
-				lifetime=			"20"
-				powerUse=			"100"
-
-				effect=				"&efKineticBoltDefault;"
-				sound=				"&snRecoillessCannon;"
-				>
-
-			<Configuration aimTolerance="5">
-				<Shot posAngle="90" posRadius="13" />
-				<Shot posAngle="270" posRadius="13" />
-			</Configuration>
-		</Weapon>
-	</ItemType>
-
-	<!-- Centauri Recoilless -->
-
-	<ItemType UNID="&itCentauriRecoilless;"
-			name=				"Centauri recoilless| Centauri recoilless cannons"
-			level=				"1"
-			value=				"150"
-			mass=				"2500"
-			frequency=			"uncommon"
-			attributes=			"centauriWarlords; MajorItem; NotForSale"
-			showReference=		"true"
-
-			description=		"Centauri raiders use twin recoilless cannons, firing light rounds."
-
-			sortName=			"recoilless cannon, Centauri"
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="768" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"missile"
-
-				damage=				"kinetic:1d3; momentum1"
-				fireRate=			"15"
-				missileSpeed=		"30"
-				interaction=		"30"
-				lifetime=			"30"
-				powerUse=			"10"
-
-				effect=				"&efKineticBoltDefault;"
-				sound=				"&snRecoillessCannon;"
-				>
-
-			<Configuration aimTolerance="5">
-				<Shot posAngle="90" posRadius="13" />
-				<Shot posAngle="270" posRadius="13" />
-			</Configuration>
-		</Weapon>
-	</ItemType>
-
-	<!-- Barrel of Centauri Nanos -->
-
-	<ItemType UNID="&itCentauriNanos;"
-			inherit=			"&baStdPasteBarrel;"
-			name=				"[barrel(s) of ]Centauri nanos"
-			level=				"3"
-			value=				"250"
-			mass=				"1000"
-			frequency=			"veryrare"
-			numberAppearing=	"1d4"
-			unknownType=		"&itUnknownBarrel;"
-			attributes=			"ArmorEnhance; centauriWarlords; MinorItem; NotForSale"
-
-			description=		"These nanomachines weave a diamond matrix through the target material. Armor that has been treated in this way will be more resistant to laser and impact damage."
-
-			useScreen=			"&dsRPGUseItemOnArmor;"
-			data=				"centauriNanos"
-
-			sortName=			"Centauri nanos, barrel of"
-			>
-
-		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<StaticData>
-			<Data id="enhancementTable">
-				(
-					{	criteria:"a &lt;=3"	enhancement:0x0808	}
-					{	criteria:"a &lt;=5"	enhancement:0x0805	}
-					{	criteria:"a &lt;=6"	enhancement:0x0803	}
-					{	criteria:"a &gt;10"	enhancement:Nil	descID:'TooAdvanced	}
-					)
-			</Data>
-		</StaticData>
-
-		<Language>
-			<Text id="descResultIntro">
-				The coating is composed of nanomachines that strengthen your armor against laser and impact damage.
-			</Text>
-		</Language>
-	</ItemType>
-	
-<!-- SHIP CLASSES -->
-
-	<!-- Arco Vaughn's Heavy Raider -->
-
-	<ShipClass UNID="&scArcoVaughnHeavyRaider;"
-			manufacturer=		"Centauri"
-			class=				""
-			type=				"heavy raider"
-
-			mass=				"100"
-			cargoSpace=			"10"
-			thrustRatio=		"1.8"
-			maxSpeed=			"13"
-
-			leavesWreck=		"100"
-
-			attributes=			"arcoVaughn,centauriWarlords"
-			>
-
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" />
-			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" />
-		</Armor>
-
-		<Devices>
-			<Table>
-				<Group chance="25">
-					<Device deviceID="&itCentauriCLAW;"/>
-					<Device deviceID="&itAClassDefenseScreen;"/>
-				</Group>
-				<Group chance="25">
-					<Device deviceID="&itCentauriHeavyCLAW;"/>
-					<Device deviceID="&itAClassDefenseScreen;"/>
-				</Group>
-				<Group chance="25">
-					<Device deviceID="&itDualRecoillessCannon;"	enhanced="100"/>
-					<Device deviceID="&itClass2Deflector;"/>
-				</Group>
-				<Group chance="25">
-					<Device deviceID="&itDualLaserCannon;"	enhanced="100"/>
-					<Device deviceID="&itClass2Deflector;"/>
-				</Group>
-			</Table>
-			<Device deviceID="&itNAMIMissileLauncher;">
-				<Items>
-					<Table>
-						<Item chance="50" count="10-20"  item="&itFragmentationMissile;"/>
-						<Item chance="50" count="10-20"  item="&itKM100Missile;"/>
-					</Table>
-				</Items>
-			</Device>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item chance="60"	count="2d6" item="&itHelium3FuelRod;"/>
-			<Table>
-				<Item chance="25"	count="4" item="&itHeavyReactiveArmor;"/>
-				<Item chance="10"	count="1" item="&itTritiumPropulsionUpgrade;"/>
-				<Item chance="15"	count="1" item="&itMonopoleDeflector;"/>
-				<Item chance="25"	count="4" item="&itCentauriNanos;"/>
-				<Lookup chance="15" count="1" table="&trMinorItem2;"/>
-				<Lookup chance="10" count="1" table="&trMajorItem2;"/>
-			</Table>
-		</Items>
-
-		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<Names noArticle="true" personalName="true">Arco Vaughn</Names>
-
-		<AISettings
-			aggressor=			"true"
-			fireRateAdj=		"12"
-			fireAccuracy=		"95"
-			perception=			"4"
-			/>
-
-		<Events>
-			<OnCreate>
-				(block Nil
-					; Vaughn's armor is resistant to laser and kinetic (only 20% damage gets through)
-					(objEnumItems gSource "aI" theItem
-						(shpEnhanceItem gSource theItem 0x0808)
-						)
-					)
-			</OnCreate>
-		</Events>
-	</ShipClass>
-
-	<!-- Centauri Heavy Raider -->
-
-	<ShipClass UNID="&scCentauriHeavyRaider;"
-			manufacturer=		"Centauri"
-			class=				""
-			type=				"heavy raider"
-			defaultSovereign=	"&svCentauriWarlords;"
-
-			mass=				"60"
-			cargoSpace=			"10"
-			thrustRatio=		"1.8"
-			maxSpeed=			"13"
-
-			attributes=			"centauriWarlords,genericClass"
-			>
-
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" />
-			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" />
-		</Armor>
-
-		<Devices>
-			<Table>
-				<Device chance="40" deviceID="&itCentauriCLAW;"/>
-				<Device chance="60" deviceID="&itCentauriHeavyCLAW;"/>
-			</Table>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<AISettings
-			fireRateAdj=		"20"
-			fireAccuracy=		"80"
-			perception=			"4"
-			/>
-
-	</ShipClass>
-
-	<!-- Centauri Raider -->
-
-	<ShipClass UNID="&scCentauriRaider;"
-			manufacturer=		"Centauri"
-			class=				""
-			type=				"raider"
-			defaultSovereign=	"&svCentauriWarlords;"
-
-			mass=				"25"
-			cargoSpace=			"5"
-			thrustRatio=		"4.0"
-			maxSpeed=			"13"
-
-			attributes=			"centauriWarlords,genericClass"
-			>
-
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumArmor;" />
-			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumArmor;" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itCentauriRecoilless;" enhanced="10"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Image imageID="&rsCentauriRaiderHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<AISettings
-			fireRateAdj=		"40"
-			fireAccuracy=		"80"
-			perception=			"4"
-			/>
-
-	</ShipClass>
-	
 <!-- STATION TYPES -->
 
 	<!-- Centauri Occupation -->
@@ -389,9 +45,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, human, occupation, populated"
-			levelFrequency=		"uuv-- ----- ----- ----- -----"
-			locationCriteria=	"+planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"uuv-- ----- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Names noArticle="true">Arenius Habitat; Baja Habitat; Clearspace Station; Durin Habitat;
 				Earthnight Habitat; Fairmoon Settlement; Greenfield Habitat;
@@ -606,9 +271,17 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, generic, human, populated, warlords"
-			levelFrequency=		"crv-- ----- ----- ----- -----"
-			locationCriteria=	"+outerSystem, +planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+centauriWarlordsSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"crv-- ----- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, +planetary"
+				/>
 
 		<Image			imageID="&rsCentauriStationsImage;" imageX="24" imageY="0" imageWidth="80" imageHeight="128"/>
 
@@ -655,9 +328,17 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"centauriWarlords, enemy, envWater, envAvoidsEarth, generic, human, populated, warlords"
-			levelFrequency=		"rurv- ----- ----- ----- -----"
-			locationCriteria=	"+outerSystem, +planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+centauriWarlordsSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"rurv- ----- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, +planetary"
+				/>
 
 		<Image			imageID="&rsCentauriStationsImage;" imageX="24" imageY="0" imageWidth="80" imageHeight="128"/>
 
@@ -771,6 +452,360 @@
 		</Language>
 
 	</StationType>
+	
+<!-- SHIP CLASSES -->
+
+	<!-- Arco Vaughn's Heavy Raider -->
+
+	<ShipClass UNID="&scArcoVaughnHeavyRaider;"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"heavy raider"
+
+			mass=				"100"
+			cargoSpace=			"10"
+			thrustRatio=		"1.8"
+			maxSpeed=			"13"
+
+			leavesWreck=		"100"
+
+			attributes=			"arcoVaughn,centauriWarlords"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Group chance="25">
+					<Device deviceID="&itCentauriCLAW;"/>
+					<Device deviceID="&itAClassDefenseScreen;"/>
+				</Group>
+				<Group chance="25">
+					<Device deviceID="&itCentauriHeavyCLAW;"/>
+					<Device deviceID="&itAClassDefenseScreen;"/>
+				</Group>
+				<Group chance="25">
+					<Device deviceID="&itDualRecoillessCannon;"	enhanced="100"/>
+					<Device deviceID="&itClass2Deflector;"/>
+				</Group>
+				<Group chance="25">
+					<Device deviceID="&itDualLaserCannon;"	enhanced="100"/>
+					<Device deviceID="&itClass2Deflector;"/>
+				</Group>
+			</Table>
+			<Device deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Table>
+						<Item chance="50" count="10-20"  item="&itFragmentationMissile;"/>
+						<Item chance="50" count="10-20"  item="&itKM100Missile;"/>
+					</Table>
+				</Items>
+			</Device>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item chance="60"	count="2d6" item="&itHelium3FuelRod;"/>
+			<Table>
+				<Item chance="25"	count="4" item="&itHeavyReactiveArmor;"/>
+				<Item chance="10"	count="1" item="&itTritiumPropulsionUpgrade;"/>
+				<Item chance="15"	count="1" item="&itMonopoleDeflector;"/>
+				<Item chance="25"	count="4" item="&itCentauriNanos;"/>
+				<Lookup chance="15" count="1" table="&trMinorItem2;"/>
+				<Lookup chance="10" count="1" table="&trMajorItem2;"/>
+			</Table>
+		</Items>
+
+		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<Names noArticle="true" personalName="true">Arco Vaughn</Names>
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"12"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+
+		<Events>
+			<OnCreate>
+				(block Nil
+					; Vaughn's armor is resistant to laser and kinetic (only 20% damage gets through)
+					(objEnumItems gSource "aI" theItem
+						(shpEnhanceItem gSource theItem 0x0808)
+						)
+					)
+			</OnCreate>
+		</Events>
+	</ShipClass>
+
+	<!-- Centauri Heavy Raider -->
+
+	<ShipClass UNID="&scCentauriHeavyRaider;"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"heavy raider"
+			defaultSovereign=	"&svCentauriWarlords;"
+
+			mass=				"60"
+			cargoSpace=			"10"
+			thrustRatio=		"1.8"
+			maxSpeed=			"13"
+
+			attributes=			"centauriWarlords,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itReactiveArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itReactiveArmor;" />
+		</Armor>
+
+		<Devices>
+			<Table>
+				<Device chance="40" deviceID="&itCentauriCLAW;"/>
+				<Device chance="60" deviceID="&itCentauriHeavyCLAW;"/>
+			</Table>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsCentauriHeavyRaiderHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Centauri Raider -->
+
+	<ShipClass UNID="&scCentauriRaider;"
+			manufacturer=		"Centauri"
+			class=				""
+			type=				"raider"
+			defaultSovereign=	"&svCentauriWarlords;"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrustRatio=		"4.0"
+			maxSpeed=			"13"
+
+			attributes=			"centauriWarlords,genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itUltraLightTitaniumArmor;" />
+			<ArmorSection start="90"  span="180" armorID="&itUltraLightTitaniumArmor;" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itCentauriRecoilless;" enhanced="10"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Image imageID="&rsCentauriRaiderHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="143"	posRadius="20"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-143"	posRadius="20"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"80"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+	
+<!-- ITEM TYPES -->
+
+	<!-- Centauri CLAW cannon -->
+
+	<ItemType UNID="&itCentauriCLAW;"
+			name=				"CLAW cannon"
+			level=				"3"
+			value=				"1700"
+			mass=				"6000"
+			frequency=			"rare"
+			attributes=			"centauriWarlords; MajorItem; NotForSale"
+			showReference=		"true"
+
+			description=		"Centauri warlords create these weapons by linking together two DK10 Arbalest cannons. The CLAW cannon requires two device slots to install."
+
+			sortName=			"CLAW cannon, Centauri"
+			>
+
+		<Image imageID="&rsItems3;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				deviceSlots=		"2"
+
+				repeating=			"3"
+				damage=				"kinetic:1d6+1; momentum:1"
+				fireRate=			"24"
+				missileSpeed=		"40"
+				interaction=		"50"
+				lifetime=			"30"
+				powerUse=			"100"
+
+				effect=				"&efKineticBoltDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Configuration aimTolerance="5">
+				<Shot posAngle="90" posRadius="13" />
+				<Shot posAngle="270" posRadius="13" />
+			</Configuration>
+		</Weapon>
+	</ItemType>
+
+	<!-- Centauri Heavy CLAW cannon -->
+
+	<ItemType UNID="&itCentauriHeavyCLAW;"
+			name=				"heavy CLAW cannon"
+			level=				"3"
+			value=				"1800"
+			mass=				"6000"
+			frequency=			"rare"
+			attributes=			"centauriWarlords; MajorItem; NotForSale"
+			showReference=		"true"
+
+			description=		"The Centauri warlord's favorite weapon is a massive dual kinetic-cannon. The heavy CLAW cannon requires two device slots to install."
+
+			sortName=			"CLAW cannon, Centauri heavy"
+			>
+
+		<Image imageID="&rsItems3;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+				deviceSlots=		"2"
+
+				damage=				"kinetic:2d8+1; momentum:1; WMD:5"
+				fireRate=			"16"
+				missileSpeed=		"50"
+				interaction=		"50"
+				lifetime=			"20"
+				powerUse=			"100"
+
+				effect=				"&efKineticBoltDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Configuration aimTolerance="5">
+				<Shot posAngle="90" posRadius="13" />
+				<Shot posAngle="270" posRadius="13" />
+			</Configuration>
+		</Weapon>
+	</ItemType>
+
+	<!-- Centauri Recoilless -->
+
+	<ItemType UNID="&itCentauriRecoilless;"
+			name=				"Centauri recoilless| Centauri recoilless cannons"
+			level=				"1"
+			value=				"150"
+			mass=				"2500"
+			frequency=			"uncommon"
+			attributes=			"centauriWarlords; MajorItem; NotForSale"
+			showReference=		"true"
+
+			description=		"Centauri raiders use twin recoilless cannons, firing light rounds."
+
+			sortName=			"recoilless cannon, Centauri"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="768" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"kinetic:1d3; momentum1"
+				fireRate=			"15"
+				missileSpeed=		"30"
+				interaction=		"30"
+				lifetime=			"30"
+				powerUse=			"10"
+
+				effect=				"&efKineticBoltDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<Configuration aimTolerance="5">
+				<Shot posAngle="90" posRadius="13" />
+				<Shot posAngle="270" posRadius="13" />
+			</Configuration>
+		</Weapon>
+	</ItemType>
+
+	<!-- Barrel of Centauri Nanos -->
+
+	<ItemType UNID="&itCentauriNanos;"
+			inherit=			"&baStdPasteBarrel;"
+			name=				"[barrel(s) of ]Centauri nanos"
+			level=				"3"
+			value=				"250"
+			mass=				"1000"
+			frequency=			"veryrare"
+			numberAppearing=	"1d4"
+			unknownType=		"&itUnknownBarrel;"
+			attributes=			"ArmorEnhance; centauriWarlords; MinorItem; NotForSale"
+
+			description=		"These nanomachines weave a diamond matrix through the target material. Armor that has been treated in this way will be more resistant to laser and impact damage."
+
+			useScreen=			"&dsRPGUseItemOnArmor;"
+			data=				"centauriNanos"
+
+			sortName=			"Centauri nanos, barrel of"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<Data id="enhancementTable">
+				(
+					{	criteria:"a &lt;=3"	enhancement:0x0808	}
+					{	criteria:"a &lt;=5"	enhancement:0x0805	}
+					{	criteria:"a &lt;=6"	enhancement:0x0803	}
+					{	criteria:"a &gt;10"	enhancement:Nil	descID:'TooAdvanced	}
+					)
+			</Data>
+		</StaticData>
+
+		<Language>
+			<Text id="descResultIntro">
+				The coating is composed of nanomachines that strengthen your armor against laser and impact damage.
+			</Text>
+		</Language>
+	</ItemType>
 	
 <!-- MISCELLANEOUS -->
 

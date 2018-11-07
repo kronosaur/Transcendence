@@ -11,391 +11,15 @@
 			alignment="neutral"
 			/>
 
-	<!-- Kytryn Blaster -->
-
-	<ItemType UNID="&itKytrynBlaster;"
-			name=				"Kytryn blaster"
-			level=				"9"
-			value=				"220000"
-			mass=				"3000"
-			frequency=			"rare"
-			attributes=			"Alien; MajorItem; Military; Teraton"
-			unknownType=		"&itUnknownAlienDevice10;"
-
-			description=		"Kytryn blasters were created by the Teratons based on research on Iocrym technology."
+	<SystemMap unid="&smTeratonSpace;"
+			displayOn="&smHumanSpace;"
 			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+ringerSpace;"	attributes="teratonSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-		<Image imageID="&rsItems9;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				type=				"particles"
-				damage=				"plasma:40; WMD5"
-				
-				fireRate=			"16"
-				hitPoints=			"15"
-
-				powerUse=			"3000"
-				sound=				"&snRecoillessCannon;"
-				>
-
-			<ParticleSystem
-					style=				"amorphous"
-					emitRate=			"40"
-					emitSpeed=			"36-44"
-					emitLifetime=		"1"
-					spreadAngle=		"6"
-					
-					particleLifetime=	"80"
-					particleEffect=		"&efPlasmaParticleDefault;"
-					>
-			</ParticleSystem>
-		</Weapon>
-	</ItemType>
-
-	<!-- Kytryn Launcher -->
-
-	<ItemType UNID="&itKytrynLauncher;"
-			name=				"Kytryn launcher"
-			level=				"10"
-			value=				"350000"
-			mass=				"5000"
-			frequency=			"rare"
-			attributes=			"Alien; MajorItem; Military; Teraton"
-			unknownType=		"&itUnknownAlienDevice10;"
-
-			description=		"This Teraton weapon launches a Kytryn plasma pod warhead, which blossoms into a shell of plasma energy."
-			>
-
-		<Image imageID="&rsItems1;" imageX="0" imageY="480" imageWidth="96" imageHeight="96"/>
-
-		<Weapon
-				fireRate=			"40"
-				powerUse=			"200"
-				launcher=			"true"
-				>
-
-			<Missiles>
-				<Missile ammoID="&itKytrynPlasmaSeed;"/>
-			</Missiles>
-		</Weapon>
-	</ItemType>
-
-	<!-- Kytryn Plasma Seed -->
-
-	<ItemType UNID="&itKytrynPlasmaSeed;"
-			name=				"Kytryn plasma pod"
-			level=				"10"
-			value=				"450"
-			mass=				"30"
-			attributes=			"Consumable; Alien; Missile; Teraton"
-			frequency=			"uncommon"
-			numberAppearing=	"1d6"
-
-			description=		"These alien warheads are launched by the Kytryn launcher."
-
-			sortName=			"Kytryn.10"
-			>
-
-		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
-		
-		<Missile
-				type=			"missile"
-				lifetime=		"480"
-				missileSpeed=	"30"
-				hitPoints=		"50"
-
-				failsafe=		"6"
-
-				sound=			"&snMissileLauncher;"
-				>
-			
-			<Effect>
-				<Orb
-						style=				"flare"
-						radius=				"50"
-						intensity=			"50"
-						
-						blendMode=			"screen"
-						primaryColor=		"#feff00"
-						secondaryColor=		"#ffbf00"
-						/>
-			
-				<ParticleSystem
-						style=				"jet"
-						fixedPos=			"true"
-						emitRate=			"4-8"
-						tangentSpeed=		"-6-6"
-						particleLifetime=	"24"
-						XformTime=			"30"
-						>
-					<ParticleEffect>
-						<Orb
-								instance=			"owner"
-						
-								style=				"smooth"
-								animate=			"fade"
-								radius=				"10"
-								lifetime=			"24"
-								intensity=			"20"
-						
-								blendMode=			"screen"
-								primaryColor=		"#feff00"
-								secondaryColor=		"#ff7f00"
-								/>
-					</ParticleEffect>
-				</ParticleSystem>
-			</Effect>
-
-			<Fragment
-					type=				"particles"
-					damage=				"plasma:500; WMD:4"
-					hitPoints=			"10"
-					>
-			
-				<ParticleSystem
-						style=				"radiate"
-						emitLifetime=		"1"
-						emitRate=			"120"
-						emitSpeed=			"20"
-					
-						particleLifetime=	"30"
-						particleEffect=		"&efPlasmaParticleDefault;"
-						>
-				</ParticleSystem>
-			</Fragment>
-		</Missile>
-	</ItemType>
-
-	<!-- Teraton Nest Base
-	
-	All Teraton nests are derived from this type
-	
-	-->
-	
-	<Type UNID="&baTeratonNestBase;"
-			inherit=			"&unidCommonText;"
-			>
-		<Language>
-			<Text id="actionCommoditiesExchange">[T]rading Chamber</Text>
-
-			<Text id="descWelcome">
-				You are in the peripheral tunnel of a Teraton nest. The hard
-				walls are covered by a sinewy membrane and odd growths hang from
-				the ceiling. There is a foul smell of rot and bile in the air.
-			</Text>
-			<Text id="core.commoditiesExchangeDesc">
-
-				The Trading Chamber is a vast, dark cavern where Teratons
-				trade with various human and neo-humans. From a distance the
-				Teratons look like abnormally tall humans, but up close you
-				notice their deformities and mutations.
-
-			</Text>
-			<Text id="core.abandonedStationDesc">
-
-				You are docked at the remains of a Teraton nest.
-				The sickly sweet smell of burnt flesh fills the air and 
-				mucusy discharges flow out of organic walls.
-
-			</Text>
-		</Language>
-
-		<Events>
-			<OnBehavior>
-				(if (not (objIsAbandoned gSource))
-					(block (totalDefenders)
-						; Count the number of defenders
-						(setq totalDefenders (count (sysFindObject gSource "TAN:25; +teraton; -populated;")))
-						(setq optimalDefenders (add 3 (typGetGlobalData &baTeratonNestBase; "nestsDestroyed")))
-						
-						(if (ls totalDefenders optimalDefenders)
-							(terCreateDefender gSource)
-							)
-						)
-					)
-			</OnBehavior>
-			
-			<OnCreate>
-				(block Nil
-					; Create some defenders
-					(for i 1 (random 3 5)
-						(block (thePos theObj)
-							(setq thePos (sysVectorRandom gSource (random 7 20) 4 "t"))
-							(setq theObj (sysCreateStation &stTeratonDefender; thePos))
-							(objAddSubordinate gSource theObj)
-							)
-						)
-					
-					; Register update event
-					(sysAddObjRecurringTimerEvent 301 gSource "OnBehavior")
-					)
-			</OnCreate>
-
-			<OnDestroy>
-				(block (playerItems)
-					; Keep track of stations destroyed
-					(typIncGlobalData &baTeratonNestBase; "nestsDestroyed")
-					
-					; Before we destroy items on the station, take away any items
-					; that we took from the player; these have a greater chance of showing
-					; up.
-					
-					(setq playerItems (filter (objGetItems gSource "*") theItem (itmGetData theItem "001F2001_fromPlayer")))
-					(enum playerItems theItem (objRemoveItem gSource theItem))
-					
-					; Destroy items on the station
-					(rpgDestroyItems gSource)
-					
-					; Add back the player items
-					(enum playerItems theItem
-						(if (leq (random 1 100) 90)
-							(objAddItem gSource (itmSetData theItem "001F2001_fromPlayer" Nil (itmGetCount theItem)))
-							)
-						)
-					)
-			</OnDestroy>
-		</Events>
-	</Type>
-	
-	<!-- Teraton Chrysalis
-	
-	EXTRA DATA
-	
-	openTime:			Tick on which chrysalis will open
-	type:				One of the following
-							'defender = Create a Teraton defender
-	
-	-->
-
-	<StationType UNID="&stTeratonChrysalis;"
-			name=				"Teraton chrysalis(es)"
-			sovereign=			"&svTeratons;"
-			dockScreen=			"Main"
-			abandonedScreen=	"&dsRPGAbandonedStation;"
-			dockingPorts=		"4"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			mass=				"5000"
-			armorID=			"&itLightIthaliumArmor;"
-			hitPoints=			"250"
-			regen=				"10"
-			structuralHitPoints="20"
-			fireRateAdj=		"20"
-			ejectaType=			"&vtWreckEjecta;"
-			
-			attributes=			"teraton, teratonChrysalis"
-			>
-
-		<Image	imageID="&rsTeratonChrysalis;" imageWidth="100" imageHeight="100"/>
-		
-		<Language>
-			<Text id="actionUndock">[U]ndock</Text>
-
-			<Text id="descWelcome">
-				You are docked with a Teraton chrysalis&mdash;a pulsing mass
-				of biomechanical systems. You see a bony structure taking
-				shape inside the large spherical structure.
-			</Text>
-			<Text id="core.abandonedStationDesc">
-
-				You are docked at the dead remains of a Teraton chrysalis.
-				The bony, motionless mass at its center bleeds an ochre fluid.
-
-			</Text>
-		</Language>
-		
-		<Events>
-			<OnBehavior>
-				(block (openTime)
-					(if (and (setq openTime (objGetData gSource "openTime"))
-							(geq (unvGetTick) openTime)
-							(not (objIsAbandoned gSource)))
-						(block (theType theObj)
-							; Create open animation effect
-							(sysCreateEffect &efTeratonChrysalisOpen; Nil (objGetPos gSource))
-							
-							; Create the object
-							(setq theType (objGetData gSource "type"))
-							(switch
-								(eq theType 'defender)
-									(block (theBase)
-										(setq theObj (sysCreateStation &stTeratonDefender; (objGetPos gSource)))
-										
-										; Find the nearest Teraton nest and make this a subordinate
-										(if (setq theBase (sysFindObject gSource "TAN +teraton; +populated"))
-											(objAddSubordinate theBase theObj)
-											)
-										)
-								)
-							
-							; Destroy ourselves
-							(objDestroy gSource)
-							)
-						)
-					)
-			</OnBehavior>
-			
-			<OnCreate>
-				(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
-			</OnCreate>
-		</Events>
-		
-		<DockScreens>
-			<Main>
-				<Panes>
-					<Default descID="descWelcome">
-						<Actions>
-							<Action id="actionUndock" default="1" cancel="1">
-								<Exit/>
-							</Action>
-						</Actions>
-					</Default>
-				</Panes>
-			</Main>
-		</DockScreens>
-
-	</StationType>
-
-	<!-- Teraton Defense Satellite -->
-
-	<StationType UNID="&stTeratonDefender;"
-			name=				"Teraton Defender"
-			sovereign=			"&svTeratons;"
-			abandonedScreen=	"&dsRPGAbandonedStation;"
-			dockingPorts=		"4"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			mass=				"5000"
-			armorID=			"&itLightIthaliumArmor;"
-			hitPoints=			"150"
-			structuralHitPoints="40"
-			fireRateAdj=		"20"
-			ejectaType=			"&vtWreckEjecta;"
-			
-			attributes=			"generic, teraton, teratonDefender"
-			>
-
-		<Image	imageID="&rsTeratonDefender;" imageWidth="64" imageHeight="64" imageFrameCount="12" imageTicksPerFrame="2"/>
-
-		<Devices>
-			<Device deviceID="&itKytrynBlaster;"	omnidirectional="true"/>
-		</Devices>
-
-		<Language>
-			<Text id="core.abandonedStationDesc">
-
-				You are docked at the dead remains of a Teraton defender.
-				Wisps of high-energy plasma vent from holes along a bony central mass.
-
-			</Text>
-		</Language>
-	</StationType>
+<!-- ENCOUNTERS -->
 
 	<!-- Teraton Factory -->
 
@@ -415,14 +39,22 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, independent, friendly, generic, majorStation, populated, neoHuman, teraton, teratonFactory"
-			levelFrequency=		"----- --ruv ----- ----- -----"
-			locationCriteria=	"+outerSystem, -void"
-			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
 			>
 
 		<Names>Teraton Nest</Names>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+teratonSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"----- --ruv ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -void"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsStations9;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
 
@@ -824,14 +456,22 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonResearch"
-			levelFrequency=		"----- --rr- ----- ----- -----"
-			locationCriteria=	"+outerSystem, -void"
-			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
 			>
 
 		<Names>Teraton Nest</Names>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+teratonSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"----- --rr- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -void"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsStations9;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
 
@@ -933,14 +573,22 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, generic, independent, friendly, majorStation, populated, neoHuman, teraton, teratonTrading"
-			levelFrequency=		"----- -vcuv ----- ----- -----"
-			locationCriteria=	"+outerSystem, -void"
-			enemyExclusionRadius="50"
 
 			inherit=			"&baTeratonNestBase;"
 			>
 
 		<Names>Teraton Nest</Names>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+teratonSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"----- -vcuv ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -void"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsStations9;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
 
@@ -1016,6 +664,396 @@
 
 	</StationType>
 
+<!-- STATION TYPES -->
+
+	<!-- Teraton Chrysalis
+	
+	EXTRA DATA
+	
+	openTime:			Tick on which chrysalis will open
+	type:				One of the following
+							'defender = Create a Teraton defender
+	
+	-->
+
+	<StationType UNID="&stTeratonChrysalis;"
+			name=				"Teraton chrysalis(es)"
+			sovereign=			"&svTeratons;"
+			dockScreen=			"Main"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			mass=				"5000"
+			armorID=			"&itLightIthaliumArmor;"
+			hitPoints=			"250"
+			regen=				"10"
+			structuralHitPoints="20"
+			fireRateAdj=		"20"
+			ejectaType=			"&vtWreckEjecta;"
+			
+			attributes=			"teraton, teratonChrysalis"
+			>
+
+		<Image	imageID="&rsTeratonChrysalis;" imageWidth="100" imageHeight="100"/>
+		
+		<Language>
+			<Text id="actionUndock">[U]ndock</Text>
+
+			<Text id="descWelcome">
+				You are docked with a Teraton chrysalis&mdash;a pulsing mass
+				of biomechanical systems. You see a bony structure taking
+				shape inside the large spherical structure.
+			</Text>
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the dead remains of a Teraton chrysalis.
+				The bony, motionless mass at its center bleeds an ochre fluid.
+
+			</Text>
+		</Language>
+		
+		<Events>
+			<OnBehavior>
+				(block (openTime)
+					(if (and (setq openTime (objGetData gSource "openTime"))
+							(geq (unvGetTick) openTime)
+							(not (objIsAbandoned gSource)))
+						(block (theType theObj)
+							; Create open animation effect
+							(sysCreateEffect &efTeratonChrysalisOpen; Nil (objGetPos gSource))
+							
+							; Create the object
+							(setq theType (objGetData gSource "type"))
+							(switch
+								(eq theType 'defender)
+									(block (theBase)
+										(setq theObj (sysCreateStation &stTeratonDefender; (objGetPos gSource)))
+										
+										; Find the nearest Teraton nest and make this a subordinate
+										(if (setq theBase (sysFindObject gSource "TAN +teraton; +populated"))
+											(objAddSubordinate theBase theObj)
+											)
+										)
+								)
+							
+							; Destroy ourselves
+							(objDestroy gSource)
+							)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreate>
+				(sysAddObjRecurringTimerEvent 30 gSource "OnBehavior")
+			</OnCreate>
+		</Events>
+		
+		<DockScreens>
+			<Main>
+				<Panes>
+					<Default descID="descWelcome">
+						<Actions>
+							<Action id="actionUndock" default="1" cancel="1">
+								<Exit/>
+							</Action>
+						</Actions>
+					</Default>
+				</Panes>
+			</Main>
+		</DockScreens>
+
+	</StationType>
+
+	<!-- Teraton Defense Satellite -->
+
+	<StationType UNID="&stTeratonDefender;"
+			name=				"Teraton Defender"
+			sovereign=			"&svTeratons;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			mass=				"5000"
+			armorID=			"&itLightIthaliumArmor;"
+			hitPoints=			"150"
+			structuralHitPoints="40"
+			fireRateAdj=		"20"
+			ejectaType=			"&vtWreckEjecta;"
+			
+			attributes=			"generic, teraton, teratonDefender"
+			>
+
+		<Image	imageID="&rsTeratonDefender;" imageWidth="64" imageHeight="64" imageFrameCount="12" imageTicksPerFrame="2"/>
+
+		<Devices>
+			<Device deviceID="&itKytrynBlaster;"	omnidirectional="true"/>
+		</Devices>
+
+		<Language>
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the dead remains of a Teraton defender.
+				Wisps of high-energy plasma vent from holes along a bony central mass.
+
+			</Text>
+		</Language>
+	</StationType>
+
+<!-- ITEM TYPES -->
+
+	<!-- Kytryn Blaster -->
+
+	<ItemType UNID="&itKytrynBlaster;"
+			name=				"Kytryn blaster"
+			level=				"9"
+			value=				"220000"
+			mass=				"3000"
+			frequency=			"rare"
+			attributes=			"Alien; MajorItem; Military; Teraton"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"Kytryn blasters were created by the Teratons based on research on Iocrym technology."
+			>
+
+		<Image imageID="&rsItems9;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"particles"
+				damage=				"plasma:40; WMD5"
+				
+				fireRate=			"16"
+				hitPoints=			"15"
+
+				powerUse=			"3000"
+				sound=				"&snRecoillessCannon;"
+				>
+
+			<ParticleSystem
+					style=				"amorphous"
+					emitRate=			"40"
+					emitSpeed=			"36-44"
+					emitLifetime=		"1"
+					spreadAngle=		"6"
+					
+					particleLifetime=	"80"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kytryn Launcher -->
+
+	<ItemType UNID="&itKytrynLauncher;"
+			name=				"Kytryn launcher"
+			level=				"10"
+			value=				"350000"
+			mass=				"5000"
+			frequency=			"rare"
+			attributes=			"Alien; MajorItem; Military; Teraton"
+			unknownType=		"&itUnknownAlienDevice10;"
+
+			description=		"This Teraton weapon launches a Kytryn plasma pod warhead, which blossoms into a shell of plasma energy."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"40"
+				powerUse=			"200"
+				launcher=			"true"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itKytrynPlasmaSeed;"/>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kytryn Plasma Seed -->
+
+	<ItemType UNID="&itKytrynPlasmaSeed;"
+			name=				"Kytryn plasma pod"
+			level=				"10"
+			value=				"450"
+			mass=				"30"
+			attributes=			"Consumable; Alien; Missile; Teraton"
+			frequency=			"uncommon"
+			numberAppearing=	"1d6"
+
+			description=		"These alien warheads are launched by the Kytryn launcher."
+
+			sortName=			"Kytryn.10"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		
+		<Missile
+				type=			"missile"
+				lifetime=		"480"
+				missileSpeed=	"30"
+				hitPoints=		"50"
+
+				failsafe=		"6"
+
+				sound=			"&snMissileLauncher;"
+				>
+			
+			<Effect>
+				<Orb
+						style=				"flare"
+						radius=				"50"
+						intensity=			"50"
+						
+						blendMode=			"screen"
+						primaryColor=		"#feff00"
+						secondaryColor=		"#ffbf00"
+						/>
+			
+				<ParticleSystem
+						style=				"jet"
+						fixedPos=			"true"
+						emitRate=			"4-8"
+						tangentSpeed=		"-6-6"
+						particleLifetime=	"24"
+						XformTime=			"30"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"10"
+								lifetime=			"24"
+								intensity=			"20"
+						
+								blendMode=			"screen"
+								primaryColor=		"#feff00"
+								secondaryColor=		"#ff7f00"
+								/>
+					</ParticleEffect>
+				</ParticleSystem>
+			</Effect>
+
+			<Fragment
+					type=				"particles"
+					damage=				"plasma:500; WMD:4"
+					hitPoints=			"10"
+					>
+			
+				<ParticleSystem
+						style=				"radiate"
+						emitLifetime=		"1"
+						emitRate=			"120"
+						emitSpeed=			"20"
+					
+						particleLifetime=	"30"
+						particleEffect=		"&efPlasmaParticleDefault;"
+						>
+				</ParticleSystem>
+			</Fragment>
+		</Missile>
+	</ItemType>
+
+	<!-- Teraton Nest Base
+	
+	All Teraton nests are derived from this type
+	
+	-->
+	
+	<Type UNID="&baTeratonNestBase;"
+			inherit=			"&unidCommonText;"
+			>
+		<Language>
+			<Text id="actionCommoditiesExchange">[T]rading Chamber</Text>
+
+			<Text id="descWelcome">
+				You are in the peripheral tunnel of a Teraton nest. The hard
+				walls are covered by a sinewy membrane and odd growths hang from
+				the ceiling. There is a foul smell of rot and bile in the air.
+			</Text>
+			<Text id="core.commoditiesExchangeDesc">
+
+				The Trading Chamber is a vast, dark cavern where Teratons
+				trade with various human and neo-humans. From a distance the
+				Teratons look like abnormally tall humans, but up close you
+				notice their deformities and mutations.
+
+			</Text>
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the remains of a Teraton nest.
+				The sickly sweet smell of burnt flesh fills the air and 
+				mucusy discharges flow out of organic walls.
+
+			</Text>
+		</Language>
+
+		<Events>
+			<OnBehavior>
+				(if (not (objIsAbandoned gSource))
+					(block (totalDefenders)
+						; Count the number of defenders
+						(setq totalDefenders (count (sysFindObject gSource "TAN:25; +teraton; -populated;")))
+						(setq optimalDefenders (add 3 (typGetGlobalData &baTeratonNestBase; "nestsDestroyed")))
+						
+						(if (ls totalDefenders optimalDefenders)
+							(terCreateDefender gSource)
+							)
+						)
+					)
+			</OnBehavior>
+			
+			<OnCreate>
+				(block Nil
+					; Create some defenders
+					(for i 1 (random 3 5)
+						(block (thePos theObj)
+							(setq thePos (sysVectorRandom gSource (random 7 20) 4 "t"))
+							(setq theObj (sysCreateStation &stTeratonDefender; thePos))
+							(objAddSubordinate gSource theObj)
+							)
+						)
+					
+					; Register update event
+					(sysAddObjRecurringTimerEvent 301 gSource "OnBehavior")
+					)
+			</OnCreate>
+
+			<OnDestroy>
+				(block (playerItems)
+					; Keep track of stations destroyed
+					(typIncGlobalData &baTeratonNestBase; "nestsDestroyed")
+					
+					; Before we destroy items on the station, take away any items
+					; that we took from the player; these have a greater chance of showing
+					; up.
+					
+					(setq playerItems (filter (objGetItems gSource "*") theItem (itmGetData theItem "001F2001_fromPlayer")))
+					(enum playerItems theItem (objRemoveItem gSource theItem))
+					
+					; Destroy items on the station
+					(rpgDestroyItems gSource)
+					
+					; Add back the player items
+					(enum playerItems theItem
+						(if (leq (random 1 100) 90)
+							(objAddItem gSource (itmSetData theItem "001F2001_fromPlayer" Nil (itmGetCount theItem)))
+							)
+						)
+					)
+			</OnDestroy>
+		</Events>
+	</Type>
+	
 	<Globals>
 		(block Nil
 			(setq intConsumeItem (lambda (theObj theItem)

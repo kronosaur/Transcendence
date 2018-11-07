@@ -28,9 +28,11 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"--vcu r---- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="60"
+				systemCriteria=			"+sungSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"--vcu r---- ----- ----- -----"
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"60"
 				/>
 
 		<!-- Trade and Items -->

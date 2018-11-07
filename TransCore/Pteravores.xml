@@ -13,6 +13,8 @@
 			alignment="destructive chaos"
 			/>
 
+<!-- ENCOUNTERS -->
+
 	<!-- Pteravore Lair -->
 
 	<StationType UNID="&stPteravoreLair;"
@@ -31,9 +33,19 @@
 			ejectaType=			"&vtStoneAsteroidEjecta;"
 
 			attributes=			"asteroidBase, chitometallicEco, enemy, envFire, envAvoidsWater, galacticCreature, generic, pteravore, score"
-			levelFrequency=		"----- ----r cur-- ----- -----"
-			locationCriteria=	"++asteroids, +++chitometallicEco"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				distanceCriteria=		"+nodeID:G2;"
+				distanceFrequency=		"ccccc|rv---"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"----- ----r cuur- ----- -----"
+
+				locationCriteria=		"++asteroids"
+				enemyExclusionRadius=	"80"
+				/>
 
 		<ImageVariants>
 			<Image	imageID="&rsPteravoreLair;" imageX="0"	 imageY="0" imageWidth="150" imageHeight="150"/>

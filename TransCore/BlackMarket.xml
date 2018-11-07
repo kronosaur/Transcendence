@@ -15,128 +15,7 @@ PLAYER DATA
 	
 -->
 
-<!-- SHIP CLASSES -->
-
-	<!-- Molotok-class Heavy Gunship -->
-
-	<ShipClass UNID="&scMolotok;"
-			manufacturer=		"Makayev-Energia"
-			class=				"Molotok"
-			type=				"heavy gunship"
-			defaultSovereign=	"&svBlackMarket;"
-
-			attributes=			"blackMarket, genericClass, outlaws"
-			inherit=			"&baHumanTechShip;"
-			>
-
-		<!-- Hull -->
-
-		<Hull
-			size=				"27"
-			mass=				"144"
-			cargoSpace=			"50"
-
-			maxReactorPower=	"10000"
-			maxCargoSpace=		"100"
-			maxDevices=			"8"
-
-			stdArmor=			"4000"
-			maxArmor=			"16000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"0"
-			/>
-
-		<Drive
-			maxSpeed=			"22"
-			thrust=				"2000"
-			/>
-
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<!-- Configuration -->
-
-		<Armor
-			armorID=			"&itCeralloyArmor;"
-			count=				"4"
-			/>
-
-		<Devices>
-			<Device deviceID="&itDragonflyMissileSystem;">
-				<Items>
-					<Item count="20d6" item="&itDragonflyCartridge;"/>
-				</Items>
-			</Device>
-			<Device deviceID="&itMAGLauncher;" secondaryWeapon="true" minFireArc="330" maxFireArc="30" posAngle="0" posRadius="16" posZ="0">
-				<Items>
-					<Item count="20d6" item="&it800HexageneMAG;"/>
-				</Items>
-			</Device>
-			<Device deviceID="&itClass3Deflector;"/>
-		</Devices>
-
-		<Items>
-			<Item count="2d6" item="&itHeliumAssembly;"/>
-		</Items>
-
-		<Image imageID="&rsMolotokHD;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.004875"/>
-		<Image imageID="&rsMolotokHero;" imageHeight="320" imageWidth="320"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="155"	posRadius="22"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-155"	posRadius="22"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-		<AISettings
-			fireRateAdj=		"25"
-			fireAccuracy=		"85"
-			perception=			"4"
-			
-			combatStyle=		"advanced"
-			/>
-
-		</ShipClass>
-		
-<!-- ITEM TYPES -->
-
-	<!-- Black Market Container -->
-
-	<ItemType UNID="&itBlackMarketContainer;"
-			name=				"sealed container with black markings"
-			level=				"5"
-			value=				"6500"
-			frequency=			"notrandom"
-			mass=				"1000"
-			attributes=			"Illegal; SealedContainer"
-
-			description=		"This is a sealed container generally used by the Sindikat to move illegal items around from system to system."
-			>
-
-		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
-	</ItemType>
-
-	<!-- Identification Chip, Black Market -->
-
-	<ItemType UNID="&itBlackMarketID;"
-			name=				"black market identification chip"
-			level=				"2"
-			value=				"250"
-			mass=				"1"
-			frequency=			"veryrare"
-			unknownType=		"&itUnknownID;"
-			attributes=			"BlackMarketID; ID; Illegal; MinorItem"
-
-			description=		"This identification chip is used by pirates and other outlaws to identify each other in the black market. Only people who have this chip can trade in the black market."
-
-			sortName=			"identification chip, black market"
-			>
-
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
-	</ItemType>
-	
-<!-- STATION TYPES -->
+<!-- ENCOUNTERS -->
 
 	<!-- Black Market Station -->
 
@@ -164,9 +43,12 @@ PLAYER DATA
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"-uccu v---- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"-uccu v---- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
 				/>
 
 		<!-- Trade and Items -->
@@ -558,9 +440,12 @@ PLAYER DATA
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"---uc crr-- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"---uc crr-- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
 				/>
 
 		<!-- Trade and Items -->
@@ -724,8 +609,11 @@ PLAYER DATA
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"rcuuu r---- ----- ----- -----"
-				locationCriteria=	"--planetary"
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"rcuuu r---- ----- ----- -----"
+
+				locationCriteria=		"--planetary"
 				/>
 
 		<!-- Trade and Items -->
@@ -834,6 +722,127 @@ PLAYER DATA
 		</Language>
 	</StationType>
     
+<!-- SHIP CLASSES -->
+
+	<!-- Molotok-class Heavy Gunship -->
+
+	<ShipClass UNID="&scMolotok;"
+			manufacturer=		"Makayev-Energia"
+			class=				"Molotok"
+			type=				"heavy gunship"
+			defaultSovereign=	"&svBlackMarket;"
+
+			attributes=			"blackMarket, genericClass, outlaws"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"27"
+			mass=				"144"
+			cargoSpace=			"50"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"100"
+			maxDevices=			"8"
+
+			stdArmor=			"4000"
+			maxArmor=			"16000"
+			maxArmorSpeedAdj=	"-2"
+			minArmorSpeedAdj=	"0"
+			/>
+
+		<Drive
+			maxSpeed=			"22"
+			thrust=				"2000"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itCeralloyArmor;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itDragonflyMissileSystem;">
+				<Items>
+					<Item count="20d6" item="&itDragonflyCartridge;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itMAGLauncher;" secondaryWeapon="true" minFireArc="330" maxFireArc="30" posAngle="0" posRadius="16" posZ="0">
+				<Items>
+					<Item count="20d6" item="&it800HexageneMAG;"/>
+				</Items>
+			</Device>
+			<Device deviceID="&itClass3Deflector;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHeliumAssembly;"/>
+		</Items>
+
+		<Image imageID="&rsMolotokHD;" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" viewportRatio="0.004875"/>
+		<Image imageID="&rsMolotokHero;" imageHeight="320" imageWidth="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="155"	posRadius="22"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-155"	posRadius="22"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			fireRateAdj=		"25"
+			fireAccuracy=		"85"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+		</ShipClass>
+		
+<!-- ITEM TYPES -->
+
+	<!-- Black Market Container -->
+
+	<ItemType UNID="&itBlackMarketContainer;"
+			name=				"sealed container with black markings"
+			level=				"5"
+			value=				"6500"
+			frequency=			"notrandom"
+			mass=				"1000"
+			attributes=			"Illegal; SealedContainer"
+
+			description=		"This is a sealed container generally used by the Sindikat to move illegal items around from system to system."
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Identification Chip, Black Market -->
+
+	<ItemType UNID="&itBlackMarketID;"
+			name=				"black market identification chip"
+			level=				"2"
+			value=				"250"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownID;"
+			attributes=			"BlackMarketID; ID; Illegal; MinorItem"
+
+			description=		"This identification chip is used by pirates and other outlaws to identify each other in the black market. Only people who have this chip can trade in the black market."
+
+			sortName=			"identification chip, black market"
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+	
 <!-- CODE -->
 
 	<Globals>

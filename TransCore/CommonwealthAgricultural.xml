@@ -30,10 +30,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"uuurr ----- ----- ----- -----"
-				locationCriteria=	"-asteroids, +lifeZone"
-				unique=				"inSystem"
-				exclusionRadius="80"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"uuurr ----- ----- ----- -----"
+
+				locationCriteria=		"-asteroids, +lifeZone"
+				exclusionRadius=		"80"
+
+				unique=					"inSystem"
 				/>
 
 		<Names noArticle="true">

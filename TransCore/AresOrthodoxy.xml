@@ -14,8 +14,8 @@
 	<SystemMap unid="&smAresSpace;"
 			displayOn="&smHumanSpace;"
 			>
-		<TopologyProcessor priority="primaryColony"	criteria="+outerRealm;">
-			<System attributes="aresSpace"/>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+outerRealm;" attributes="aresSpace"/>
 		</TopologyProcessor>
 	</SystemMap>
 
@@ -43,8 +43,13 @@
 		<!-- Encounter Info -->
 
 		<Encounter
+				systemCriteria=			"+humanSpace;"
+				distanceCriteria=		"+aresSpace;"
+				distanceFrequency=		"ccccc|rv---"
+				systemAffinity=			"*"
 				levelFrequency=			"----- rcur- ----- ----- -----"
-				locationCriteria=		"*aresSpace; -asteroids"
+
+				locationCriteria=		"-asteroids"
 				enemyExclusionRaduis=	"80"
 				/>
 
@@ -114,8 +119,13 @@
 		<!-- Encounter Info -->
 
 		<Encounter
+				systemCriteria=			"+humanSpace;"
+				distanceCriteria=		"+aresSpace;"
+				distanceFrequency=		"ccccu|v----"
+				systemAffinity=			"*"
 				levelFrequency=			"----- -vuur ----- ----- -----"
-				locationCriteria=		"*aresSpace; -asteroids"
+
+				locationCriteria=		"-asteroids"
 				enemyExclusionRadius=	"100"
 				/>
 
@@ -201,8 +211,13 @@
 		<!-- Encounter Info -->
 
 		<Encounter
+				systemCriteria=			"+humanSpace;"
+				distanceCriteria=		"+aresSpace;"
+				distanceFrequency=		"cccur|-----"
+				systemAffinity=			"*"
 				levelFrequency=			"----- --vuu ----- ----- -----"
-				locationCriteria=		"*aresSpace; -asteroids"
+
+				locationCriteria=		"-asteroids"
 				enemyExclusionRadius=	"150"
 				/>
 

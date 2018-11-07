@@ -3435,7 +3435,7 @@
 			obsoleteVersion="43"
 			>
 		<TopologyProcessor priority="primaryColony">
-			<System attributes="aresSpace"/>
+			<System attributes="aresSpace, commonwealthCore, commonwealthSpace"/>
 		</TopologyProcessor>
 	</SystemMap>
 

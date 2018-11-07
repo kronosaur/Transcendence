@@ -41,6 +41,15 @@
 		</Language>
 	</Sovereign>
 
+	<SystemMap unid="&smFerianSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+ringerSpace;"			attributes="ferianSpace"/>
+			<System criteria="+ungoverned; +envEarth;"	attributes="ferianSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
 <!-- ENCOUNTERS -->
 	
 	<!-- Level 6: Ferian Colony
@@ -79,8 +88,11 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"---ru ccr-- ----- ----- -----"
-				locationCriteria=	"++asteroids"
+				systemCriteria=			"+ferianSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"---ru ccr-- ----- ----- -----"
+
+				locationCriteria=		"++asteroids"
 				/>
 
 		<!-- Trade and Items -->

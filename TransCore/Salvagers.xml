@@ -14,6 +14,82 @@
 			alignment="neutral"
 			/>
 
+	<SystemMap unid="&smSalvagerSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+newBeyond;"		attributes="salvagerSpace"/>
+			<System criteria="+ungoverned;"		attributes="salvagerSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- ENCOUNTERS -->
+
+	<!-- Salvager Encounter -->
+
+	<StationType UNID="&stSalvagerEncounter;"
+			name=				"(salvager encounter)"
+			sovereign=			"&svUnknownEnemy;"
+			dockScreen=			"&dsAbandonedShip;"
+
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"debris, friendly, shipwreck"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+salvagerSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"ruurv ----- ----- ----- -----"
+
+				locationCriteria=		"--planetary"
+				/>
+
+		<ImageVariants>
+			<Shipwreck class="&scBorer;"/>
+			<Shipwreck class="&scEarthzone;"/>
+			<Shipwreck class="&scRoninA;"/>
+		</ImageVariants>
+
+		<Ships>
+			<Ship	count="1"	class="&scSalvagerNomad;" orders="scavenge"		sovereign="&svSalvagers;"/>
+		</Ships>
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem1;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem1;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+<!-- SHIP CLASSES -->
+
 	<!-- Salvager Nomad -->
 
 	<ShipClass UNID="&scSalvagerNomad;"
@@ -117,61 +193,7 @@
 
 	</ShipClass>
 
-	<!-- Salvager Encounter -->
-
-	<StationType UNID="&stSalvagerEncounter;"
-			name=				"(salvager encounter)"
-			sovereign=			"&svUnknownEnemy;"
-			dockScreen=			"&dsAbandonedShip;"
-
-			scale=				"ship"
-			mobile=				"true"
-			noMapIcon=			"true"
-
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"debris, friendly, shipwreck"
-			levelFrequency=		"ruurv ----- ----- ----- -----"
-			locationCriteria=	"--planetary"
-			>
-		<ImageVariants>
-			<Shipwreck class="&scBorer;"/>
-			<Shipwreck class="&scEarthzone;"/>
-			<Shipwreck class="&scRoninA;"/>
-		</ImageVariants>
-
-		<Ships>
-			<Ship	count="1"	class="&scSalvagerNomad;" orders="scavenge"		sovereign="&svSalvagers;"/>
-		</Ships>
-
-		<Items>
-			<Table>
-				<Null	chance="20"/>
-				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
-				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
-				<Lookup chance="25" count="1"	table="&trMinorItem1;"/>
-				<Lookup chance="10" count="1"	table="&trMajorItem1;"/>
-			</Table>
-		</Items>
-
-		<Events>
-			<GetExplosionType>
-				(intContainerGetExplosionType gSource)
-			</GetExplosionType>
-
-			<OnDamage>
-				(intContainerOnDamage gSource aDamageHP)
-			</OnDamage>
-		</Events>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"48"
-				maxDist=		"3"
-				/>
-	</StationType>
-
-	<!-- Resources -->
+<!-- RESOURCES -->
 
 	<Image UNID="&rsSalvagerNomad;"				bitmap="Resources\SalvagerNomad.jpg"		bitmask="Resources\SalvagerNomadMask.bmp"  loadOnUse="true"/>
 	

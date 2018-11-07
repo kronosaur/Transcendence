@@ -4,6 +4,367 @@
 
 <!-- Outlaws ============================================================== -->
 
+	<Sovereign UNID="&svOutlaw;"
+			name="Outlaws"
+			alignment="destructive order"
+			/>
+
+	<SystemMap unid="&smOutlawSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+humanSpace;"	attributes="outlawSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- ENCOUNTERS -->
+
+	<!-- Outlaw Convoy Encounter -->
+
+	<StationType UNID="&stOutlawConvoyEncounter;"
+			name=				"(outlaw convoy)"
+			sovereign=			"&svIndependentTrader;"
+
+			attributes=			"debris, envWater, envAvoidsEarth, friendly, outlaw"
+
+			dockScreen=			"&dsRPGAbandonedStation;"
+
+			scale=				"ship"
+			size=				"20"
+			mass=				"50"
+			structuralHitPoints="20"
+
+			mobile=				"true"
+			noMapIcon=			"true"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"uuurv ----- ----- ----- -----"
+
+				locationCriteria=		"--planetary"
+				/>
+
+		<Names>abandoned cargo container</Names>
+
+		<!-- Items -->
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem1;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem1;"/>
+			</Table>
+		</Items>
+
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Ship	count="1"	class="&scT31ArmedTransport;" orders="tradeRoute"	sovereign="&svBlackMarket;">
+				<Items>
+					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
+					<Lookup					count="1d2+1" table="&trIllegalItems2;"/>
+					<Table>
+						<Lookup chance="40" count="1" table="&trConsumables2;"/>
+						<Lookup chance="40" count="1" table="&trMinorItem2;"/>
+						<Lookup chance="20" count="1" table="&trMajorItem2;"/>
+					</Table>
+				</Items>
+
+				<Escorts>
+					<Ship     count="1d4"	class="&scZulu;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+		<!-- Image and Effects
+		
+			Abandoned containers are mostly yellow, with a small chance of other
+			colors.
+
+		-->
+
+		<ImageVariants>
+			<Image	imageID="&rsCargoContainer;"	imageX="0"   imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="56"  imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="112" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="168" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="224" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="280" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="336" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="392" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+
+			<Image	imageID="&rsCargoContainer;"	imageX="0"   imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+			<Image	imageID="&rsCargoContainer;"	imageX="224" imageY="56"  imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"50"
+				maxDist=		"3"
+				/>
+
+		<!-- Events and Data -->
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+	</StationType>
+
+	<!-- Outlaw Base -->
+
+	<StationType UNID="&stOutlawBase;"
+			name=				"outlaw camp"
+			sovereign=			"&svOutlaw;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itUltraLightTitaniumArmor;"
+			hitPoints=			"50"
+			explosionType=		"&vtKineticExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, outlaws, populated"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"ucv-- ----- ----- ----- -----"
+
+				locationCriteria=		"--innerSystem, +planetary"
+				/>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Ships>
+			<Table>
+				<Ship chance="50"	count="1d4"	class="&scZulu;"		orders="guard"/>
+				<Group chance="25">
+					<Ship			count="1"	class="&scZulu;"		orders="guard"/>
+					<Ship			count="1"	class="&scZulu-II;"		orders="guard"/>
+				</Group>
+				<Ship chance="20"	count="1"	class="&scOromo;"		orders="guard"/>
+				<Ship chance="5"	count="1d2"	class="&scZulu-II;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Lookup chance="25" count="1d2" table="&trIllegalItems1;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables2;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem2;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem2;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbOutlawEncounters;"/>
+		</Encounters>
+
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 11
+					textID: 'rumor.commonwealthPub
+					}
+			</GetRumors>
+		</Events>
+
+		<Language>
+			<Text id="rumor.commonwealthPub">
+				You spend 5 credits on drinks. A young stationer next to you
+				comments that its a lot easier to get laudanum now that the
+				Outlaw base is in the system.
+			</Text>
+		</Language>
+	</StationType>
+
+	<!-- Outlaw Base 2 -->
+
+	<StationType UNID="&stOutlawBase2;"
+			name=				"outlaw base"
+			sovereign=			"&svOutlaw;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itCeramicPlate;"
+			hitPoints=			"90"
+            regen=              "1"
+			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, outlaws, populated"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"vcr-- ----- ----- ----- -----"
+
+				locationCriteria=		"--innerSystem, +planetary"
+				/>
+
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="20"	count="2d3"	class="&scZulu;"		orders="guard"/>
+				<Group chance="35">
+					<Ship			count="1d4"	class="&scZulu;"		orders="guard"/>
+					<Ship			count="1"	class="&scZulu-II;"		orders="guard"/>
+				</Group>
+				<Group chance="25">
+					<Ship			count="1d2"	class="&scZulu;"		orders="guard"/>
+					<Ship			count="1"	class="&scOromo;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scZulu-II;"		orders="guard"/>
+				<Ship chance="10"	count="1d3"	class="&scOromo;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Lookup					count="1d2" table="&trIllegalItems1;"/>
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables3;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbOutlawEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Outlaw Haven -->
+
+	<StationType UNID="&stOutlawHaven;"
+			name=				"outlaw haven"
+			sovereign=			"&svOutlaw;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyCeramicPlate;"
+			hitPoints=			"250"
+            regen=              "5"
+			fireRateAdj=		"30"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, outlawHaven, outlaws, populated"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"-vcr- ----- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, +planetary"
+				enemyExclusionRadius=	"100"
+				/>
+
+		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itLaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scZulu-II;"		orders="guard"/>
+					<Ship			count="1"	class="&scOromo;"		orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scZulu;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scOromo;"		orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scZulu-II;"		orders="guard"/>
+					<Ship			count="1"	class="&scSotho;"		orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d2"	class="&scOromo;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scOromo;"		orders="guard"/>
+				<Ship chance="10"	count="1d4"	class="&scSotho;"		orders="guard"/>
+			</Table>
+
+			<Ship class="&scT31ArmedTransport;" count="1d2" orders="gateOnThreat">
+				<Items>
+					<Item chance="50"	count="6d20" item="&itSmartCannonShell;"/>
+					<Group value="standard:level=3:x=1.3">
+						<Lookup				count="1d2+1" table="&trIllegalItems2;"/>
+						<Lookup chance="50"	count="1"	table="&trStdTreasure;"/>
+					</Group>
+				</Items>
+			</Ship>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="25"	count="1d6"	class="&scZulu;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scZulu-II;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scOromo;"		orders="guard"/>
+				<Ship chance="20"	count="1d4"	class="&scSotho;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables3;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbOutlawEncounters;"/>
+		</Encounters>
+	</StationType>
+
+<!-- SHIP CLASSES -->
+
 	<!-- Oromo-class Gunship -->
 
 	<ShipClass UNID="&scOromo;"
@@ -395,323 +756,6 @@
 
 	</ShipClass>
 
-	<!-- Outlaw Convoy Encounter -->
-
-	<StationType UNID="&stOutlawConvoyEncounter;"
-			name=				"(outlaw convoy)"
-			sovereign=			"&svIndependentTrader;"
-
-			attributes=			"debris, envAir, envAvoidsFire, friendly, outlaw"
-
-			dockScreen=			"&dsRPGAbandonedStation;"
-
-			scale=				"ship"
-			size=				"20"
-			mass=				"50"
-			structuralHitPoints="20"
-
-			mobile=				"true"
-			noMapIcon=			"true"
-			ejectaType=			"&vtWreckEjecta;"
-			>
-
-		<!-- Encounter Info -->
-
-		<Encounter
-				levelFrequency=		"uuurv ----- ----- ----- -----"
-				locationCriteria=	"--planetary"
-				/>
-
-		<Names>abandoned cargo container</Names>
-
-		<!-- Items -->
-
-		<Items>
-			<Table>
-				<Null	chance="20"/>
-				<Lookup chance="30" count="1d3" table="&trConsumables1;"/>
-				<Lookup chance="15" count="1"	table="&trConsumables2;"/>
-				<Lookup chance="25" count="1"	table="&trMinorItem1;"/>
-				<Lookup chance="10" count="1"	table="&trMajorItem1;"/>
-			</Table>
-		</Items>
-
-		<!-- Ships and Defenses -->
-
-		<Ships>
-			<Ship	count="1"	class="&scT31ArmedTransport;" orders="tradeRoute"	sovereign="&svBlackMarket;">
-				<Items>
-					<Item chance="50"		count="8d20" item="&itSmartCannonShell;"/>
-					<Lookup					count="1d2+1" table="&trIllegalItems2;"/>
-					<Table>
-						<Lookup chance="40" count="1" table="&trConsumables2;"/>
-						<Lookup chance="40" count="1" table="&trMinorItem2;"/>
-						<Lookup chance="20" count="1" table="&trMajorItem2;"/>
-					</Table>
-				</Items>
-
-				<Escorts>
-					<Ship     count="1d4"	class="&scZulu;"	orders="escort"/>
-				</Escorts>
-			</Ship>
-		</Ships>
-
-		<!-- Image and Effects
-		
-			Abandoned containers are mostly yellow, with a small chance of other
-			colors.
-
-		-->
-
-		<ImageVariants>
-			<Image	imageID="&rsCargoContainer;"	imageX="0"   imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="56"  imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="112" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="168" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="224" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="280" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="336" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="392" imageY="112" imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-
-			<Image	imageID="&rsCargoContainer;"	imageX="0"   imageY="0"   imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-			<Image	imageID="&rsCargoContainer;"	imageX="224" imageY="56"  imageWidth="56" imageHeight="56" viewportRatio="0.00406"/>
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"50"
-				maxDist=		"3"
-				/>
-
-		<!-- Events and Data -->
-
-		<Events>
-			<GetExplosionType>
-				(intContainerGetExplosionType gSource)
-			</GetExplosionType>
-
-			<OnDamage>
-				(intContainerOnDamage gSource aDamageHP)
-			</OnDamage>
-		</Events>
-	</StationType>
-
-	<!-- Outlaw Base -->
-
-	<StationType UNID="&stOutlawBase;"
-			name=				"outlaw camp"
-			sovereign=			"&svOutlaw;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itUltraLightTitaniumArmor;"
-			hitPoints=			"50"
-			explosionType=		"&vtKineticExplosion1;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
-			levelFrequency=		"ucv-- ----- ----- ----- -----"
-			locationCriteria=	"--innerSystem, +planetary"
-			>
-
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Ships>
-			<Table>
-				<Ship chance="50"	count="1d4"	class="&scZulu;"		orders="guard"/>
-				<Group chance="25">
-					<Ship			count="1"	class="&scZulu;"		orders="guard"/>
-					<Ship			count="1"	class="&scZulu-II;"		orders="guard"/>
-				</Group>
-				<Ship chance="20"	count="1"	class="&scOromo;"		orders="guard"/>
-				<Ship chance="5"	count="1d2"	class="&scZulu-II;"		orders="guard"/>
-			</Table>
-		</Ships>
-
-		<Items>
-			<Lookup chance="25" count="1d2" table="&trIllegalItems1;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables2;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem2;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem2;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="common">
-			<Lookup table="&tbOutlawEncounters;"/>
-		</Encounters>
-
-		<Events>
-			<GetRumors>
-				{
-					attributes: "commonwealthPub"
-					priority: 11
-					textID: 'rumor.commonwealthPub
-					}
-			</GetRumors>
-		</Events>
-
-		<Language>
-			<Text id="rumor.commonwealthPub">
-				You spend 5 credits on drinks. A young stationer next to you
-				comments that its a lot easier to get laudanum now that the
-				Outlaw base is in the system.
-			</Text>
-		</Language>
-	</StationType>
-
-	<!-- Outlaw Base 2 -->
-
-	<StationType UNID="&stOutlawBase2;"
-			name=				"outlaw base"
-			sovereign=			"&svOutlaw;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itCeramicPlate;"
-			hitPoints=			"90"
-            regen=              "1"
-			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlaws, populated"
-			levelFrequency=		"vcr-- ----- ----- ----- -----"
-			locationCriteria=	"--innerSystem, +planetary"
-			>
-
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
-
-		<Devices>
-			<Device deviceID="&itLaserCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Table>
-				<Ship chance="20"	count="2d3"	class="&scZulu;"		orders="guard"/>
-				<Group chance="35">
-					<Ship			count="1d4"	class="&scZulu;"		orders="guard"/>
-					<Ship			count="1"	class="&scZulu-II;"		orders="guard"/>
-				</Group>
-				<Group chance="25">
-					<Ship			count="1d2"	class="&scZulu;"		orders="guard"/>
-					<Ship			count="1"	class="&scOromo;"		orders="guard"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scZulu-II;"		orders="guard"/>
-				<Ship chance="10"	count="1d3"	class="&scOromo;"		orders="guard"/>
-			</Table>
-		</Ships>
-
-		<Items>
-			<Lookup					count="1d2" table="&trIllegalItems1;"/>
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="common">
-			<Lookup table="&tbOutlawEncounters;"/>
-		</Encounters>
-
-	</StationType>
-
-	<!-- Outlaw Haven -->
-
-	<StationType UNID="&stOutlawHaven;"
-			name=				"outlaw haven"
-			sovereign=			"&svOutlaw;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"250"
-            regen=              "5"
-			fireRateAdj=		"30"
-			explosionType=		"&vtKineticExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, outlawHaven, outlaws, populated"
-			levelFrequency=		"-vcr- ----- ----- ----- -----"
-			locationCriteria=	"+outerSystem, +planetary"
-			enemyExclusionRadius="100"
-			>
-
-		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
-
-		<Devices>
-			<Device deviceID="&itLaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
-			<Device deviceID="&itLaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
-		</Devices>
-
-		<Ships>
-			<Table>
-				<Group chance="20">
-					<Ship			count="1d4"	class="&scZulu-II;"		orders="guard"/>
-					<Ship			count="1"	class="&scOromo;"		orders="guard"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1d4"	class="&scZulu;"		orders="guard"/>
-					<Ship			count="1d2"	class="&scOromo;"		orders="guard"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1d4"	class="&scZulu-II;"		orders="guard"/>
-					<Ship			count="1"	class="&scSotho;"		orders="guard"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1d2"	class="&scOromo;"		orders="guard"/>
-					<Ship			count="1d2"	class="&scSotho;"		orders="guard"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scOromo;"		orders="guard"/>
-				<Ship chance="10"	count="1d4"	class="&scSotho;"		orders="guard"/>
-			</Table>
-
-			<Ship class="&scT31ArmedTransport;" count="1d2" orders="gateOnThreat">
-				<Items>
-					<Item chance="50"	count="6d20" item="&itSmartCannonShell;"/>
-					<Group value="standard:level=3:x=1.3">
-						<Lookup				count="1d2+1" table="&trIllegalItems2;"/>
-						<Lookup chance="50"	count="1"	table="&trStdTreasure;"/>
-					</Group>
-				</Items>
-			</Ship>
-		</Ships>
-
-		<Reinforcements minShips="6">
-			<Table>
-				<Ship chance="25"	count="1d6"	class="&scZulu;"		orders="guard"/>
-				<Ship chance="35"	count="1d3"	class="&scZulu-II;"		orders="guard"/>
-				<Ship chance="20"	count="1d2"	class="&scOromo;"		orders="guard"/>
-				<Ship chance="20"	count="1d4"	class="&scSotho;"		orders="guard"/>
-			</Table>
-		</Reinforcements>
-
-		<Items>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem3;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="common">
-			<Lookup table="&tbOutlawEncounters;"/>
-		</Encounters>
-	</StationType>
-
 	<ShipTable UNID="&tbOutlawEncounters;">
 		<LevelTable>
 			<Ship levelFrequency="ucv-- -----" count="1"	class="&scZulu;" eventHandler="&evStdPatrolEncounterBehavior;">
@@ -800,6 +844,8 @@
 			</Ship>
 		</LevelTable>
 	</ShipTable>
+
+<!-- RESOURCES -->
 	
 	<Image UNID="&rsOromo;"				bitmap="Resources\Oromo.jpg"		bitmask="Resources\OromoMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsSotho;"				bitmap="Resources\Sotho.jpg"		bitmask="Resources\SothoMask.bmp"  loadOnUse="true"/>

@@ -2,9 +2,9 @@
 
 <TranscendenceModule>
 
-	<!-- Tinker's Guild
+<!-- Tinker's Guild
 
-	-->
+-->
 	
 	<Sovereign UNID="&svTinkers;"
 			name=":the Tinkers Guild"
@@ -45,6 +45,17 @@
 		</GlobalData>
 	</Sovereign>
 
+	<SystemMap unid="&smTinkerSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+newBeyond;"		attributes="tinkerSpace"/>
+			<System criteria="+ungoverned;"		attributes="tinkerSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- ENCOUNTERS -->
+
 	<!-- Tinker Gathering -->
 
 	<StationType UNID="&stTinkerGathering;"
@@ -72,10 +83,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"uccuu r---- ----- ----- -----"
-				locationCriteria=	"+asteroids, -asteroidbelt"
-				unique=				"inSystem"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+tinkerSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"uccuu r---- ----- ----- -----"
+
+				locationCriteria=		"+asteroids, -asteroidbelt"
+				enemyExclusionRadius=	"50"
+
+				unique=					"inSystem"
 				/>
 
 		<Names noArticle="true">

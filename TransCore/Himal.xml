@@ -14,6 +14,14 @@
 			alignment="destructive order"
 			/>
 
+	<SystemMap unid="&smHimalSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+newBeyond;"	attributes="himalSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
 <!-- ENCOUNTERS -->
 
 	<!-- Level 1: Himal Refuge -->
@@ -42,8 +50,11 @@
 		<!-- Encounter Info -->
 		
 		<Encounter
-				levelFrequency=		"curv- ----- ----- ----- -----"
-				locationCriteria=	"+outerSystem, -planetary"
+				systemCriteria=			"+himalSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"curv- ----- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -planetary"
 				enemyExclusionRadius="50"
 				/>
 
