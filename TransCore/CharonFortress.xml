@@ -249,7 +249,7 @@
 
 			<FillLocations
 					count=				"1d4" 
-					stationCriteria=	"!primary,!debris,+envAir,-envAvoidsAir,!korolovShipping" 
+					stationCriteria=	"!primary, !debris, !korolovShipping" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
