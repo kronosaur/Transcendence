@@ -184,7 +184,7 @@
 
 		<Encounter
 				systemCriteria=			"+commonwealthSpace;"
-				systemAffinity=			"*"
+				systemAffinity=			"+commonwealthCore;"
 				levelFrequency=			"cuc-- ----- ----- ----- -----"
 
 				locationCriteria=		"-outerSystem, +planetary"
@@ -441,7 +441,7 @@
 
 		<Encounter
 				systemCriteria=			"+commonwealthSpace;"
-				systemAffinity=			"*"
+				systemAffinity=			"+commonwealthCore;"
 				levelFrequency=			"---uu cu--- ----- ----- -----"
 
 				locationCriteria=		"+planetary"

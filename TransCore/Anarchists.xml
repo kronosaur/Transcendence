@@ -9,11 +9,11 @@
 			alignment="destructive chaos"
 			/>
 
-	<SystemMap unid="&smAnarchistsSpace;"
+	<SystemMap unid="&smAnarchistSpace;"
 			displayOn="&smHumanSpace;"
 			>
 		<TopologyProcessor priority="tertiaryColony">
-			<System criteria="+corporateSpace;"	attributes="anarchistsSpace"/>
+			<System criteria="+corporateSpace;"	attributes="anarchistSpace"/>
 		</TopologyProcessor>
 	</SystemMap>
 
@@ -40,7 +40,7 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				systemCriteria=			"+anarchistsSpace;"
+				systemCriteria=			"+anarchistSpace;"
 				systemAffinity=			"+envEarth; -envAir;"
 				levelFrequency=			"cuv-- ----- ----- ----- -----"
 
@@ -105,7 +105,7 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				systemCriteria=			"+anarchistsSpace;"
+				systemCriteria=			"+anarchistSpace;"
 				systemAffinity=			"+envEarth; -envAir;"
 				levelFrequency=			"rcuv- ----- ----- ----- -----"
 
@@ -236,7 +236,7 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				systemCriteria=			"+anarchistsSpace;"
+				systemCriteria=			"+anarchistSpace;"
 				systemAffinity=			"+envEarth; -envAir;"
 				levelFrequency=			"-rcuv ----- ----- ----- -----"
 

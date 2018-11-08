@@ -84,7 +84,7 @@
 		</Language>
 	</Sovereign>
 
-	<SystemMap unid="&smHuariSpace;"
+	<SystemMap unid="&smHuariSpaceAttribs;"
 			displayOn="&smHumanSpace;"
 			>
 		<TopologyProcessor priority="secondaryColony">

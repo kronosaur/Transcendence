@@ -3435,7 +3435,7 @@
 			obsoleteVersion="43"
 			>
 		<TopologyProcessor priority="primaryColony">
-			<System attributes="aresSpace, commonwealthCore, commonwealthSpace"/>
+			<System attributes="abbasidSpace, anarchistSpace, aresSpace, centauriWarlordsSpace, commonwealthCore, commonwealthSpace, corporateCore, corporateSpace, cscOperationsSpace, dwargSpace, ferianSpace, gaianSpace, heliotropeSpace, himalSpace, kobolSpace, luminousSpace, outlawSpace, penitentSpace, ranxSpace, ringerSpace, rogueFleetSpace, salvagerSpace, sapiensSpace, sungSpace, teratonSpace, tinkerSpace, urakSpace, ventariSpace, xenophobeSpace"/>
 		</TopologyProcessor>
 	</SystemMap>
 
