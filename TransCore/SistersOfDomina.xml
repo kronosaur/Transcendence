@@ -69,10 +69,19 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envAir, envAvoidsFire, friendly, generic, human, majorStation, populated, religious, sistersOfDomina"
-			levelFrequency=		"ruccc ur--- ----- ----- -----"
-			unique=				"inSystem"
-			locationCriteria=	"-innerSystem, +planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"ruccc ur--- ----- ----- -----"
+
+				locationCriteria=		"-innerSystem, +planetary"
+
+				unique=					"inSystem"
+				/>
 
 		<Image			imageID="&rsStations1;" imageX="384" imageY="512" imageWidth="128" imageHeight="128"/>
 		<HeroImage		imageID="&rsSistersShrineHero;" imageWidth="324" imageHeight="528"/>

@@ -174,9 +174,12 @@
 		<!-- Encounter Info -->
 		
 		<Encounter
-				levelFrequency=		"ccur- ----- ----- ----- -----"
-				locationCriteria=	"+asteroids, -outerSystem"
-				enemyExclusionRadius="60"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"ccur- ----- ----- ----- -----"
+
+				locationCriteria=		"+asteroids, -outerSystem"
+				enemyExclusionRadius=	"60"
 				/>
 
 		<Names noArticle="true">Amundsen Mining Colony; Benin %1%0%0; Clementine Mining Association; Duralloy Dreams;

@@ -14,75 +14,187 @@
 			alignment="destructive chaos"
 			/>
 
-	<!-- Actinide Waste Cannon -->
+	<SystemMap unid="&smSapiensSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+newBeyond;"		attributes="sapiensSpace"/>
+			<System criteria="+ungoverned;"		attributes="sapiensSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-	<ItemType UNID="&itWasteCannon;"
-			name=				"actinide waste cannon"
-			attributes=			"illegal, majorItem, sapiens, notStandard;"
-			  
-			level=				"4"
-			frequency=			"rare"
+<!-- ENCOUNTERS -->
 
-			value=				"6200"
-			mass=				"6000"
-			  
-			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
+	<!-- Terrorist Camp -->
+
+	<StationType UNID="&stTerroristCamp;"
+			name=				"Sapiens camp"
+			sovereign=			"&svSapiens;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itHardenedReactiveArmor;"
+			hitPoints=			"120"
+            regen=              "1"
+			fireRateAdj=		"30"
+			explosionType=		"&vtRadioactiveExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCamp"
 			>
 
-		<Image imageID="&rsItems4;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Weapon
-				fireRate=			"30"
+		<Encounter
+				systemCriteria=			"+sapiensSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"-vcuv ----- ----- ----- -----"
 
-				type=				"missile"
-				repeating=			"3"
+				locationCriteria=		"+lifeZone"
+				enemyExclusionRadius=	"50"
+				/>
 
-				hitPoints=			"5"
-				lifetime=			"60"
-				damage=				"blast:1d8; radiation1; WMD1"
-				powerUse=			"60"
+		<ImageVariants>
+			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
 
-				missileSpeed=		"20"
-				
-				hitEffect=			"&efRadioactiveHitEffect;"
-				sound=				"&snLaserCannon;"
-				>
+		<Devices>
+			<Device deviceID="&itFlenserCannon;"	omnidirectional="true"/>
+		</Devices>
 
-			<Configuration aimTolerance="5">
-				<Shot angle="3d5-9"/>
-			</Configuration>
+		<Ships>
+			<Table>
+				<Ship chance="60" class="&scPlague;" count="1d4" orders="guard"/>
+				<Ship chance="30" class="&scRevelations;" count="1d2" orders="guard"/>
+				<Group chance="10">
+					<Ship class="&scPlague;" count="1" orders="guard"/>
+					<Ship class="&scRevelations;" count="1" orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Group value="standard:level=3:x=1.3">
+				<Item		chance="50"	count="1d4"	  item="&itFusionTrigger;"/>
+				<Item		chance="50"	count="1d6"	  item="&itRadioactiveWaste;"/>
+				<Lookup table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbSapiensEncounters;"/>
+		</Encounters>
+
+		<Events>
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 30
+					textID: 'rumor.commonwealthPub
+					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
+					}
+			</GetRumors>
+		</Events>
+
+		<Language>
+			<Text id="rumor.commonwealthPub">
+				You spend 5 credits and listen to a nuclear technician:
+
+				"I just got paid ten kilocreds to install a radiation room at
+				the Sapiens camp! Those flippers scare me&mdash;with all their
+				talk about 'human purity' they seem a little short on the
+				brain scale."
+			</Text>
+		</Language>
+	</StationType>
+
+	<!-- Terrorist Compound -->
+
+	<StationType UNID="&stTerroristCompound;"
+			name=				"Sapiens compound"
+			sovereign=			"&svSapiens;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHardenedReactiveArmor;"
+			hitPoints=			"320"
+            regen=              "6"
+			fireRateAdj=		"20"
+			explosionType=		"&vtRadioactiveExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCompound"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+sapiensSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"--vcu v---- ----- ----- -----"
+
+				locationCriteria=		"+lifeZone"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itNAMIMissileLauncher;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="20" class="&scPlague;" count="2d3" orders="guard"/>
+				<Ship chance="40" class="&scRevelations;" count="1d4" orders="guard"/>
+				<Group chance="40">
+					<Ship class="&scPlague;" count="1d2+1" orders="guard"/>
+					<Ship class="&scRevelations;" count="1" orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Group value="standard:level=4:x=2.0">
+				<Item chance="60"		count="2d8"	  item="&itXM300Missile;"/>
+				<Item chance="70"		count="4d8"	  item="&itFusionTrigger;"/>
+				<Item chance="60"		count="2d6"   item="&itRadioactiveWaste;"/>
+				<Lookup chance="50"						table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbSapiensEncounters;"/>
+		</Encounters>
+		
+		<Events>
+			<OnCreate>
+				(sysAddObjRecurringTimerEvent 150 gSource "OnProduceMissiles")
+			</OnCreate>
 			
-			<Effect>
-				<Orb	style=			"fireblast"
-						animate=		"explode"
-						lifetime=		"60"
-
-						blendMode=		"screen"
-						primaryColor=	"#00ff2b"
-						secondaryColor=	"#008015"
-						>
-					<Events>
-						<GetParameters>
-							(block (
-								(damageHP (@ gData 'damageHP))
-								(weaponUNID (@ gData 'weaponUNID))
+			<OnProduceMissiles>
+				(if (not (objIsAbandoned gSource))
+					(block (reapers)
+						
+						;	check how many reaper missiles we have and produce more if we're going to run out
+						
+						(setq reapers (@ (objGetItems gSource "m +unid:&itXM300Missile;;") 0))
+						(if (or (not reapers) (ls (itmGetCount reapers) 16))
+							(objAddItem gSource
+								(itmCreate &itXM300Missile; (random 10 40))		;	produce between 10 and 40 missiles
 								)
-							
-								{
-									radius: (if (= damageHP 0) 10 (mathScale damageHP 5 64 20 45 50))
-									;lifetime: (if (= damageHP 0) 4 (mathScale damageHP 5 64 12 48 50))
-								
-									intensity: (seededRandom weaponUNID 50 70)
-									distortion: (mathScale damageHP 5 64 50 0 100)
-									detail: (seededRandom weaponUNID 20 25)
-									}
-								)
-						</GetParameters>
-					</Events>
-				</Orb>
-			</Effect>
-		</Weapon>
-	</ItemType>
+							)
+						)
+					)
+			</OnProduceMissiles>
+		</Events>
+	</StationType>
+	
+<!-- SHIP CLASSES -->
 
 	<!-- Plague Gunship -->
 
@@ -193,158 +305,78 @@
 
 	</ShipClass>
 
-	<!-- Terrorist Camp -->
+<!-- ITEM TYPES -->
 
-	<StationType UNID="&stTerroristCamp;"
-			name=				"Sapiens camp"
-			sovereign=			"&svSapiens;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
+	<!-- Actinide Waste Cannon -->
 
-			armorID=			"&itHardenedReactiveArmor;"
-			hitPoints=			"120"
-            regen=              "1"
-			fireRateAdj=		"30"
-			explosionType=		"&vtRadioactiveExplosion1;"
-			ejectaType=			"&vtWreckEjecta;"
+	<ItemType UNID="&itWasteCannon;"
+			name=				"actinide waste cannon"
+			attributes=			"illegal, majorItem, sapiens, notStandard;"
+			  
+			level=				"4"
+			frequency=			"rare"
 
-			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCamp"
-			levelFrequency=		"-vcuv ----- ----- ----- -----"
-			locationCriteria=	"+lifeZone"
+			value=				"6200"
+			mass=				"6000"
+			  
+			description=		"The actinide waste cannon is a dirty weapon that shoots out a cloud of radioactive debris."
 			>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
+		<Image imageID="&rsItems4;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
 
-		<Devices>
-			<Device deviceID="&itFlenserCannon;"	omnidirectional="true"/>
-		</Devices>
+		<Weapon
+				fireRate=			"30"
 
-		<Ships>
-			<Table>
-				<Ship chance="60" class="&scPlague;" count="1d4" orders="guard"/>
-				<Ship chance="30" class="&scRevelations;" count="1d2" orders="guard"/>
-				<Group chance="10">
-					<Ship class="&scPlague;" count="1" orders="guard"/>
-					<Ship class="&scRevelations;" count="1" orders="guard"/>
-				</Group>
-			</Table>
-		</Ships>
+				type=				"missile"
+				repeating=			"3"
 
-		<Items>
-			<Group value="standard:level=3:x=1.3">
-				<Item		chance="50"	count="1d4"	  item="&itFusionTrigger;"/>
-				<Item		chance="50"	count="1d6"	  item="&itRadioactiveWaste;"/>
-				<Lookup table="&trStdTreasure;"/>
-			</Group>
-		</Items>
+				hitPoints=			"5"
+				lifetime=			"60"
+				damage=				"blast:1d8; radiation1; WMD1"
+				powerUse=			"60"
 
-		<Encounters frequency="common">
-			<Lookup table="&tbSapiensEncounters;"/>
-		</Encounters>
+				missileSpeed=		"20"
+				
+				hitEffect=			"&efRadioactiveHitEffect;"
+				sound=				"&snLaserCannon;"
+				>
 
-		<Events>
-			<GetRumors>
-				{
-					attributes: "commonwealthPub"
-					priority: 30
-					textID: 'rumor.commonwealthPub
-					onExitRumor: (lambda (theRumor) (objSetKnown (@ theRumor 'sourceObj)))
-					}
-			</GetRumors>
-		</Events>
-
-		<Language>
-			<Text id="rumor.commonwealthPub">
-				You spend 5 credits and listen to a nuclear technician:
-
-				"I just got paid ten kilocreds to install a radiation room at
-				the Sapiens camp! Those flippers scare me&mdash;with all their
-				talk about 'human purity' they seem a little short on the
-				brain scale."
-			</Text>
-		</Language>
-	</StationType>
-
-	<!-- Terrorist Compound -->
-
-	<StationType UNID="&stTerroristCompound;"
-			name=				"Sapiens compound"
-			sovereign=			"&svSapiens;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itHardenedReactiveArmor;"
-			hitPoints=			"320"
-            regen=              "6"
-			fireRateAdj=		"20"
-			explosionType=		"&vtRadioactiveExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated, sapiens, sapiensCompound"
-			levelFrequency=		"--vcu v---- ----- ----- -----"
-			locationCriteria=	"+lifeZone"
-			enemyExclusionRadius="50"
-			>
-
-		<Image			imageID="&rsStations1;" imageX="0" imageY="256" imageWidth="128" imageHeight="128"/>
-
-		<Devices>
-			<Device deviceID="&itNAMIMissileLauncher;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Table>
-				<Ship chance="20" class="&scPlague;" count="2d3" orders="guard"/>
-				<Ship chance="40" class="&scRevelations;" count="1d4" orders="guard"/>
-				<Group chance="40">
-					<Ship class="&scPlague;" count="1d2+1" orders="guard"/>
-					<Ship class="&scRevelations;" count="1" orders="guard"/>
-				</Group>
-			</Table>
-		</Ships>
-
-		<Items>
-			<Group value="standard:level=4:x=2.0">
-				<Item chance="60"		count="2d8"	  item="&itXM300Missile;"/>
-				<Item chance="70"		count="4d8"	  item="&itFusionTrigger;"/>
-				<Item chance="60"		count="2d6"   item="&itRadioactiveWaste;"/>
-				<Lookup chance="50"						table="&trStdTreasure;"/>
-			</Group>
-		</Items>
-
-		<Encounters frequency="common">
-			<Lookup table="&tbSapiensEncounters;"/>
-		</Encounters>
-		
-		<Events>
-			<OnCreate>
-				(sysAddObjRecurringTimerEvent 150 gSource "OnProduceMissiles")
-			</OnCreate>
+			<Configuration aimTolerance="5">
+				<Shot angle="3d5-9"/>
+			</Configuration>
 			
-			<OnProduceMissiles>
-				(if (not (objIsAbandoned gSource))
-					(block (reapers)
-						
-						;	check how many reaper missiles we have and produce more if we're going to run out
-						
-						(setq reapers (@ (objGetItems gSource "m +unid:&itXM300Missile;;") 0))
-						(if (or (not reapers) (ls (itmGetCount reapers) 16))
-							(objAddItem gSource
-								(itmCreate &itXM300Missile; (random 10 40))		;	produce between 10 and 40 missiles
+			<Effect>
+				<Orb	style=			"fireblast"
+						animate=		"explode"
+						lifetime=		"60"
+
+						blendMode=		"screen"
+						primaryColor=	"#00ff2b"
+						secondaryColor=	"#008015"
+						>
+					<Events>
+						<GetParameters>
+							(block (
+								(damageHP (@ gData 'damageHP))
+								(weaponUNID (@ gData 'weaponUNID))
 								)
-							)
-						)
-					)
-			</OnProduceMissiles>
-		</Events>
-	</StationType>
-	
+							
+								{
+									radius: (if (= damageHP 0) 10 (mathScale damageHP 5 64 20 45 50))
+									;lifetime: (if (= damageHP 0) 4 (mathScale damageHP 5 64 12 48 50))
+								
+									intensity: (seededRandom weaponUNID 50 70)
+									distortion: (mathScale damageHP 5 64 50 0 100)
+									detail: (seededRandom weaponUNID 20 25)
+									}
+								)
+						</GetParameters>
+					</Events>
+				</Orb>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
 	<!-- Sapiens Encounter Table -->
 	
 	<ShipTable unid="&tbSapiensEncounters;">
@@ -382,7 +414,7 @@
 		</LevelTable>
 	</ShipTable>
 
-	<!-- Resources -->
+<!-- RESOURCES -->
 
 	<Image UNID="&rsPlagueHD;"				bitmap="Resources\PlagueHD.jpg"			bitmask="Resources\PlagueHDMask.bmp"		loadOnUse="true"/>
 	<Image UNID="&rsRevelationsHD;"			bitmap="Resources\RevelationsHD.jpg"	bitmask="Resources\RevelationsHDMask.bmp"	loadOnUse="true"/>

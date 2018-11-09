@@ -152,9 +152,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"---cc ur--- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="75"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"---cc ur--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"75"
+
+				unique=					"inSystem"
 				/>
 
 		<!-- Trade and Items -->

@@ -14,22 +14,16 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Abbasid Thanogram -->
-
-	<ItemType UNID="&itAbbasidThanogram;"
-			name=				"Abbasid thanogram"
-			level=				"3"
-			value=				"500"
-			mass=				"5"
-			frequency=			"veryrare"
-			attributes=			"Consumable; Info; Soul; NotForSale"
-
-			description=		"This is a neural network initialized from the cerebral patterns of one or more Scholars of Abbasid. The legal, ethical, and moral knowledge of the Abbasid is contained and interpreted by these constructs."
+	<SystemMap unid="&smAbbasidSpace;"
+			displayOn="&smHumanSpace;"
 			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+newBeyond;"	attributes="abbasidSpace"/>
+			<System criteria="+ungoverned;"	attributes="abbasidSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
-
-	</ItemType>
+<!-- STATION TYPES -->
 
 	<!-- Abbasid Outpost -->
 
@@ -49,10 +43,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envFire, envAvoidsWater, generic, human, populated"
-			levelFrequency=		"ccur- ----- ----- ----- -----"
-			locationCriteria=	"+outerSystem, -planetary"
-			enemyExclusionRadius="100"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+abbasidSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"ccur- ----- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -planetary"
+				enemyExclusionRadius=	"100"
+				/>
 
 		<Image			imageID="&rsStations1;" imageX="256" imageY="512" imageWidth="128" imageHeight="128"/>
 
@@ -101,6 +103,7 @@
 
 		<Language>
 			<Text id="rumor.commonwealthPub">
+
 				A woman weeps softly as she tells her story:
 
 				"Our freighter strayed near an Abbasid outpost by mistake.
@@ -109,8 +112,28 @@
 				our cabin got hit and my husband..."
 
 				She stares into space and says no more. You leave 5 credits for her drinks.
+
 			</Text>
 		</Language>
 	</StationType>
+
+<!-- ITEM TYPES -->
+
+	<!-- Abbasid Thanogram -->
+
+	<ItemType UNID="&itAbbasidThanogram;"
+			name=				"Abbasid thanogram"
+			level=				"3"
+			value=				"500"
+			mass=				"5"
+			frequency=			"veryrare"
+			attributes=			"Consumable; Info; Soul; NotForSale"
+
+			description=		"This is a neural network initialized from the cerebral patterns of one or more Scholars of Abbasid. The legal, ethical, and moral knowledge of the Abbasid is contained and interpreted by these constructs."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="288" imageWidth="96" imageHeight="96"/>
+
+	</ItemType>
 
 </TranscendenceModule>

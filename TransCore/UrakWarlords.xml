@@ -12,6 +12,241 @@
 			alignment="destructive order"
 			/>
 
+	<SystemMap unid="&smUrakSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+newBeyond;"		attributes="urakSpace"/>
+			<System criteria="+ungoverned;"		attributes="urakSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- ENCOUNTERS -->
+
+	<!-- Urak Outpost -->
+
+	<StationType UNID="&stUrakOutpost;"
+			name=				"Urak outpost"
+			sovereign=			"&svUrakWarlords;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itUrakArmorLight;"
+			hitPoints=			"60"
+			regen=				"1"
+			fireRateAdj=		"60"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+urakSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"-cuv- ----- ----- ----- -----"
+
+				locationCriteria=		"-innerSystem, -void"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations2;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itSlamCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
+		</Ships>
+
+		<Reinforcements minShips="3">
+			<Ship				count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
+		</Reinforcements>
+
+		<Items>
+			<Group value="standard:level=2:x=2.0">
+				<Table>
+					<Lookup chance="30" count="1" table="&trConsumables3;"/>
+					<RandomItem chance="30"
+							criteria=			"* +Res; -NotStandard;"
+							levelFrequency=		"rucur"
+							/>
+					<Item chance="15" count="1d4" item="&itUrakArmorLight;"/>
+					<Item chance="10" count="1" item="&itUrakMassDriver;"/>
+					<Lookup chance="10" count="1" table="&trMinorItem3;"/>
+					<Lookup chance="5" count="1" table="&trMajorItem3;"/>
+				</Table>
+			</Group>
+		</Items>
+
+		<DockingPorts>
+			<Port x="11"	y="60" />
+			<Port x="83"	y="44" />
+			<Port x="59"	y="-12" />
+			<Port x="54"	y="-81" />
+			<Port x="-19"	y="-60" />
+			<Port x="-88"	y="-51" />
+			<Port x="-60"	y="11" />
+			<Port x="-50"	y="74" />
+		</DockingPorts>
+	</StationType>
+
+	<!-- Urak Mine -->
+
+	<StationType UNID="&stUrakMine;"
+			name=				"Urak mine"
+			sovereign=			"&svUrakWarlords;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itUrakArmorLight;"
+			hitPoints=			"120"
+            regen=              "1"
+			fireRateAdj=		"60"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+urakSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"--cuv ----- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations3;" imageX="0" imageY="608" imageWidth="192" imageHeight="192"/>
+
+		<Devices>
+			<Device deviceID="&itUrakHowitzer;" omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
+		</Ships>
+
+		<Reinforcements minShips="3">
+			<Ship				count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
+		</Reinforcements>
+
+		<Items>
+			<RandomItem count="1d4"
+					criteria=			"* +Res; -NotStandard;"
+					levelFrequency=		"-uccu"
+					/>
+			<RandomItem chance="30"
+					criteria=			"* +Res; -NotStandard;"
+					levelFrequency=		"---uc cu---"
+					/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables3;"/>
+				<Item chance="25" count="1d4" item="&itUrakArmorLight;"/>
+				<Item chance="20" count="1" item="&itUrakMassDriver;"/>
+				<Lookup chance="10" count="1" table="&trMinorItem3;"/>
+				<Lookup chance="5" count="1" table="&trMajorItem3;"/>
+			</Table>
+		</Items>
+
+		<DockingPorts>
+			<Port x="-31"	y="100" />
+			<Port x="28"	y="122" />
+			<Port x="100"	y="99" />
+			<Port x="114"	y="32" />
+			<Port x="86"	y="-38" />
+			<Port x="32"	y="-60" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Urak Fortress -->
+
+	<StationType UNID="&stUrakFortress;"
+			name=				"Urak fortress(es)"
+			sovereign=			"&svUrakWarlords;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itUrakArmorHeavy;"
+			hitPoints=			"790"
+            regen=              "6"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envAvoidsFire, generic, human, majorStation, populated, urakFortress, urakWarlords"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+urakSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"---cu v---- ----- ----- -----"
+
+				locationCriteria=		"-innerSystem, -void"
+				enemyExclusionRadius=	"60"
+				/>
+
+		<Image			imageID="&rsStations4;" imageX="0" imageY="768" imageWidth="256" imageHeight="256"/>
+
+		<Devices>
+			<Device deviceID="&itUrakHowitzer;" omnidirectional="true" posAngle="90" posRadius="100"/>
+			<Device deviceID="&itUrakHowitzer;" omnidirectional="true" posAngle="210" posRadius="100"/>
+			<Device deviceID="&itUrakHowitzer;" omnidirectional="true" posAngle="330" posRadius="100"/>
+		</Devices>
+
+		<Ships>
+			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="4"/>
+			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="7"/>
+			<Ship				count="1"	class="&scUrakDestroyer;" orders="patrol" patrolDist="15"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Ship chance="35"		count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="4"/>
+				<Ship chance="35"		count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="7"/>
+				<Ship chance="30"		count="1"	class="&scUrakDestroyer;" orders="patrol" patrolDist="15"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Group value="standard:level=4:x=3.5">
+				<RandomItem
+						criteria=			"* +Res; -NotStandard;"
+						levelFrequency=		"-uccu"
+						/>
+				<RandomItem chance="10"
+						criteria=			"* +Res; -NotStandard;"
+						levelFrequency=		"---uc cu---"
+						/>
+				<Table count="1-4">
+					<Lookup chance="15" count="1" table="&trConsumables5;"/>
+					<Item chance="20" count="1d4" item="&itUrakArmorLight;"/>
+					<Item chance="20" count="1" item="&itUrakMassDriver;"/>
+					<Item chance="15" count="1d4" item="&itUrakArmorHeavy;"/>
+					<Item chance="15" count="1" item="&itUrakHowitzer;"/>
+					<Lookup chance="10" count="1" table="&trMinorItem5;"/>
+					<Lookup chance="5" count="1" table="&trMajorItem5;"/>
+				</Table>
+			</Group>
+		</Items>
+
+	</StationType>
+
+<!-- SHIP CLASSES -->
+
 	<!-- Urak Sentinel -->
 
 	<ShipClass UNID="&scUrakSentinel;"
@@ -144,6 +379,8 @@
 			/>
 
 	</ShipClass>
+
+<!-- ITEM TYPES -->
 
 	<!-- Urak Mass Driver -->
 
@@ -332,202 +569,6 @@
 			</Fragment>
 		</Weapon>
 	</ItemType>
-
-	<!-- Urak Outpost -->
-
-	<StationType UNID="&stUrakOutpost;"
-			name=				"Urak outpost"
-			sovereign=			"&svUrakWarlords;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itUrakArmorLight;"
-			hitPoints=			"60"
-			regen=				"1"
-			fireRateAdj=		"60"
-			explosionType=		"&vtKineticExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
-			levelFrequency=		"-cuv- ----- ----- ----- -----"
-			locationCriteria=	"-innerSystem, -void"
-			>
-
-		<Image			imageID="&rsStations2;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
-
-		<Devices>
-			<Device deviceID="&itSlamCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
-		</Ships>
-
-		<Reinforcements minShips="3">
-			<Ship				count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
-		</Reinforcements>
-
-		<Items>
-			<Group value="standard:level=2:x=2.0">
-				<Table>
-					<Lookup chance="30" count="1" table="&trConsumables3;"/>
-					<RandomItem chance="30"
-							criteria=			"* +Res; -NotStandard;"
-							levelFrequency=		"rucur"
-							/>
-					<Item chance="15" count="1d4" item="&itUrakArmorLight;"/>
-					<Item chance="10" count="1" item="&itUrakMassDriver;"/>
-					<Lookup chance="10" count="1" table="&trMinorItem3;"/>
-					<Lookup chance="5" count="1" table="&trMajorItem3;"/>
-				</Table>
-			</Group>
-		</Items>
-
-		<DockingPorts>
-			<Port x="11"	y="60" />
-			<Port x="83"	y="44" />
-			<Port x="59"	y="-12" />
-			<Port x="54"	y="-81" />
-			<Port x="-19"	y="-60" />
-			<Port x="-88"	y="-51" />
-			<Port x="-60"	y="11" />
-			<Port x="-50"	y="74" />
-		</DockingPorts>
-	</StationType>
-
-	<!-- Urak Mine -->
-
-	<StationType UNID="&stUrakMine;"
-			name=				"Urak mine"
-			sovereign=			"&svUrakWarlords;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itUrakArmorLight;"
-			hitPoints=			"120"
-            regen=              "1"
-			fireRateAdj=		"60"
-			explosionType=		"&vtKineticExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"asteroidBase, enemy, envAir, envAvoidsFire, generic, human, populated, urakWarlords"
-			levelFrequency=		"--cuv ----- ----- ----- -----"
-			locationCriteria=	"+outerSystem"
-			>
-
-		<Image			imageID="&rsStations3;" imageX="0" imageY="608" imageWidth="192" imageHeight="192"/>
-
-		<Devices>
-			<Device deviceID="&itUrakHowitzer;" omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
-		</Ships>
-
-		<Reinforcements minShips="3">
-			<Ship				count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="5"/>
-		</Reinforcements>
-
-		<Items>
-			<RandomItem count="1d4"
-					criteria=			"* +Res; -NotStandard;"
-					levelFrequency=		"-uccu"
-					/>
-			<RandomItem chance="30"
-					criteria=			"* +Res; -NotStandard;"
-					levelFrequency=		"---uc cu---"
-					/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables3;"/>
-				<Item chance="25" count="1d4" item="&itUrakArmorLight;"/>
-				<Item chance="20" count="1" item="&itUrakMassDriver;"/>
-				<Lookup chance="10" count="1" table="&trMinorItem3;"/>
-				<Lookup chance="5" count="1" table="&trMajorItem3;"/>
-			</Table>
-		</Items>
-
-		<DockingPorts>
-			<Port x="-31"	y="100" />
-			<Port x="28"	y="122" />
-			<Port x="100"	y="99" />
-			<Port x="114"	y="32" />
-			<Port x="86"	y="-38" />
-			<Port x="32"	y="-60" />
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Urak Fortress -->
-
-	<StationType UNID="&stUrakFortress;"
-			name=				"Urak fortress(es)"
-			sovereign=			"&svUrakWarlords;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itUrakArmorHeavy;"
-			hitPoints=			"790"
-            regen=              "6"
-			fireRateAdj=		"40"
-			explosionType=		"&vtBlastExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envAvoidsFire, generic, human, majorStation, populated, urakFortress, urakWarlords"
-			levelFrequency=		"---cu v---- ----- ----- -----"
-			locationCriteria=	"-innerSystem, -void"
-			enemyExclusionRadius="60"
-			>
-
-		<Image			imageID="&rsStations4;" imageX="0" imageY="768" imageWidth="256" imageHeight="256"/>
-
-		<Devices>
-			<Device deviceID="&itUrakHowitzer;" omnidirectional="true" posAngle="90" posRadius="100"/>
-			<Device deviceID="&itUrakHowitzer;" omnidirectional="true" posAngle="210" posRadius="100"/>
-			<Device deviceID="&itUrakHowitzer;" omnidirectional="true" posAngle="330" posRadius="100"/>
-		</Devices>
-
-		<Ships>
-			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="4"/>
-			<Ship				count="1d4" class="&scUrakSentinel;" orders="patrol" patrolDist="7"/>
-			<Ship				count="1"	class="&scUrakDestroyer;" orders="patrol" patrolDist="15"/>
-		</Ships>
-
-		<Reinforcements minShips="5">
-			<Table>
-				<Ship chance="35"		count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="4"/>
-				<Ship chance="35"		count="1d2" class="&scUrakSentinel;" orders="patrol" patrolDist="7"/>
-				<Ship chance="30"		count="1"	class="&scUrakDestroyer;" orders="patrol" patrolDist="15"/>
-			</Table>
-		</Reinforcements>
-
-		<Items>
-			<Group value="standard:level=4:x=3.5">
-				<RandomItem
-						criteria=			"* +Res; -NotStandard;"
-						levelFrequency=		"-uccu"
-						/>
-				<RandomItem chance="10"
-						criteria=			"* +Res; -NotStandard;"
-						levelFrequency=		"---uc cu---"
-						/>
-				<Table count="1-4">
-					<Lookup chance="15" count="1" table="&trConsumables5;"/>
-					<Item chance="20" count="1d4" item="&itUrakArmorLight;"/>
-					<Item chance="20" count="1" item="&itUrakMassDriver;"/>
-					<Item chance="15" count="1d4" item="&itUrakArmorHeavy;"/>
-					<Item chance="15" count="1" item="&itUrakHowitzer;"/>
-					<Lookup chance="10" count="1" table="&trMinorItem5;"/>
-					<Lookup chance="5" count="1" table="&trMajorItem5;"/>
-				</Table>
-			</Group>
-		</Items>
-
-	</StationType>
 
 <!-- RESOURCES -->
 

@@ -75,11 +75,19 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"debris, friendly, helenaVolkov, locked, shipwreck"
-			
-			maxAppearing=		"1"
-			levelFrequency=		"---vr vvv-- ----- ----- -----"
-			locationCriteria=	"-planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"---vr vvv-- ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+
+				maxAppearing=			"1"
+				/>
 
 		<ImageShipwreck class="&scEI500;"/>
 

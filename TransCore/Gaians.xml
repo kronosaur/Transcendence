@@ -14,42 +14,81 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Gaian Demolition Cannon -->
+	<SystemMap unid="&smGaianSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+outerRealm;"	attributes="gaianSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-	<ItemType UNID="&itGaianDemolitionCannon;"
-			name=				"Gaian demolition cannon"
-			level=				"9"
-			value=				"150000"
-			mass=				"20000"
-			frequency=			"veryrare"
-			numberAppearing=	"1"
-			attributes=			"EnergyWeapon; Military; MajorItem; NotForSale; NotStandard;"
+<!-- ENCOUNTERS -->
 
-			description=		"Gaians use these cannons for their vast engineering projects. The technology to power the cannon is known only to the Gaians."
+	<!-- Gaian Processor Encounter -->
 
-			charges=			"8"
+	<StationType UNID="&stGaianProcessorEncounter;"
+			name=				"(Gaian processor)"
+			sovereign=			"&svUnknownEnemy;"
+			controllingSovereign="&svGaianTerraformers;"
+			dockScreen=			"&dsAbandonedShip;"
+
+			scale=				"ship"
+			mobile=				"true"
+			noMapIcon=			"true"
+
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, shipwreck"
 			>
 
-		<Image imageID="&rsItems9;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Weapon
-				type=				"beam"
-				deviceSlots=		"2"
+		<Encounter
+				systemCriteria=			"+gaianSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"----- --vuu r----- ----- -----"
 
-				damage=				"thermo:24d20; WMD:7"
-				fireRate=			"60"
-				lifetime=			"30"
-                missileSpeed=       "50"
-				hitPoints=			"20"
-				powerUse=			"200"
-				charges=			"true"
+				locationCriteria=		"+asteroids"
+				/>
 
-				effect=				"&efThermoShellDefault;"
-				sound=				"&snRecoillessCannon;"
-				>
-		</Weapon>
+		<ImageVariants>
+			<Shipwreck class="&scTundra;"/>
+			<Shipwreck class="&scCenturionM;"/>
+			<Shipwreck class="&scSandstorm;"/>
+		</ImageVariants>
 
-	</ItemType>
+		<Ships>
+			<Ship	count="1"	class="&scGaianProcessor;" controller="gaianprocessor" sovereign="&svGaianTerraformers;" />
+		</Ships>
+
+		<Items>
+			<Table>
+				<Null	chance="20"/>
+				<Lookup chance="30" count="1d3" table="&trConsumables6;"/>
+				<Lookup chance="15" count="1"	table="&trConsumables7;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem6;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem6;"/>
+			</Table>
+		</Items>
+
+		<Events>
+			<GetExplosionType>
+				(intContainerGetExplosionType gSource)
+			</GetExplosionType>
+
+			<OnDamage>
+				(intContainerOnDamage gSource aDamageHP)
+			</OnDamage>
+		</Events>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"48"
+				maxDist=		"3"
+				/>
+	</StationType>
+
+<!-- SHIP CLASSES -->
 
 	<!-- Gaian Processor -->
 
@@ -132,59 +171,43 @@
 
 	</ShipClass>
 
-	<!-- Gaian Processor Encounter -->
+<!-- ITEM TYPES -->
 
-	<StationType UNID="&stGaianProcessorEncounter;"
-			name=				"(Gaian processor)"
-			sovereign=			"&svUnknownEnemy;"
-			controllingSovereign="&svGaianTerraformers;"
-			dockScreen=			"&dsAbandonedShip;"
+	<!-- Gaian Demolition Cannon -->
 
-			scale=				"ship"
-			mobile=				"true"
-			noMapIcon=			"true"
+	<ItemType UNID="&itGaianDemolitionCannon;"
+			name=				"Gaian demolition cannon"
+			level=				"9"
+			value=				"150000"
+			mass=				"20000"
+			frequency=			"veryrare"
+			numberAppearing=	"1"
+			attributes=			"EnergyWeapon; Military; MajorItem; NotForSale; NotStandard;"
 
-			ejectaType=			"&vtWreckEjecta;"
+			description=		"Gaians use these cannons for their vast engineering projects. The technology to power the cannon is known only to the Gaians."
 
-			attributes=			"enemy, envEarth, envAvoidsAir, shipwreck"
-			levelFrequency=		"----- --vuu r----- ----- -----"
-			locationCriteria=	"+asteroids"
+			charges=			"8"
 			>
-		<ImageVariants>
-			<Shipwreck class="&scTundra;"/>
-			<Shipwreck class="&scCenturionM;"/>
-			<Shipwreck class="&scSandstorm;"/>
-		</ImageVariants>
 
-		<Ships>
-			<Ship	count="1"	class="&scGaianProcessor;" controller="gaianprocessor" sovereign="&svGaianTerraformers;" />
-		</Ships>
+		<Image imageID="&rsItems9;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
-		<Items>
-			<Table>
-				<Null	chance="20"/>
-				<Lookup chance="30" count="1d3" table="&trConsumables6;"/>
-				<Lookup chance="15" count="1"	table="&trConsumables7;"/>
-				<Lookup chance="25" count="1"	table="&trMinorItem6;"/>
-				<Lookup chance="10" count="1"	table="&trMajorItem6;"/>
-			</Table>
-		</Items>
+		<Weapon
+				type=				"beam"
+				deviceSlots=		"2"
 
-		<Events>
-			<GetExplosionType>
-				(intContainerGetExplosionType gSource)
-			</GetExplosionType>
+				damage=				"thermo:24d20; WMD:7"
+				fireRate=			"60"
+				lifetime=			"30"
+                missileSpeed=       "50"
+				hitPoints=			"20"
+				powerUse=			"200"
+				charges=			"true"
 
-			<OnDamage>
-				(intContainerOnDamage gSource aDamageHP)
-			</OnDamage>
-		</Events>
+				effect=				"&efThermoShellDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+		</Weapon>
 
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"48"
-				maxDist=		"3"
-				/>
-	</StationType>
+	</ItemType>
 
 </TranscendenceModule>

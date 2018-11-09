@@ -14,100 +14,156 @@
 			alignment="destructive chaos"
 			/>
 	
-	<!-- Segment of light meteorsteel -->
+	<SystemMap unid="&smXenophobeSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+outerRealm;"				attributes="xenophobeSpace"/>
+			<System criteria="+ungoverned; +envFire;"	attributes="xenophobeSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-	<ItemType UNID="&itLightMeteorsteel;"
-			name=				"[segment(s) of ]light meteorsteel"
-			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
-			  
-			level=				"4"
-			frequency=			"rare"
-			numberAppearing=	"1d4"
+<!-- ENCOUNTERS -->
 
-			value=				"600"
-			mass=				"2500"
-			  
-			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+	<!-- Xenophobe Fleet Encounter -->
+
+	<StationType UNID="&stXenophobeFleet;"
+			name=				"(Xenophobe fleet)"
+			scale=				"world"
+			sovereign=			"&svIndependent;"
+			controllingSovereign="&svXenophobes;"
+
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			attributes=			"asteroid,enemy,envFire,envAvoidsWater"
 			>
 
-		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Armor
-				hitPoints=	"100"
-				hpBonus=	" +50, +50,+100,+100"
+		<Encounter
+				systemCriteria=			"+xenophobeSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"----v cuv-- ----- ----- -----"
 
-				repairTech=	"5"
-
-				shieldInterference=	"true"
-				blindingDamageAdj=	"0"
-				radiationImmune=	"true"
-				deviceDamageAdj=	"50"
-				EMPDamageAdj=		"50"
+				locationCriteria=		"*"
 				/>
 
-	</ItemType>
+		<ImageVariants>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
 
-	<!-- Segment of heavy meteorsteel -->
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
+			<Image imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
+		</ImageVariants>
 
-	<ItemType UNID="&itHeavyMeteorsteel;"
-			name=				"[segment(s) of ]heavy meteorsteel"
-			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
-			  
-			level=				"5"
-			frequency=			"rare"
-			numberAppearing=	"1d4"
+		<Ships>
+			<Ship	count="1"	class="&scXenophobeDefender;" orders="wander" sovereign="&svXenophobes;" >
+				<Escorts>
+					<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+		</Ships>
 
-			value=				"1300"
-			mass=				"5000"
-			  
-			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
+		<Events>
+			<OnMining>
+				(intAsteroidOnMining 100)
+			</OnMining>
+
+			<GetRumors>
+				{
+					attributes: "commonwealthPub"
+					priority: 60
+					textID: 'rumor.commonwealthPub
+					}
+			</GetRumors>
+		</Events>
+
+		<Language>
+			<Text id="rumor.commonwealthPub">
+				You spend 5 credits buying drinks for a mercenary. He talk about
+				his encounters with the Xenophobes:
+
+				"The minute I see their green ships I turn tail&mdash;I'm not
+				proud. And you shouldn't be either!"
+			</Text>
+		</Language>
+	</StationType>
+
+	<!-- Xenophobe Worldship Encounter -->
+
+	<StationType UNID="&stXenophobeWorldship;"
+			name=				"(Xenophobe worldship)"
+			sovereign=			"&svCommonwealth;"
+			controllingSovereign="&svXenophobes;"
+			abandonedScreen=	"&dsRPGAbandonedStation;"
+
+			multiHull=			"true"
+			armorID=			"&itPlasteelPlate;"
+			maxHitPoints=		"100"
+			hitPoints=			"0"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
 			>
 
-		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Armor
-				hitPoints=	"150"
-				hpBonus=	" ***, ***,+200,+200"
+		<Encounter
+				systemCriteria=			"+xenophobeSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"----- -vuv- ----- ----- -----"
 
-				shieldInterference=	"true"
-				blindingDamageAdj=	"0"
-				radiationImmune=	"true"
-				EMPDamageAdj=		"0"
-				deviceDamageAdj=	"0"
+				locationCriteria=		"*"
 				/>
 
-	</ItemType>
+		<Names noArticle="true">Agricola Station; Britannia Station; Canterbury Station;
+				Devonshire Colony; Enterprise Station; Farsend Station;
+				Grenoble Colony; Hellas Station; Independence Station;
+				Janus Colony; Koran Station; Lexington Colony; Massachusetts Colony;
+				Nakura Colony; Ontario Station; Paduan Station; Qatar Station;
+				Ryad Colony; Santiago Station; Tango Colony; Umber Station;
+				Victory Colony; Winchell Station; %s Colony; %s Alpha Station;
+				%s Beta Station; %s Gamma Station; %s Epsilon Station;
+				Anacreon Colony %1%0%0%0; Anacreon Colony %1%0%0; Anacreon Colony %1%0%0;
+				Anacreon Colony %1%0%0; Anacreon Colony %1%0%0
+		</Names>
 
-	<!-- Worldship Armor Plate -->
+		<Image imageID="&rsCommonwealthSettlement;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
 
-	<ItemType UNID="&itWorldshipArmorPlate;"
-			name=				"worldship armor plate"
-			attributes=			"benninXenophobes, military, minorItem, notForSale, notStandard"
-			  
-			level=				"8"
-			frequency=			"rare"
-			numberAppearing=	"1d4"
+		<DockingPorts
+				portCount=		"10"
+				portRadius=		"175"
+				>
+		</DockingPorts>
+		
+		<Ships>
+			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svXenophobes;" >
+				<Escorts>
+					<Ship		count="1d3+1"	class="&scXenophobeDefender;"	orders="escort">
+						<Escorts>
+							<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
+						</Escorts>
+					</Ship>
+				</Escorts>
+			</Ship>
+		</Ships>
 
-			value=				"8000"
-			mass=				"15000"
-			  
-			description=		"Like other meteorsteel armors, this plate interferes with shield generators."
-			>
+		<Language>
+			<Text id="core.abandonedStationDesc">
 
-		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+				You are docked at the lifeless ruins of a destroyed station. 
+				A group of refugees, huddling in the cavernous bay, tell you 
+				that the station was destroyed by Xenophobes.
 
-		<Armor
-				hitPoints=	"250"
-				hpBonus=	" ***, ***, ***, ***,+400,+400,+100,+100"
+			</Text>
+		</Language>
+	</StationType>
 
-				shieldInterference=	"true"
-				blindingDamageAdj=	"0"
-				radiationImmune=	"true"
-				deviceDamageAdj=	"0"
-				EMPDamageAdj=		"0"
-				/>
-
-	</ItemType>
+<!-- SHIP CLASSES -->
 
 	<!-- Xenophobe Fighter -->
 
@@ -532,127 +588,102 @@
 
 	</ShipClass>
 
-	<!-- Xenophobe Fleet Encounter -->
+<!-- ITEM TYPES -->
 
-	<StationType UNID="&stXenophobeFleet;"
-			name=				"(Xenophobe fleet)"
-			scale=				"world"
-			sovereign=			"&svIndependent;"
-			controllingSovereign="&svXenophobes;"
+	<!-- Segment of light meteorsteel -->
 
-			ejectaType=			"&vtStoneAsteroidEjecta;"
+	<ItemType UNID="&itLightMeteorsteel;"
+			name=				"[segment(s) of ]light meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"4"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
 
-			attributes=			"asteroid,enemy,envFire,envAvoidsWater"
-			levelFrequency=		"----v cuv-- ----- ----- -----"
-			locationCriteria=	"*"
+			value=				"600"
+			mass=				"2500"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
 			>
 
-		<ImageVariants>
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="0"   imageWidth="64" imageHeight="64"/>
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="64"  imageWidth="64" imageHeight="64"/>
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="128" imageWidth="64" imageHeight="64"/>
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="192" imageWidth="64" imageHeight="64"/>
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="256" imageWidth="64" imageHeight="64"/>
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="320" imageWidth="64" imageHeight="64"/>
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image imageID="&rsWorlds1;" imageX="128" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
+		<Armor
+				hitPoints=	"100"
+				hpBonus=	" +50, +50,+100,+100"
 
-		<Ships>
-			<Ship	count="1"	class="&scXenophobeDefender;" orders="wander" sovereign="&svXenophobes;" >
-				<Escorts>
-					<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
-				</Escorts>
-			</Ship>
-		</Ships>
+				repairTech=	"5"
 
-		<Events>
-			<OnMining>
-				(intAsteroidOnMining 100)
-			</OnMining>
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"50"
+				EMPDamageAdj=		"50"
+				/>
 
-			<GetRumors>
-				{
-					attributes: "commonwealthPub"
-					priority: 60
-					textID: 'rumor.commonwealthPub
-					}
-			</GetRumors>
-		</Events>
+	</ItemType>
 
-		<Language>
-			<Text id="rumor.commonwealthPub">
-				You spend 5 credits buying drinks for a mercenary. He talk about
-				his encounters with the Xenophobes:
+	<!-- Segment of heavy meteorsteel -->
 
-				"The minute I see their green ships I turn tail&mdash;I'm not
-				proud. And you shouldn't be either!"
-			</Text>
-		</Language>
-	</StationType>
+	<ItemType UNID="&itHeavyMeteorsteel;"
+			name=				"[segment(s) of ]heavy meteorsteel"
+			attributes=			"benninXenophobes, minorItem, notStandard, specialty"
+			  
+			level=				"5"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
 
-	<!-- Xenophobe Worldship Encounter -->
-
-	<StationType UNID="&stXenophobeWorldship;"
-			name=				"(Xenophobe worldship)"
-			sovereign=			"&svCommonwealth;"
-			controllingSovereign="&svXenophobes;"
-			abandonedScreen=	"&dsRPGAbandonedStation;"
-
-			multiHull=			"true"
-			armorID=			"&itPlasteelPlate;"
-			maxHitPoints=		"100"
-			hitPoints=			"0"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envFire, envAvoidsWater, human, populated"
-			levelFrequency=		"----- -vuv- ----- ----- -----"
-			locationCriteria=	"*"
+			value=				"1300"
+			mass=				"5000"
+			  
+			description=		"A rare alloy invented by the Bennin Xenophobes, meteorsteel interferes with most shield generators."
 			>
 
-		<Names noArticle="true">Agricola Station; Britannia Station; Canterbury Station;
-				Devonshire Colony; Enterprise Station; Farsend Station;
-				Grenoble Colony; Hellas Station; Independence Station;
-				Janus Colony; Koran Station; Lexington Colony; Massachusetts Colony;
-				Nakura Colony; Ontario Station; Paduan Station; Qatar Station;
-				Ryad Colony; Santiago Station; Tango Colony; Umber Station;
-				Victory Colony; Winchell Station; %s Colony; %s Alpha Station;
-				%s Beta Station; %s Gamma Station; %s Epsilon Station;
-				Anacreon Colony %1%0%0%0; Anacreon Colony %1%0%0; Anacreon Colony %1%0%0;
-				Anacreon Colony %1%0%0; Anacreon Colony %1%0%0
-		</Names>
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
-		<Image imageID="&rsCommonwealthSettlement;" imageWidth="320" imageHeight="290" viewportRatio="0.05"/>
+		<Armor
+				hitPoints=	"150"
+				hpBonus=	" ***, ***,+200,+200"
 
-		<DockingPorts
-				portCount=		"10"
-				portRadius=		"175"
-				>
-		</DockingPorts>
-		
-		<Ships>
-			<Ship	count="1"	class="&scXenophobeWorldship;" orders="wander" sovereign="&svXenophobes;" >
-				<Escorts>
-					<Ship		count="1d3+1"	class="&scXenophobeDefender;"	orders="escort">
-						<Escorts>
-							<Ship		count="1d4+1"	class="&scXenophobeFighter;"	orders="escort"/>
-						</Escorts>
-					</Ship>
-				</Escorts>
-			</Ship>
-		</Ships>
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				EMPDamageAdj=		"0"
+				deviceDamageAdj=	"0"
+				/>
 
-		<Language>
-			<Text id="core.abandonedStationDesc">
+	</ItemType>
 
-				You are docked at the lifeless ruins of a destroyed station. 
-				A group of refugees, huddling in the cavernous bay, tell you 
-				that the station was destroyed by Xenophobes.
+	<!-- Worldship Armor Plate -->
 
-			</Text>
-		</Language>
-	</StationType>
+	<ItemType UNID="&itWorldshipArmorPlate;"
+			name=				"worldship armor plate"
+			attributes=			"benninXenophobes, military, minorItem, notForSale, notStandard"
+			  
+			level=				"8"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			value=				"8000"
+			mass=				"15000"
+			  
+			description=		"Like other meteorsteel armors, this plate interferes with shield generators."
+			>
+
+		<Image imageID="&rsItems4;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"250"
+				hpBonus=	" ***, ***, ***, ***,+400,+400,+100,+100"
+
+				shieldInterference=	"true"
+				blindingDamageAdj=	"0"
+				radiationImmune=	"true"
+				deviceDamageAdj=	"0"
+				EMPDamageAdj=		"0"
+				/>
+
+	</ItemType>
 
 	<!-- LEVEL VII ITEMS -->
 
@@ -732,7 +763,7 @@
 
 	</ItemType>
 
-	<!-- Resources -->
+<!-- RESOURCES -->
 
 	<Image UNID="&rsXenophobeArk;"				bitmap="Resources\XenophobeArk.jpg"				bitmask="Resources\XenophobeArkMask.bmp"  		loadOnUse="true"/>
 	<Image UNID="&rsXenophobeDefender;"			bitmap="Resources\XenophobeDefender.jpg"		bitmask="Resources\XenophobeDefenderMask.bmp"	loadOnUse="true"/>

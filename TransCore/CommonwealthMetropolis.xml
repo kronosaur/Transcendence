@@ -30,9 +30,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"rurrv ----- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="100"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"rurrv ----- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"100"
+
+				unique=					"inSystem"
 				/>
 		
 		<Names noArticle="true">
@@ -176,9 +181,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"---ru urv-- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="100"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"---ru urv-- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"100"
+
+				unique=					"inSystem"
 				/>
 		
 		<Names noArticle="true">

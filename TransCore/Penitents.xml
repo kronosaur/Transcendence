@@ -14,6 +14,14 @@
 			alignment="destructive order"
 			/>
 	
+	<SystemMap unid="&smPenitentSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+commonwealthSpace;"		attributes="penitentSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
 <!-- ENCOUNTERS -->
 
 	<!-- Level 5: Penitent Shrine -->
@@ -40,9 +48,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"---rc uv--- ----- ----- -----"
-				locationCriteria=	"+nebulae"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+penitentSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"---rc uv--- ----- ----- -----"
+
+				locationCriteria=		"+nebulae"
+				enemyExclusionRadius=	"50"
 				/>
 
 		<!-- Trade and Items -->
@@ -132,9 +143,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"----r cuv-- ----- ----- -----"
-				locationCriteria=	"+nebulae"
-				enemyExclusionRadius="60"
+				systemCriteria=			"+penitentSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"----r cuv-- ----- ----- -----"
+
+				locationCriteria=		"+nebulae"
+				enemyExclusionRadius=	"60"
 				/>
 
 		<!-- Trade and Items -->
@@ -204,10 +218,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"----- vur-- ----- ----- -----"
-				locationCriteria=	"+nebulae"
-				enemyExclusionRadius="80"
-				unique=				"inSystem"
+				systemCriteria=			"+penitentSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"----- vur-- ----- ----- -----"
+
+				locationCriteria=		"+nebulae"
+				enemyExclusionRadius=	"80"
+
+				unique=					"inSystem"
 				/>
 		
 		<!-- Trade and Items -->

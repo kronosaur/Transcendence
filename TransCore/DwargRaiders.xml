@@ -19,24 +19,322 @@
 			alignment="constructive chaos"
 			/>
 
-	<!-- Zoanthrope base class -->
-	
-	<Type UNID="&baZoanthropeBase;">
-		<Events>
-			<OnObjDestroyed>
-				(intZoanthropeOnObjDestroyed)
-			</OnObjDestroyed>
+	<SystemMap unid="&smDwargSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+ungoverned;"	attributes="dwargSpace"/>
+			<System criteria="+outerRealm;"	attributes="dwargSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-			<OnOrderChanged>
-				(intZoanthropeOnOrderChanged)
-			</OnOrderChanged>
-		</Events>
-		
-		<Language>
-			<Text id="WatchYourTargets">"\"Grrr!\""</Text>
-			<Text id="NiceShooting">""</Text>
-		</Language>
-	</Type>
+<!-- STATION TYPES -->
+
+	<!-- Dwarg Colony -->
+
+	<StationType UNID="&stDwargColony;"
+			name=				"Dwarg colony|Dwarg colonies"
+			sovereign=			"&svDwargRaiders;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itDwargChitonArmor;"
+			hitPoints=			"160"
+            regen=              "2"
+			fireRateAdj=		"50"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+dwargSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"---cu v---- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations4;" imageX="128" imageY="640" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itDwargXiphonCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
+		</Ships>
+
+		<Reinforcements minShips="4">
+			<Ship				count="1d4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
+		</Reinforcements>
+
+		<Items value="standard:level=4:x=1.6">
+			<Lookup table="&trStdTreasure;"/>
+		</Items>
+
+		<DockingPorts>
+			<Port x="-82"	y="35" />
+			<Port x="-33"	y="71" />
+			<Port x="76"	y="44" />
+			<Port x="85"	y="0" />
+			<Port x="0"		y="-86" />
+			<Port x="-49"	y="-70" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Dwarg Gathering -->
+
+	<StationType UNID="&stDwargGathering;"
+			name=				"Dwarg colony|Dwarg colonies"
+			sovereign=			"&svDwargRaiders;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itDwargCatoptricArmor;"
+			hitPoints=			"210"
+            regen=              "2"
+			fireRateAdj=		"50"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+dwargSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"----c uv--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"100"
+				/>
+
+		<Image			imageID="&rsStations4;" imageX="128" imageY="640" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itDwargXiphonCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship				count="1"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
+				<Escorts>
+					<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
+				</Escorts>
+			</Ship>
+		</Ships>
+
+		<Reinforcements minShips="1">
+			<Ship				count="1"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
+				<Escorts>
+					<Ship				count="1d4+8"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
+				</Escorts>
+			</Ship>
+		</Reinforcements>
+
+		<Items value="standard:level=5">
+			<Lookup table="&trStdTreasure;"/>
+		</Items>
+
+		<Satellites overlapCheck="planetoids">
+			<Table>
+				<Group chance="50">
+					<Siblings arcInc="16" radiusInc="1d4+3">
+						<Station type="&stDwargGatheringSat;"/>
+					</Siblings>
+					<Siblings arcInc="-16" radiusInc="1d4+3">
+						<Station type="&stDwargGatheringSat;"/>
+					</Siblings>
+				</Group>
+				<Group chance="50">
+					<Siblings arcInc="16" radiusInc="1d4+3">
+						<Station type="&stDwargGatheringSat;"/>
+					</Siblings>
+					<Siblings arcInc="-16" radiusInc="1d4+3">
+						<Station type="&stDwargGatheringSat;"/>
+					</Siblings>
+					<Siblings arcInc="32">
+						<Station type="&stDwargGatheringSat;"/>
+					</Siblings>
+				</Group>
+			</Table>
+		</Satellites>
+
+		<DockingPorts>
+			<Port x="-82"	y="35" />
+			<Port x="-33"	y="71" />
+			<Port x="76"	y="44" />
+			<Port x="85"	y="0" />
+			<Port x="0"		y="-86" />
+			<Port x="-49"	y="-70" />
+		</DockingPorts>
+
+		<Encounters frequency="uncommon">
+			<Ship				count="1"		class="&scDwargMaster;" orders="wander" maxShips="3">
+				<Escorts>
+					<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
+				</Escorts>
+			</Ship>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Dwarg Gathering Satellite -->
+
+	<StationType UNID="&stDwargGatheringSat;"
+			name=				"Dwarg colony|Dwarg colonies"
+			sovereign=			"&svDwargRaiders;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+			noMapLabel=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itDwargCatoptricArmor;"
+			hitPoints=			"210"
+            regen=              "2"
+			fireRateAdj=		"50"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
+			enemyExclusionRadius="50"
+			>
+
+		<Image			imageID="&rsStations4;" imageX="128" imageY="640" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itDwargXiphonCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Ship				count="1d4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
+		</Reinforcements>
+
+		<Items value="standard:level=5">
+			<Lookup table="&trStdTreasure;"/>
+		</Items>
+
+		<DockingPorts>
+			<Port x="-82"	y="35" />
+			<Port x="-33"	y="71" />
+			<Port x="76"	y="44" />
+			<Port x="85"	y="0" />
+			<Port x="0"		y="-86" />
+			<Port x="-49"	y="-70" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Dwarg Fortress -->
+
+	<StationType UNID="&stDwargFortress;"
+			name=				"Dwarg fortress(es)"
+			sovereign=			"&svDwargRaiders;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itDwargHolochroalArmor;"
+			hitPoints=			"1400"
+			regen=              "11"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion4;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, generic, majorStation, neoHuman, populated, zoanthrope"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+dwargSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"----- cr--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"100"
+				/>
+
+		<Image			imageID="&rsStations6;" imageX="0" imageY="896" imageWidth="256" imageHeight="256"/>
+
+		<Devices>
+			<Device deviceID="&itDwargXiphonCannon;"	posAngle="45" posRadius="84"  minFireArc="315" maxFireArc="135" />
+			<Device deviceID="&itDwargBehemothCannon;"	posAngle="344" posRadius="89" minFireArc="254" maxFireArc="74" />
+			<Device deviceID="&itDwargXiphonCannon;"	posAngle="295" posRadius="87" minFireArc="205" maxFireArc="25" />
+			<Device deviceID="&itDwargBehemothCannon;"	posAngle="220" posRadius="93" minFireArc="130" maxFireArc="310" />
+			<Device deviceID="&itDwargXiphonCannon;"	posAngle="155" posRadius="86" minFireArc="65"  maxFireArc="245" />
+			<Device deviceID="&itDwargBehemothCannon;"	posAngle="112" posRadius="80" minFireArc="22"  maxFireArc="202" />
+		</Devices>
+
+		<Ships>
+			<Ship				count="1d2"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
+				<Escorts>
+					<Ship	chance="25"	count="1"		class="&scDwargBehemoth;"		orders="escort"	controller="zoanthrope"/>
+					<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
+				</Escorts>
+			</Ship>
+			<Ship				count="1d4+4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="6" controller="zoanthrope"/>
+			<Ship				count="1"			class="&scDwargBehemoth;"	orders="patrol"	patrolDist="6" controller="zoanthrope"/>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship	chance="50"	count="1"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
+					<Escorts>
+						<Ship	chance="25"	count="1"		class="&scDwargBehemoth;"		orders="escort"	controller="zoanthrope"/>
+						<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
+					</Escorts>
+				</Ship>
+				<Ship	chance="30"	count="1d4+4"	class="&scDwargRaider;"	orders="patrol"	patrolDist="6" controller="zoanthrope"/>
+				<Ship	chance="20"	count="1"		class="&scDwargBehemoth;" orders="patrol"	patrolDist="6" controller="zoanthrope"/>
+			</Table>
+		</Reinforcements>
+
+		<Items value="standard:level=6:x=4">
+			<Lookup table="&trStdTreasure;"/>
+		</Items>
+
+		<DockingPorts>
+			<Port x="62"	y="95" />
+			<Port x="106"	y="60" />
+			<Port x="125"	y="0" />
+			<Port x="111"	y="-60" />
+			<Port x="69"	y="-108" />
+
+			<Port x="-62"	y="95" />
+			<Port x="-106"	y="60" />
+			<Port x="-125"	y="0" />
+			<Port x="-111"	y="-60" />
+			<Port x="-69"	y="-108" />
+
+			<Port x="0"		y="-127" />
+			<Port x="0"		y="106" />
+		</DockingPorts>
+
+		<Encounters frequency="common">
+			<Ship				count="1"		class="&scDwargMaster;" orders="wander" maxShips="4">
+				<Escorts>
+					<Ship				count="2d4+8"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
+				</Escorts>
+			</Ship>
+		</Encounters>
+
+	</StationType>
+
+<!-- SHIP CLASSES -->
 	
 	<!-- Dwarg Raider -->
 
@@ -222,6 +520,8 @@
 			/>
 
 	</ShipClass>
+
+<!-- ITEM TYPES -->
 
 	<!-- Dwarg Chiton Armor -->
 
@@ -451,286 +751,6 @@
 
 	</ItemType>
 
-	<!-- Dwarg Colony -->
-
-	<StationType UNID="&stDwargColony;"
-			name=				"Dwarg colony|Dwarg colonies"
-			sovereign=			"&svDwargRaiders;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itDwargChitonArmor;"
-			hitPoints=			"160"
-            regen=              "2"
-			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
-			levelFrequency=		"---cu v---- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
-			>
-
-		<Image			imageID="&rsStations4;" imageX="128" imageY="640" imageWidth="128" imageHeight="128"/>
-
-		<Devices>
-			<Device deviceID="&itDwargXiphonCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
-		</Ships>
-
-		<Reinforcements minShips="4">
-			<Ship				count="1d4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
-		</Reinforcements>
-
-		<Items value="standard:level=4:x=1.6">
-			<Lookup table="&trStdTreasure;"/>
-		</Items>
-
-		<DockingPorts>
-			<Port x="-82"	y="35" />
-			<Port x="-33"	y="71" />
-			<Port x="76"	y="44" />
-			<Port x="85"	y="0" />
-			<Port x="0"		y="-86" />
-			<Port x="-49"	y="-70" />
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Dwarg Gathering -->
-
-	<StationType UNID="&stDwargGathering;"
-			name=				"Dwarg colony|Dwarg colonies"
-			sovereign=			"&svDwargRaiders;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itDwargCatoptricArmor;"
-			hitPoints=			"210"
-            regen=              "2"
-			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"dwargColony, dwargRaiders, enemy, envWater, envAvoidsEarth, generic, neoHuman, populated, zoanthrope"
-			levelFrequency=		"----c uv--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="100"
-			>
-
-		<Image			imageID="&rsStations4;" imageX="128" imageY="640" imageWidth="128" imageHeight="128"/>
-
-		<Devices>
-			<Device deviceID="&itDwargXiphonCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Ship				count="1"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
-				<Escorts>
-					<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
-				</Escorts>
-			</Ship>
-		</Ships>
-
-		<Reinforcements minShips="1">
-			<Ship				count="1"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
-				<Escorts>
-					<Ship				count="1d4+8"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
-				</Escorts>
-			</Ship>
-		</Reinforcements>
-
-		<Items value="standard:level=5">
-			<Lookup table="&trStdTreasure;"/>
-		</Items>
-
-		<Satellites overlapCheck="planetoids">
-			<Table>
-				<Group chance="50">
-					<Siblings arcInc="16" radiusInc="1d4+3">
-						<Station type="&stDwargGatheringSat;"/>
-					</Siblings>
-					<Siblings arcInc="-16" radiusInc="1d4+3">
-						<Station type="&stDwargGatheringSat;"/>
-					</Siblings>
-				</Group>
-				<Group chance="50">
-					<Siblings arcInc="16" radiusInc="1d4+3">
-						<Station type="&stDwargGatheringSat;"/>
-					</Siblings>
-					<Siblings arcInc="-16" radiusInc="1d4+3">
-						<Station type="&stDwargGatheringSat;"/>
-					</Siblings>
-					<Siblings arcInc="32">
-						<Station type="&stDwargGatheringSat;"/>
-					</Siblings>
-				</Group>
-			</Table>
-		</Satellites>
-
-		<DockingPorts>
-			<Port x="-82"	y="35" />
-			<Port x="-33"	y="71" />
-			<Port x="76"	y="44" />
-			<Port x="85"	y="0" />
-			<Port x="0"		y="-86" />
-			<Port x="-49"	y="-70" />
-		</DockingPorts>
-
-		<Encounters frequency="uncommon">
-			<Ship				count="1"		class="&scDwargMaster;" orders="wander" maxShips="3">
-				<Escorts>
-					<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
-				</Escorts>
-			</Ship>
-		</Encounters>
-
-	</StationType>
-
-	<!-- Dwarg Gathering Satellite -->
-
-	<StationType UNID="&stDwargGatheringSat;"
-			name=				"Dwarg colony|Dwarg colonies"
-			sovereign=			"&svDwargRaiders;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-			noMapLabel=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itDwargCatoptricArmor;"
-			hitPoints=			"210"
-            regen=              "2"
-			fireRateAdj=		"50"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, neoHuman, populated, zoanthrope"
-			enemyExclusionRadius="50"
-			>
-
-		<Image			imageID="&rsStations4;" imageX="128" imageY="640" imageWidth="128" imageHeight="128"/>
-
-		<Devices>
-			<Device deviceID="&itDwargXiphonCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
-		</Ships>
-
-		<Reinforcements minShips="5">
-			<Ship				count="1d4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="10" controller="zoanthrope"/>
-		</Reinforcements>
-
-		<Items value="standard:level=5">
-			<Lookup table="&trStdTreasure;"/>
-		</Items>
-
-		<DockingPorts>
-			<Port x="-82"	y="35" />
-			<Port x="-33"	y="71" />
-			<Port x="76"	y="44" />
-			<Port x="85"	y="0" />
-			<Port x="0"		y="-86" />
-			<Port x="-49"	y="-70" />
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Dwarg Fortress -->
-
-	<StationType UNID="&stDwargFortress;"
-			name=				"Dwarg fortress(es)"
-			sovereign=			"&svDwargRaiders;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itDwargHolochroalArmor;"
-			hitPoints=			"1400"
-			regen=              "11"
-			fireRateAdj=		"40"
-			explosionType=		"&vtBlastExplosion4;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"dwargRaiders, enemy, envWater, envAvoidsEarth, generic, majorStation, neoHuman, populated, zoanthrope"
-			levelFrequency=		"----- cr--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="100"
-			>
-
-		<Image			imageID="&rsStations6;" imageX="0" imageY="896" imageWidth="256" imageHeight="256"/>
-
-		<Devices>
-			<Device deviceID="&itDwargXiphonCannon;"	posAngle="45" posRadius="84"  minFireArc="315" maxFireArc="135" />
-			<Device deviceID="&itDwargBehemothCannon;"	posAngle="344" posRadius="89" minFireArc="254" maxFireArc="74" />
-			<Device deviceID="&itDwargXiphonCannon;"	posAngle="295" posRadius="87" minFireArc="205" maxFireArc="25" />
-			<Device deviceID="&itDwargBehemothCannon;"	posAngle="220" posRadius="93" minFireArc="130" maxFireArc="310" />
-			<Device deviceID="&itDwargXiphonCannon;"	posAngle="155" posRadius="86" minFireArc="65"  maxFireArc="245" />
-			<Device deviceID="&itDwargBehemothCannon;"	posAngle="112" posRadius="80" minFireArc="22"  maxFireArc="202" />
-		</Devices>
-
-		<Ships>
-			<Ship				count="1d2"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
-				<Escorts>
-					<Ship	chance="25"	count="1"		class="&scDwargBehemoth;"		orders="escort"	controller="zoanthrope"/>
-					<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
-				</Escorts>
-			</Ship>
-			<Ship				count="1d4+4"		class="&scDwargRaider;"		orders="patrol"	patrolDist="6" controller="zoanthrope"/>
-			<Ship				count="1"			class="&scDwargBehemoth;"	orders="patrol"	patrolDist="6" controller="zoanthrope"/>
-		</Ships>
-
-		<Reinforcements minShips="6">
-			<Table>
-				<Ship	chance="50"	count="1"		class="&scDwargMaster;" orders="patrol" patrolDist="10">
-					<Escorts>
-						<Ship	chance="25"	count="1"		class="&scDwargBehemoth;"		orders="escort"	controller="zoanthrope"/>
-						<Ship				count="1d4+4"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
-					</Escorts>
-				</Ship>
-				<Ship	chance="30"	count="1d4+4"	class="&scDwargRaider;"	orders="patrol"	patrolDist="6" controller="zoanthrope"/>
-				<Ship	chance="20"	count="1"		class="&scDwargBehemoth;" orders="patrol"	patrolDist="6" controller="zoanthrope"/>
-			</Table>
-		</Reinforcements>
-
-		<Items value="standard:level=6:x=4">
-			<Lookup table="&trStdTreasure;"/>
-		</Items>
-
-		<DockingPorts>
-			<Port x="62"	y="95" />
-			<Port x="106"	y="60" />
-			<Port x="125"	y="0" />
-			<Port x="111"	y="-60" />
-			<Port x="69"	y="-108" />
-
-			<Port x="-62"	y="95" />
-			<Port x="-106"	y="60" />
-			<Port x="-125"	y="0" />
-			<Port x="-111"	y="-60" />
-			<Port x="-69"	y="-108" />
-
-			<Port x="0"		y="-127" />
-			<Port x="0"		y="106" />
-		</DockingPorts>
-
-		<Encounters frequency="common">
-			<Ship				count="1"		class="&scDwargMaster;" orders="wander" maxShips="4">
-				<Escorts>
-					<Ship				count="2d4+8"	class="&scDwargRaider;"		orders="escort"	controller="zoanthrope"/>
-				</Escorts>
-			</Ship>
-		</Encounters>
-
-	</StationType>
-	
 <!-- GLOBALS -->
 
 	<Globals>
@@ -798,6 +818,27 @@
 				))
 			)
 	</Globals>
+
+<!-- BASE CLASSES -->
+	
+	<!-- Zoanthrope base class -->
+	
+	<Type UNID="&baZoanthropeBase;">
+		<Events>
+			<OnObjDestroyed>
+				(intZoanthropeOnObjDestroyed)
+			</OnObjDestroyed>
+
+			<OnOrderChanged>
+				(intZoanthropeOnOrderChanged)
+			</OnOrderChanged>
+		</Events>
+		
+		<Language>
+			<Text id="WatchYourTargets">"\"Grrr!\""</Text>
+			<Text id="NiceShooting">""</Text>
+		</Language>
+	</Type>
 	
 <!-- RESOURCES -->
 	

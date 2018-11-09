@@ -11,34 +11,59 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Ares Outpost -->
+	<SystemMap unid="&smAresSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+outerRealm;" attributes="aresSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+	<!-- Level 7: Ares Outpost -->
 
 	<StationType UNID="&stAresOutpost;"
 			name=				"Ares outpost"
 			sovereign=			"&svAres;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			attributes=			"ares, enemy, envAir, envEarth, envFire, envWater, generic, neoHuman, populated"
+
+			abandonedScreen=	"&dsAbandonedStation;"
+
 			armorID=			"&itLightTharsisPlate;"
 			hitPoints=			"370"
+			multiHull=			"true"
             regen=              "4"
+
+			canAttack=			"true"
 			fireRateAdj=		"40"
 			explosionType=		"&vtThermoExplosion1;"
 			ejectaType=			"&vtWreckEjecta;"
-			randomEncounters=	"common"
-
-			attributes=			"ares, enemy, envAir, envEarth, envFire, envWater, generic, neoHuman, populated"
-			levelFrequency=		"----- rcur- ----- ----- -----"
-			locationCriteria=	"-asteroids"
 			>
 
-		<Image			imageID="&rsStations7;" imageX="0" imageY="640" imageWidth="128" imageHeight="128"/>
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				distanceCriteria=		"+aresSpace;"
+				distanceFrequency=		"ccccc|rv---"
+				systemAffinity=			"*"
+				levelFrequency=			"----- rcur- ----- ----- -----"
+
+				locationCriteria=		"-asteroids"
+				enemyExclusionRaduis=	"80"
+				/>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbAresEncounters;"/>
+		</Encounters>
+
+		<!-- Configuration -->
 
 		<Devices>
 			<Device deviceID="&itLightningCannon;" omnidirectional="true"/>
 		</Devices>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Ship		count="1d6"		class="&scSandstorm;" orders="guard"/>
@@ -47,6 +72,8 @@
 		<Reinforcements minShips="5">
 			<Ship		count="1d4"		class="&scSandstorm;" orders="guard"/>
 		</Reinforcements>
+
+		<!-- Treasure -->
 
 		<Items value="standard:level=7:x=1.3">
 			<Table>
@@ -57,58 +84,58 @@
 				<Lookup chance="10" count="1"	table="&trMajorItem7;"/>
 			</Table>
 		</Items>
+
+		<!-- Image and Effects -->
 		
-		<Encounters frequency="common">
-			<Lookup table="&tbAresEncounters;"/>
-		</Encounters>
+		<Image			imageID="&rsStations7;" imageX="0" imageY="640" imageWidth="128" imageHeight="128"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"80"
+				/>
 
 	</StationType>
 
-	<!-- Ares Commune -->
+	<!-- Level 9: Ares Commune -->
 
 	<StationType UNID="&stAresCommune;"
 			name=				"Ares commune"
 			sovereign=			"&svAres;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itTharsisPlate;"
-			hitPoints=			"2400"
-            regen=              "25"
-			explosionType=		"&vtThermoExplosion4;"
-			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
-			levelFrequency=		"----- -vuur ----- ----- -----"
-			locationCriteria=	"-asteroids"
-			enemyExclusionRadius="100"
+
+			abandonedScreen=	"&dsAbandonedStation;"
+
+			armorID=			"&itTharsisPlate;"
+			hitPoints=			"2400"
+			multiHull=			"true"
+            regen=              "25"
+
+			canAttack=			"true"
+			explosionType=		"&vtThermoExplosion4;"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image			imageID="&rsStations7;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+		<!-- Encounter Info -->
 
-		<Ships>
-			<Ship		count="1d2"		class="&scTundra;" orders="guard"/>
-			<Ship		count="1d6"		class="&scSandstorm;" orders="patrol" patrolDist="5"/>
-		</Ships>
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				distanceCriteria=		"+aresSpace;"
+				distanceFrequency=		"ccccu|v----"
+				systemAffinity=			"*"
+				levelFrequency=			"----- -vuur ----- ----- -----"
 
-		<Reinforcements minShips="6">
-			<Table>
-				<Ship chance="75"	count="1d4" class="&scSandstorm;" orders="patrol" patrolDist="5"/>
-				<Ship chance="25"	count="1" class="&scTundra;" orders="guard" />
-			</Table>
-		</Reinforcements>
+				locationCriteria=		"-asteroids"
+				enemyExclusionRadius=	"100"
+				/>
 
-		<Items value="standard:level=8:x=8">
-			<Table>
-				<Lookup chance="25" count="1d3" table="&trConsumables8;"/>
-				<Lookup chance="25" count="1"	table="&trConsumables9;"/>
-				<Lookup chance="25" count="1"	table="&trMinorItem8;"/>
-				<Lookup chance="15" count="1"	table="&trMinorItem9;"/>
-				<Lookup chance="10" count="1"	table="&trMajorItem8;"/>
-			</Table>
-		</Items>
+		<Encounters frequency="common">
+			<Lookup table="&tbAresEncounters;"/>
+		</Encounters>
+
+		<!-- Configuration -->
+
+		<!-- Satellites -->
 
 		<Satellites overlapCheck="asteroids">
 			<LevelTable>
@@ -124,35 +151,99 @@
 			</LevelTable>
 		</Satellites>
 
-		<Encounters frequency="common">
-			<Lookup table="&tbAresEncounters;"/>
-		</Encounters>
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Ship		count="1d2"		class="&scTundra;" orders="guard"/>
+			<Ship		count="1d6"		class="&scSandstorm;" orders="patrol" patrolDist="5"/>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="75"	count="1d4" class="&scSandstorm;" orders="patrol" patrolDist="5"/>
+				<Ship chance="25"	count="1" class="&scTundra;" orders="guard" />
+			</Table>
+		</Reinforcements>
+
+		<!-- Treasure -->
+
+		<Items value="standard:level=8:x=8">
+			<Table>
+				<Lookup chance="25" count="1d3" table="&trConsumables8;"/>
+				<Lookup chance="25" count="1"	table="&trConsumables9;"/>
+				<Lookup chance="25" count="1"	table="&trMinorItem8;"/>
+				<Lookup chance="15" count="1"	table="&trMinorItem9;"/>
+				<Lookup chance="10" count="1"	table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsStations7;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"80"
+				/>
 
 	</StationType>
 
-	<!-- Ares Shipyard -->
+	<!-- Level 9: Ares Shipyard -->
 
 	<StationType UNID="&stAresShipyard;"
 			name=				"Ares shipyard"
 			sovereign=			"&svAres;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itMassiveTharsisPlate;"
-			hitPoints=			"3600"
-            regen=              "22"
-			explosionType=		"&vtPlasmaExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"ares, aresMajor, enemy, envAir, envEarth, envFire, envWater, generic, majorStation, neoHuman, populated"
-			levelFrequency=		"----- --vuu ----- ----- -----"
-			locationCriteria=	"-asteroids"
-			enemyExclusionRadius="150"
+
+			abandonedScreen=	"&dsAbandonedStation;"
+
+			armorID=			"&itMassiveTharsisPlate;"
+			hitPoints=			"3600"
+			multiHull=			"true"
+            regen=              "22"
+
+			canAttack=			"true"
+			explosionType=		"&vtPlasmaExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image			imageID="&rsStations9;" imageX="0" imageY="256" imageWidth="256" imageHeight="256"/>
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				distanceCriteria=		"+aresSpace;"
+				distanceFrequency=		"cccur|-----"
+				systemAffinity=			"*"
+				levelFrequency=			"----- --vuu ----- ----- -----"
+
+				locationCriteria=		"-asteroids"
+				enemyExclusionRadius=	"150"
+				/>
+
+		<Encounters frequency="common">
+			<Lookup table="&tbAresEncounters;"/>
+		</Encounters>
+
+		<!-- Configuration -->
+
+		<!-- Satellites -->
+
+		<Satellites overlapCheck="asteroids">
+			<LevelTable>
+				<Orbitals levelFrequency="----- cccur ----- -----" count="2d6" distance="12" angle="equidistant">
+					<Ship class="&scAresSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+				<Orbitals levelFrequency="----- -rcur ----- -----" count="2d6" distance="12" angle="equidistant">
+					<Ship class="&scAresDualSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+				<Orbitals levelFrequency="----- --rcc ur--- -----" count="2d6" distance="12" angle="equidistant">
+					<Ship class="&scAresAdvancedSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
+				</Orbitals>
+			</LevelTable>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
 
 		<Ships>
 			<Ship		count="1d2"		class="&scTundra;" orders="guard"/>
@@ -176,6 +267,8 @@
 			</Table>
 		</Construction>
 
+		<!-- Treasure -->
+
 		<Items value="standard:level=9:x=6">
 			<Table>
 				<Lookup chance="25" count="1d3" table="&trConsumables9;"/>
@@ -186,23 +279,14 @@
 			</Table>
 		</Items>
 
-		<Satellites overlapCheck="asteroids">
-			<LevelTable>
-				<Orbitals levelFrequency="----- cccur ----- -----" count="2d6" distance="12" angle="equidistant">
-					<Ship class="&scAresSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
-				</Orbitals>
-				<Orbitals levelFrequency="----- -rcur ----- -----" count="2d6" distance="12" angle="equidistant">
-					<Ship class="&scAresDualSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
-				</Orbitals>
-				<Orbitals levelFrequency="----- --rcc ur--- -----" count="2d6" distance="12" angle="equidistant">
-					<Ship class="&scAresAdvancedSentry;" count="1" sovereign="&svAres;" orders="sentry"/>
-				</Orbitals>
-			</LevelTable>
-		</Satellites>
+		<!-- Image and Effects -->
 
-		<Encounters frequency="common">
-			<Lookup table="&tbAresEncounters;"/>
-		</Encounters>
+		<Image			imageID="&rsStations9;" imageX="0" imageY="256" imageWidth="256" imageHeight="256"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"80"
+				/>
 
 	</StationType>
 	

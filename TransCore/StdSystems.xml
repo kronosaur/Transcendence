@@ -68,7 +68,7 @@
 
 			<FillLocations
 					percentFull=		"80" 
-					stationCriteria=	"!primary; !debris; +envWater; -envAvoidsWater" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
@@ -121,7 +121,7 @@
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary; !debris; +envEarth; -envAvoidsEarth" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
@@ -174,7 +174,7 @@
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary; !debris; +envEarth; -envAvoidsEarth" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
@@ -227,7 +227,7 @@
 			<FillLocations
 					percentFull=		"80"
 					locationCriteria=	"!void" 
-					stationCriteria=	"!primary; !debris; +envWater; -envAvoidsWater" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"70"
 					separateEnemies=	"true"
 					/>
@@ -281,7 +281,7 @@
 
 			<FillLocations
 					percentFull=		"80" 
-					stationCriteria=	"!primary; !debris; +envFire; -envAvoidsFire" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"70"
 					separateEnemies=	"true"
 					/>
@@ -334,7 +334,7 @@
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary; !debris; +envAir; -envAvoidsAir" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
@@ -387,7 +387,7 @@
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary; !debris; +envEarth; -envAvoidsEarth" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
@@ -441,7 +441,7 @@
 
 			<FillLocations
 					percentFull=		"80" 
-					stationCriteria=	"!primary; !debris; +envAir; -envAvoidsAir" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
@@ -494,7 +494,7 @@
 
 			<FillLocations
 					percentFull=		"80" 
-					stationCriteria=	"!primary; !debris; +envWater; -envAvoidsWater" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"65"
 					separateEnemies=	"true"
 					/>
@@ -547,7 +547,7 @@
 
 			<FillLocations
 					percentFull=		"80" 
-					stationCriteria=	"!primary; !debris; +envAir; -envAvoidsAir" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"75"
 					separateEnemies=	"true"
 					/>
@@ -600,7 +600,7 @@
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary; !debris; +envFire; -envAvoidsFire" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"75"
 					separateEnemies=	"true"
 					/>
@@ -653,7 +653,7 @@
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary; !debris; +envFire; -envAvoidsFire" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"75"
 					separateEnemies=	"true"
 					/>

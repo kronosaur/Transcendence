@@ -14,6 +14,83 @@
 			alignment="destructive chaos"
 			/>
 
+	<SystemMap unid="&smKobolSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+outerRealm;"				attributes="kobolSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- STATION TYPES -->
+
+	<!-- Kobol Warlord Camp -->
+
+	<StationType UNID="&stKobolWarlordCamp;"
+			name=				"Kobol warlord camp"
+			sovereign=			"&svKobolWarlords;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itAdvancedCeralloyArmor;"
+			hitPoints=			"450"
+            regen=              "4"
+			fireRateAdj=		"20"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, kobol, populated, warlords"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+kobolSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"----- -cur- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations8;" imageX="0" imageY="896" imageWidth="128" imageHeight="128"/>
+
+		<Devices>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="45" posRadius="49"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="130" posRadius="50"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="215" posRadius="50"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="325" posRadius="50"/>
+		</Devices>
+
+		<Ships>
+			<Table count="1d3">
+				<Ship	chance="40"	class="&scKobolGunshipDualTeV9;" orders="patrol" patrolDist="20"/>
+				<Ship	chance="40"	class="&scKobolGunshipOmniTeV9;" orders="patrol" patrolDist="20"/>
+				<Ship	chance="20"	class="&scKobolGunshipMissiles;" orders="patrol" patrolDist="20"/>
+			</Table>
+			<Table count="1d3">
+				<Ship	chance="40"	class="&scKobolGunshipDualTeV9;" orders="guard" />
+				<Ship	chance="40"	class="&scKobolGunshipOmniTeV9;" orders="guard" />
+				<Ship	chance="20"	class="&scKobolGunshipMissiles;" orders="guard" />
+			</Table>
+		</Ships>
+
+		<Items>
+			<Item count="1d12"	  item="&itGotha400Seeker;"/>
+			<Item count="4d12"	  item="&itGotha10Missile;"/>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables8;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+	</StationType>
+
+<!-- SHIP CLASSES -->
+
 	<ShipClass UNID="&scKobolGunshipOmniTeV9;"
 			manufacturer=		""
 			class=				"Kobol gunship"
@@ -170,64 +247,7 @@
 
 	</ShipClass>
 
-	<!-- Kobol Warlord Camp -->
-
-	<StationType UNID="&stKobolWarlordCamp;"
-			name=				"Kobol warlord camp"
-			sovereign=			"&svKobolWarlords;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itAdvancedCeralloyArmor;"
-			hitPoints=			"450"
-            regen=              "4"
-			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envWater, envAvoidsEarth, generic, human, kobol, populated, warlords"
-			levelFrequency=		"----- -cur- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
-			>
-
-		<Image			imageID="&rsStations8;" imageX="0" imageY="896" imageWidth="128" imageHeight="128"/>
-
-		<Devices>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="45" posRadius="49"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="130" posRadius="50"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="215" posRadius="50"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="325" posRadius="50"/>
-		</Devices>
-
-		<Ships>
-			<Table count="1d3">
-				<Ship	chance="40"	class="&scKobolGunshipDualTeV9;" orders="patrol" patrolDist="20"/>
-				<Ship	chance="40"	class="&scKobolGunshipOmniTeV9;" orders="patrol" patrolDist="20"/>
-				<Ship	chance="20"	class="&scKobolGunshipMissiles;" orders="patrol" patrolDist="20"/>
-			</Table>
-			<Table count="1d3">
-				<Ship	chance="40"	class="&scKobolGunshipDualTeV9;" orders="guard" />
-				<Ship	chance="40"	class="&scKobolGunshipOmniTeV9;" orders="guard" />
-				<Ship	chance="20"	class="&scKobolGunshipMissiles;" orders="guard" />
-			</Table>
-		</Ships>
-
-		<Items>
-			<Item count="1d12"	  item="&itGotha400Seeker;"/>
-			<Item count="4d12"	  item="&itGotha10Missile;"/>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables8;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
-			</Table>
-		</Items>
-
-	</StationType>
-
-	<!-- Resources -->
+<!-- RESOURCES -->
 
 	<Image UNID="&rsKobolGunshipDualHD;"		bitmap="Resources\KobolGunshipDualHD.jpg"		bitmask="Resources\KobolGunshipDualHDMask.bmp"  	loadOnUse="true"/>
 	<Image UNID="&rsKobolGunshipMissilesHD;"	bitmap="Resources\KobolGunshipMissilesHD.jpg"	bitmask="Resources\KobolGunshipMissilesHDMask.bmp"  loadOnUse="true"/>

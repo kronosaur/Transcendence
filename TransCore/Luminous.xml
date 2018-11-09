@@ -22,38 +22,101 @@
 		</Language>
 	</Sovereign>
 
-	<!-- Ion Blaster -->
+	<SystemMap unid="&smLuminousSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+outerRealm;"				attributes="luminousSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-	<ItemType UNID="&itLuminousIonBlaster;"
-			name=				"Luminous blaster"
-			attributes=			"energyWeapon, luminous, military, majorItem, notForSale, notStandard"
-			  
-			level=				"8"
-			frequency=			"rare"
-			  
-			value=				"83000"
-			mass=				"4000"
+<!-- STATION TYPES -->
 
-			description=		"This ion blaster is used by Luminous for its drones."
+	<!-- Luminous Assembler -->
+
+	<StationType UNID="&stLuminousAssembler;"
+			name=				"Luminous Assembler"
+			sovereign=			"&svLuminous;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itLuminousArmature;"
+			hitPoints=			"600"
+            regen=              "3.0"
+			explosionType=		"&vtThermoExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"ai, enemy, envWater, envAvoidsEarth, generic, luminous, score"
 			>
 
-		<Image imageID="&rsItems8;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Weapon
-				type=				"beam"
+		<Encounter
+				systemCriteria=			"+luminousSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"----- -ucur ----- ----- -----"
 
-				damage=				"ion:5d6; WMD1"
-				fireRate=			"10"
-				lifetime=			"30"
-				powerUse=			"1000"
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
-				effect=				"&efEIBlasterBeam;"
-				fireEffect=			"&efEIBlasterFire;"
-				hitEffect=			"&efEIBlasterHit;" 
-				sound=				"&snLaserCannon;"
-				>
-		</Weapon>
-	</ItemType>
+		<Image			imageID="&rsStations8;" imageX="0" imageY="0" imageWidth="192" imageHeight="192"/>
+
+		<Devices>
+		</Devices>
+
+		<Items>
+			<Group value="standard:level=8:x=1.4">
+				<Table>
+					<RandomItem chance="40"	count="1d6"
+							criteria=			"* +Info; -NotStandard; "
+							levelFrequency=		"----u ccur-"
+							/>
+					<Lookup		chance="40" count="1d6" table="&trLuminousTreasure;"/>
+					<Lookup		chance="20" count="1"	table="&trStdTreasure;"/>
+				</Table>
+			</Group>
+		</Items>
+
+		<Ships>
+			<Ship			count="1d6"	class="&scLuminousDrone;"	orders="patrol" patrolDist="5"/>
+		</Ships>
+
+		<GlobalData>
+			<Resist>
+				; particle  blast  ion  thermo  total
+				(1 1 1 1 4)
+			</Resist>
+		</GlobalData>
+
+		<Construction constructionRate="500" maxConstruction="12">
+			<Table>
+				<Ship chance="100" count="1"	class="&scLuminousDrone;" orders="patrol" patrolDist="5"/>
+			</Table>
+		</Construction>
+
+		<Encounters frequency="common">
+			<Ship							   count="1"	 class="&scLuminousDrone;" eventHandler="&evStdPatrolEncounterBehavior;">
+				<Escorts>
+					<Ship					   count="1d4-1" class="&scLuminousDrone;" orders="escort"/>
+				</Escorts>
+			</Ship>
+		</Encounters>
+
+		<Language>
+			<Text id="core.abandonedStationDesc">
+
+				You are docked at the remains of a Luminous assembler.
+				This automated factory churned out drones controlled by 
+				the mysterious sentient entity known as Luminous.
+
+			</Text>
+		</Language>
+	</StationType>
+
+<!-- SHIP CLASSES -->
 
 	<!-- Luminous Drone -->
 
@@ -184,6 +247,41 @@
 		</Events>
 
 	</ShipClass>
+
+<!-- ITEM TYPES -->
+
+	<!-- Ion Blaster -->
+
+	<ItemType UNID="&itLuminousIonBlaster;"
+			name=				"Luminous blaster"
+			attributes=			"energyWeapon, luminous, military, majorItem, notForSale, notStandard"
+			  
+			level=				"8"
+			frequency=			"rare"
+			  
+			value=				"83000"
+			mass=				"4000"
+
+			description=		"This ion blaster is used by Luminous for its drones."
+			>
+
+		<Image imageID="&rsItems8;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"ion:5d6; WMD1"
+				fireRate=			"10"
+				lifetime=			"30"
+				powerUse=			"1000"
+
+				effect=				"&efEIBlasterBeam;"
+				fireEffect=			"&efEIBlasterFire;"
+				hitEffect=			"&efEIBlasterHit;" 
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
 
 	<!-- Luminous Armature -->
 
@@ -412,82 +510,6 @@
 				/>
 
 	</ItemType>
-
-	<!-- Luminous Assembler -->
-
-	<StationType UNID="&stLuminousAssembler;"
-			name=				"Luminous Assembler"
-			sovereign=			"&svLuminous;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itLuminousArmature;"
-			hitPoints=			"600"
-            regen=              "3.0"
-			explosionType=		"&vtThermoExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"ai, enemy, envWater, envAvoidsEarth, generic, luminous, score"
-			levelFrequency=		"----- -ucur ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
-			>
-
-		<Image			imageID="&rsStations8;" imageX="0" imageY="0" imageWidth="192" imageHeight="192"/>
-
-		<Devices>
-		</Devices>
-
-		<Items>
-			<Group value="standard:level=8:x=1.4">
-				<Table>
-					<RandomItem chance="40"	count="1d6"
-							criteria=			"* +Info; -NotStandard; "
-							levelFrequency=		"----u ccur-"
-							/>
-					<Lookup		chance="40" count="1d6" table="&trLuminousTreasure;"/>
-					<Lookup		chance="20" count="1"	table="&trStdTreasure;"/>
-				</Table>
-			</Group>
-		</Items>
-
-		<Ships>
-			<Ship			count="1d6"	class="&scLuminousDrone;"	orders="patrol" patrolDist="5"/>
-		</Ships>
-
-		<GlobalData>
-			<Resist>
-				; particle  blast  ion  thermo  total
-				(1 1 1 1 4)
-			</Resist>
-		</GlobalData>
-
-		<Construction constructionRate="500" maxConstruction="12">
-			<Table>
-				<Ship chance="100" count="1"	class="&scLuminousDrone;" orders="patrol" patrolDist="5"/>
-			</Table>
-		</Construction>
-
-		<Encounters frequency="common">
-			<Ship							   count="1"	 class="&scLuminousDrone;" eventHandler="&evStdPatrolEncounterBehavior;">
-				<Escorts>
-					<Ship					   count="1d4-1" class="&scLuminousDrone;" orders="escort"/>
-				</Escorts>
-			</Ship>
-		</Encounters>
-
-		<Language>
-			<Text id="core.abandonedStationDesc">
-
-				You are docked at the remains of a Luminous assembler.
-				This automated factory churned out drones controlled by 
-				the mysterious sentient entity known as Luminous.
-
-			</Text>
-		</Language>
-	</StationType>
 
 <!-- TABLES -->
 	

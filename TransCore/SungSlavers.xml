@@ -19,383 +19,342 @@
 			alignment="neutral"
 			/>
 
-<!-- LEVEL IX ITEMS -->
+	<SystemMap unid="&smSungSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
 
-	<!-- Qianlong Archcannon -->
+			<System criteria="+ungoverned;"	attributes="sungSpace"/>
 
-	<ItemType UNID="&itQianlongArchcannon;"
-			name=				"Qianlong archcannon"
-			level=				"9"
-			value=				"220000"
+			<!-- In addition, any system within 4 gates of Jiang's Star is 
+				considered Sung territory. -->
+
+			<System attributes="sungSpace">
+				<Criteria>
+					<DistanceTo nodeID="C9" min="0" max="4"/>
+				</Criteria>
+			</System>
+
+			<!-- Any system within 1 gate of Jiang's Star is considered 
+				CORE Sung territory. -->
+
+			<System attributes="sungCore">
+				<Criteria>
+					<DistanceTo nodeID="C9" min="0" max="1"/>
+				</Criteria>
+			</System>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- ENCOUNTERS -->
+
+	<!-- Sung Fortress -->
+
+	<StationType UNID="&stSungFortress;"
+			name=				"Sung fortress(es)"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"400"
+            regen=              "11"
+			explosionType=		"&vtBlastExplosion4;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+sungSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"---vc uu--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"100"
+				/>
+
+		<Image			imageID="&rsStations4;" imageX="0" imageY="192" imageWidth="128" imageHeight="128"/>
+
+		<Ships>
+			<Table>
+				<Ship chance="30"	count="2d6" class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				<Group chance="60">
+					<Ship			count="1"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="2d4"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="3">
+			<Table>
+				<Ship chance="75"	count="1d4"	class="&scWindSlaver;"	orders="patrol" patrolDist="20"/>
+				<Ship chance="25"	count="1d2"	class="&scSteelSlaver;"	orders="patrol" patrolDist="20"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup					count="1"	table="&trConsumables6;"/>
+			<Lookup					count="1"	table="&trMinorItem6;"/>
+			<Table chance="75">
+				<Lookup chance="40" count="1" table="&trConsumables7;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Ship   count="1d4"	class="&scWindSlaver;" orders="attack"/>
+		</Encounters>
+
+		<Satellites>
+			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"	segment="true"/>
+			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"	segment="true"/>
+			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"	segment="true"/>
+			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"	segment="true"/>
+		</Satellites>
+
+	</StationType>
+
+	<!-- Sung Citadel -->
+
+	<StationType UNID="&stSungCitadel;"
+			name=				"Sung citadel"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"1500"
+            regen=              "11"
+			fireRateAdj=		"20"
+			explosionType=		"&vtThermoExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+sungSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----r ur--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"100"
+				/>
+
+		<Image			imageID="&rsStations6;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
+
+		<Devices>
+			<Device deviceID="&itCyberDeckLowerShields;"/>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="40"  posRadius="120"/>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="145" posRadius="125"/>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="270" posRadius="90"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Group chance="60">
+					<Ship			count="1"	class="&scEarthSlaver;"		orders="patrol" patrolDist="30"/>
+					<Ship			count="1d2"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="1d3"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+				<Group chance="30">
+					<Ship			count="1"	class="&scEarthSlaver;"		orders="patrol" patrolDist="30"/>
+					<Ship			count="1d6"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
+					<Ship			count="1d6"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="5">
+			<Table>
+				<Ship chance="50"	count="1d3"	class="&scWindSlaver;"	orders="patrol" patrolDist="20"/>
+				<Ship chance="30"	count="1d2"	class="&scSteelSlaver;"	orders="patrol" patrolDist="20"/>
+				<Ship chance="20"	count="1"	class="&scEarthSlaver;"	orders="patrol" patrolDist="30"/>
+			</Table>
+		</Reinforcements>
+
+		<Items>
+			<Item chance="80"		count="1d4" item="&itLongzhuSphere;"/>
+			<Lookup					count="1d4"	table="&trStationSupplies;" />
+			<Lookup					count="1"	table="&trConsumables6;"/>
+			<Lookup					count="1"	table="&trMinorItem6;"/>
+			<Table>
+				<Lookup chance="45" count="1" table="&trConsumables7;"/>
+				<Lookup chance="30" count="1" table="&trMinorItem7;"/>
+				<Lookup chance="25" count="1" table="&trMajorItem7;"/>
+			</Table>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="30"	count="2d3" class="&scWindSlaver;"		orders="attack"/>
+				<Group chance="60">
+					<Ship			count="1"	class="&scSteelSlaver;"		orders="attack"/>
+					<Ship			count="1d4"	class="&scWindSlaver;"		orders="attack"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="attack"/>
+			</Table>
+		</Encounters>
+
+		<Satellites overlapCheck="asteroids">
+			<Orbitals count="8" distance="14" angle="equidistant">
+				<Station type="&stSungDefenseSat1;"/>
+			</Orbitals>
+		</Satellites>
+
+	</StationType>
+
+	<!-- Sung Defense Satellite -->
+
+	<StationType UNID="&stSungDefenseSat1;"
+			name=				"Sung defense satellite"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			noMapLabel=			"true"
+			fireRateAdj=		"40"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
 			mass=				"2500"
-			frequency=			"notrandom"
-			attributes=			"MajorItem; Military; NotForSale; qianlongArchcannon; sungSlavers"
-
-			charges=			"32"
-			description=		"The pinnacle of Sung Slaver technology, the Qianlong archcannon fires antimatter shells. The archcannon recharges with longzhu spheres."
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"60"
+			structuralHitPoints="20"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image imageID="&rsItems9;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+		<Image			imageID="&rsStations4;" imageX="192" imageY="0" imageWidth="32" imageHeight="32"/>
 
-		<Weapon
-				type=				"missile"
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
 
-				damage=				"antimatter:8d12; WMD:7"
-				fireRate=			"16"
-				missileSpeed=		"40"
-				hitPoints=			"5"
-				lifetime=			"113"
-				powerUse=			"100"
-				charges=			"true"
-
-				effect=				"&efQianlongProjectile;"
-				fireEffect=			"&efQianlongFire;"
-				hitEffect=			"&efQianlongHit;"
-				sound=				"&snRecoillessCannon;"
-				>
-		</Weapon>
-
-		<Events>
-			<OnAIUpdate>
-				(if (and (leq (itmGetCharges gItem) 256)
-						(objGetItems gSource "u +LongzhuSphere;"))
-					(block Nil
-						(setq aCharges 256)
-						(objFireItemEvent gSource gItem "Recharge")
-						(objRemoveItem gSource (itmCreate &itLongzhuSphere; 1))
-						)
-					)
-			</OnAIUpdate>
-			
-			<Recharge>
-				; aCharges = amount to recharge
-				; Returns the amount recharged
-				(block (rechargeNeeded)
-					(setq rechargeNeeded (min aCharges (subtract 9999 (itmGetCharges gItem))))
-					(if (gr rechargeNeeded 0)
-						(shpRechargeItem gSource gItem rechargeNeeded)
-						)
-					rechargeNeeded
-					)
-			</Recharge>
-		</Events>
-
-		<Language>
-			<Text id="core.charges">charge(s)</Text>
-		</Language>
-	</ItemType>
-
-<!-- LEVEL VII ITEMS -->
-
-	<!-- Segment of Dragon Armor -->
-
-	<ItemType UNID="&itDragonArmor;"
-			inherit=			"&baSungArmor;"
-			name=				"[segment(s) of ]Dragon armor"
-			level=				"7"
-			value=				"5000"
-			frequency=			"notRandom"
-			numberAppearing=	"1d4"
-			mass=				"6500"
-			attributes=			"Military; MinorItem; NotForSale; sungSlavers; TiledArmor"
-
-			description=		"This is a heavier version of the Sung's innovative armor, used on its Dragon slavers."
-
-			useScreen=			"&dsRPGUseItemOnArmor;"
-			useUninstalledOnly=	"true"
-
-			sortName=			"Sung armor.10"
-			>
-
-		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Armor
-				hitPoints=	"250"
-				hpBonus=	"  +0,  +0, +50,+100,  +0, +25"
-
-				repairTech=	"6"
-
-				blindingDamageAdj="0"
-				deviceDamageAdj="0"
-				EMPDamageAdj=	"0"
-				radiationImmune="true"
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
 				/>
+	</StationType>
 
-		<StaticData>
-			<Data id="RepairHP">125</Data>
-		</StaticData>
-	</ItemType>
+	<!-- Sung Walls -->
 
-	<!-- Dragon Shields -->
+	<StationType UNID="&stSungNWWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
 
-	<ItemType UNID="&itDragonShields;"
-			name=				"Dragon shield generator"
-			level=				"7"
-			value=				"50000"
-			mass=				"6000"
-			frequency=			"notRandom"
-			attributes=			"majorItem, military, notForSale; sungSlavers"
-
-			description=		"Used by the Sung Dragon slavers, these shields are a much enhanced version of the Yoroi S500."
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image			imageID="&rsStations5;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
 
-		<Shields
-				hitPoints=		"140"
-				hpBonus=		"  +0,+100,  +0,+400,  +0,+100"
-				regen=			"60"
-				depletionDelay=	"480"
-				powerUse=		"500"
-				/>
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
 
-	</ItemType>
+	</StationType>
 
-<!-- LEVEL VI ITEMS -->
+	<StationType UNID="&stSungNEWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
 
-	<!-- CyberDeck (Lower Shields) -->
-
-	<ItemType UNID="&itCyberDeckLowerShields;"
-			name=				"CyberDeck lower shields"
-			virtual=			"true"
-			level=				"6"
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<CyberDeckDevice
-				range=			"30"
-				attackChance=	"20"
-				aiLevel=		"6"
-				program=		"ShieldsDown"
-				programName=	"Shi3ldsDown 3.1.5"
-				/>
+		<Image			imageID="&rsStations5;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
 
-	</ItemType>
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
 
-	<!-- Longzhu Sphere -->
+	</StationType>
 
-	<ItemType UNID="&itLongzhuSphere;"
-			name=				"longzhu sphere"
-			level=				"6"
-			value=				"500"
-			mass=				"1"
-			frequency=			"rare"
-			numberAppearing=	"1"
-			attributes=			"antiMatter, confirmRefuel, consumable, fuel, 100MW, longzhuSphere, notStandardFuel, sungSlavers"
+	<StationType UNID="&stSungSEWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
 
-			useScreen=			"&dsUseLongzhuSphere;"
-			data=				"500000"
-
-			description=		"Longzhu spheres are antimatter containment vessels used by the Sung Slavers as power sources."
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image imageID="&rsItems1;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
-	</ItemType>
+		<Image			imageID="&rsStations5;" imageX="128" imageY="128" imageWidth="128" imageHeight="128"/>
 
-	<!-- Particle Bolt Cannon -->
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
 
-	<ItemType UNID="&itParticleBoltCannon;"
-			name=				"Nandao bolt cannon"
-			level=				"6"
-			value=				"25000"
-			mass=				"2000"
-			frequency=			"rare"
-			numberAppearing=	"1"
-			attributes=			"MajorItem; Military; NotForSale; sungSlavers"
+	</StationType>
 
-			description=		"The Nandao bolt cannon fires a sublight pulse of heavy ions. The weapon requires Nandao bolt cartridges."
+	<StationType UNID="&stSungSWWall;"
+			name=				"Sung defense tower"
+			sovereign=			"&svSung;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"4"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			canAttack=			"true"
+
+			mass=				"50000"
+			multiHull=			"true"
+			armorID=			"&itSungArmor;"
+			hitPoints=			"120"
+			structuralHitPoints="100"
+			fireRateAdj=		"30"
+			ejectaType=			"&vtWreckEjecta;"
 			>
 
-		<Image imageID="&rsItems6;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+		<Image			imageID="&rsStations5;" imageX="0" imageY="128" imageWidth="128" imageHeight="128"/>
 
-		<Weapon
-				fireRate=			"30"
-				powerUse=			"40"
-				>
+		<Devices>
+			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
+		</Devices>
 
-			<Missiles>
-				<Missile ammoID="&itParticleBoltCartridge;"
-						type=			"missile"
-
-						lifetime=		"80"
-						damage=			"particle:15d8; WMD:4"
-						hitPoints=		"15"
-
-						missileSpeed=	"60"
-						sound=			"&snRecoillessCannon;"
-						>
-
-					<Effect>
-						<Starburst
-								spikeCount=		"1d6+2"
-								spikeLength=	"30-50"
-								primaryColor=	"#65ff2c"
-								secondaryColor=	"#808417"
-								/>
-						
-						<Orb
-								style=			"smooth"
-								radius=			"40"
-								intensity=		"20"
-								primaryColor=	"#65ff2c"
-								secondaryColor=	"#65ff2c"
-								/>
-					</Effect>
-				</Missile>
-			</Missiles>
-		</Weapon>
-	</ItemType>
-
-	<!-- Segment of Heavy Sung Armor -->
-
-	<ItemType UNID="&itHeavySungArmor;"
-			inherit=			"&baSungArmor;"
-			name=				"[segment(s) of ]super-heavy Sung armor"
-			level=				"6"
-			value=				"2300"
-			frequency=			"rare"
-			numberAppearing=	"1d4"
-			mass=				"7500"
-			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
-
-			description=		"This is a heavier version of the Sung's innovative armor, generally used on its Earth slavers."
-
-			useScreen=			"&dsRPGUseItemOnArmor;"
-			useUninstalledOnly=	"true"
-
-			sortName=			"Sung armor.20"
-			>
-
-		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Armor
-				hitPoints=	"180"
-				hpBonus=	"  +0,  +0, -25, +50,  +0, +25"
-
-				blindingDamageAdj="0"
-				deviceDamageAdj="25"
-				EMPDamageAdj=	"10"
-				/>
-
-		<StaticData>
-			<Data id="RepairHP">90</Data>
-		</StaticData>
-	</ItemType>
-
-<!-- LEVEL V ITEMS -->
-
-	<!-- CyberDeck (Disarm) -->
-
-	<ItemType UNID="&itCyberDeckDisarm;"
-			name=				"CyberDeck disarm"
-			virtual=			"true"
-			level=				"5"
-			>
-
-		<CyberDeckDevice
-				range=			"20"
-				attackChance=	"20"
-				aiLevel=		"5"
-				program=		"Disarm"
-				programName=	"PeacefulConstraint R1.1"
-				/>
-
-	</ItemType>
-
-	<!-- Particle bolt cartridge -->
-
-	<ItemType UNID="&itParticleBoltCartridge;"
-			name=				"Nandao bolt cartridge"
-			level=				"5"
-			value=				"35"
-			mass=				"10"
-			frequency=			"common"
-			numberAppearing=	"20d40"
-			attributes=			"Consumable; Missile; NotForSale; sungSlavers"
-
-			description=		"This energy cartridge is used by the Nandao bolt cannon."
-
-			sortName=			"~.Nandao bolt cartridge"
-			>
-
-		<Image imageID="&rsItems1;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
-	</ItemType>
-
-	<!-- Segment of Sung Armor -->
-
-	<ItemType UNID="&itSungArmor;"
-			inherit=			"&baSungArmor;"
-			name=				"[segment(s) of ]Sung armor"
-			level=				"5"
-			value=				"600"
-			frequency=			"uncommon"
-			numberAppearing=	"1d4"
-			mass=				"2500"
-			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
-
-			description=		"This blast-resistant tiled armor can be cannibalized to repair other Sung armor segments."
-
-			useScreen=			"&dsRPGUseItemOnArmor;"
-			useUninstalledOnly=	"true"
-
-			sortName=			"Sung armor.30"
-			>
-
-		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Armor
-				hitPoints=	"70"
-				hpBonus=	"  +0,  +0, -25, +50,  +0"
-
-				repairTech=	"6"
-
-				blindingDamageAdj="0"
-				deviceDamageAdj="50"
-				EMPDamageAdj=	"25"
-				/>
-
-		<StaticData>
-			<Data id="RepairHP">35</Data>
-		</StaticData>
-	</ItemType>
-	
-<!-- LEVEL II ITEMS -->
-
-	<!-- Segment of Light Sung Armor -->
-
-	<ItemType UNID="&itLightSungArmor;"
-			inherit=			"&baSungArmor;"
-			name=				"[segment(s) of ]light Sung armor"
-			level=				"2"
-			value=				"60"
-			frequency=			"uncommon"
-			numberAppearing=	"1d4"
-			mass=				"1500"
-			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
-
-			description=		"The Sung created this blast-resistant tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
-
-			useScreen=			"&dsRPGUseItemOnArmor;"
-			useUninstalledOnly=	"true"
-
-			sortName=			"Sung armor.40"
-			>
-
-		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
-
-		<Armor
-				hitPoints=	"25"
-				hpBonus=	"  +0,  +0, -25, +50,  +0"
-
-				repairTech=	"6"
-
-				blindingDamageAdj="0"
-				EMPDamageAdj=	"25"
-				/>
-
-		<StaticData>
-			<Data id="RepairHP">12</Data>
-		</StaticData>
-	</ItemType>
+	</StationType>
 
 <!-- SHIP CLASSES -->
 
@@ -998,299 +957,385 @@
 
 	</ShipClass>
 
-<!-- STATIONS -->
+<!-- ITEM TYPES -->
 
-	<!-- Sung Fortress -->
+<!-- LEVEL IX ITEMS -->
 
-	<StationType UNID="&stSungFortress;"
-			name=				"Sung fortress(es)"
-			sovereign=			"&svSung;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
+	<!-- Qianlong Archcannon -->
 
-			multiHull=			"true"
-			armorID=			"&itSungArmor;"
-			hitPoints=			"400"
-            regen=              "11"
-			explosionType=		"&vtBlastExplosion4;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
-			levelFrequency=		"---vc uu--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="100"
-			>
-
-		<Image			imageID="&rsStations4;" imageX="0" imageY="192" imageWidth="128" imageHeight="128"/>
-
-		<Ships>
-			<Table>
-				<Ship chance="30"	count="2d6" class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
-				<Group chance="60">
-					<Ship			count="1"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
-					<Ship			count="2d4"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
-			</Table>
-		</Ships>
-
-		<Reinforcements minShips="3">
-			<Table>
-				<Ship chance="75"	count="1d4"	class="&scWindSlaver;"	orders="patrol" patrolDist="20"/>
-				<Ship chance="25"	count="1d2"	class="&scSteelSlaver;"	orders="patrol" patrolDist="20"/>
-			</Table>
-		</Reinforcements>
-
-		<Items>
-			<Lookup					count="1d4"	table="&trStationSupplies;" />
-			<Lookup					count="1"	table="&trConsumables6;"/>
-			<Lookup					count="1"	table="&trMinorItem6;"/>
-			<Table chance="75">
-				<Lookup chance="40" count="1" table="&trConsumables7;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem7;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem7;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="common">
-			<Ship   count="1d4"	class="&scWindSlaver;" orders="attack"/>
-		</Encounters>
-
-		<Satellites>
-			<Station type="&stSungNEWall;" xOffset="64" yOffset="64"	segment="true"/>
-			<Station type="&stSungNWWall;" xOffset="-64" yOffset="64"	segment="true"/>
-			<Station type="&stSungSWWall;" xOffset="-64" yOffset="-64"	segment="true"/>
-			<Station type="&stSungSEWall;" xOffset="64" yOffset="-64"	segment="true"/>
-		</Satellites>
-
-	</StationType>
-
-	<!-- Sung Citadel -->
-
-	<StationType UNID="&stSungCitadel;"
-			name=				"Sung citadel"
-			sovereign=			"&svSung;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itSungArmor;"
-			hitPoints=			"1500"
-            regen=              "11"
-			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, populated, sungSlavers"
-			levelFrequency=		"----r ur--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="100"
-			>
-
-		<Image			imageID="&rsStations6;" imageX="0" imageY="0" imageWidth="256" imageHeight="256"/>
-
-		<Devices>
-			<Device deviceID="&itCyberDeckLowerShields;"/>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="40"  posRadius="120"/>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="145" posRadius="125"/>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true" posAngle="270" posRadius="90"/>
-		</Devices>
-
-		<Ships>
-			<Table>
-				<Group chance="60">
-					<Ship			count="1"	class="&scEarthSlaver;"		orders="patrol" patrolDist="30"/>
-					<Ship			count="1d2"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
-					<Ship			count="1d3"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
-				</Group>
-				<Group chance="30">
-					<Ship			count="1"	class="&scEarthSlaver;"		orders="patrol" patrolDist="30"/>
-					<Ship			count="1d6"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
-				</Group>
-				<Group chance="10">
-					<Ship			count="1d4"	class="&scSteelSlaver;"		orders="patrol" patrolDist="20"/>
-					<Ship			count="1d6"	class="&scWindSlaver;"		orders="patrol" patrolDist="20"/>
-				</Group>
-			</Table>
-		</Ships>
-
-		<Reinforcements minShips="5">
-			<Table>
-				<Ship chance="50"	count="1d3"	class="&scWindSlaver;"	orders="patrol" patrolDist="20"/>
-				<Ship chance="30"	count="1d2"	class="&scSteelSlaver;"	orders="patrol" patrolDist="20"/>
-				<Ship chance="20"	count="1"	class="&scEarthSlaver;"	orders="patrol" patrolDist="30"/>
-			</Table>
-		</Reinforcements>
-
-		<Items>
-			<Item chance="80"		count="1d4" item="&itLongzhuSphere;"/>
-			<Lookup					count="1d4"	table="&trStationSupplies;" />
-			<Lookup					count="1"	table="&trConsumables6;"/>
-			<Lookup					count="1"	table="&trMinorItem6;"/>
-			<Table>
-				<Lookup chance="45" count="1" table="&trConsumables7;"/>
-				<Lookup chance="30" count="1" table="&trMinorItem7;"/>
-				<Lookup chance="25" count="1" table="&trMajorItem7;"/>
-			</Table>
-		</Items>
-
-		<Encounters frequency="common">
-			<Table>
-				<Ship chance="30"	count="2d3" class="&scWindSlaver;"		orders="attack"/>
-				<Group chance="60">
-					<Ship			count="1"	class="&scSteelSlaver;"		orders="attack"/>
-					<Ship			count="1d4"	class="&scWindSlaver;"		orders="attack"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scSteelSlaver;"		orders="attack"/>
-			</Table>
-		</Encounters>
-
-		<Satellites overlapCheck="asteroids">
-			<Orbitals count="8" distance="14" angle="equidistant">
-				<Station type="&stSungDefenseSat1;"/>
-			</Orbitals>
-		</Satellites>
-
-	</StationType>
-
-	<!-- Sung Defense Satellite -->
-
-	<StationType UNID="&stSungDefenseSat1;"
-			name=				"Sung defense satellite"
-			sovereign=			"&svSung;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			noMapLabel=			"true"
-			fireRateAdj=		"40"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
-
+	<ItemType UNID="&itQianlongArchcannon;"
+			name=				"Qianlong archcannon"
+			level=				"9"
+			value=				"220000"
 			mass=				"2500"
-			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"60"
-			structuralHitPoints="20"
-			ejectaType=			"&vtWreckEjecta;"
+			frequency=			"notrandom"
+			attributes=			"MajorItem; Military; NotForSale; qianlongArchcannon; sungSlavers"
+
+			charges=			"32"
+			description=		"The pinnacle of Sung Slaver technology, the Qianlong archcannon fires antimatter shells. The archcannon recharges with longzhu spheres."
 			>
 
-		<Image			imageID="&rsStations4;" imageX="192" imageY="0" imageWidth="32" imageHeight="32"/>
+		<Image imageID="&rsItems9;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
-		<Devices>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
-		</Devices>
+		<Weapon
+				type=				"missile"
 
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"24"
-				maxDist=		"3"
+				damage=				"antimatter:8d12; WMD:7"
+				fireRate=			"16"
+				missileSpeed=		"40"
+				hitPoints=			"5"
+				lifetime=			"113"
+				powerUse=			"100"
+				charges=			"true"
+
+				effect=				"&efQianlongProjectile;"
+				fireEffect=			"&efQianlongFire;"
+				hitEffect=			"&efQianlongHit;"
+				sound=				"&snRecoillessCannon;"
+				>
+		</Weapon>
+
+		<Events>
+			<OnAIUpdate>
+				(if (and (leq (itmGetCharges gItem) 256)
+						(objGetItems gSource "u +LongzhuSphere;"))
+					(block Nil
+						(setq aCharges 256)
+						(objFireItemEvent gSource gItem "Recharge")
+						(objRemoveItem gSource (itmCreate &itLongzhuSphere; 1))
+						)
+					)
+			</OnAIUpdate>
+			
+			<Recharge>
+				; aCharges = amount to recharge
+				; Returns the amount recharged
+				(block (rechargeNeeded)
+					(setq rechargeNeeded (min aCharges (subtract 9999 (itmGetCharges gItem))))
+					(if (gr rechargeNeeded 0)
+						(shpRechargeItem gSource gItem rechargeNeeded)
+						)
+					rechargeNeeded
+					)
+			</Recharge>
+		</Events>
+
+		<Language>
+			<Text id="core.charges">charge(s)</Text>
+		</Language>
+	</ItemType>
+
+<!-- LEVEL VII ITEMS -->
+
+	<!-- Segment of Dragon Armor -->
+
+	<ItemType UNID="&itDragonArmor;"
+			inherit=			"&baSungArmor;"
+			name=				"[segment(s) of ]Dragon armor"
+			level=				"7"
+			value=				"5000"
+			frequency=			"notRandom"
+			numberAppearing=	"1d4"
+			mass=				"6500"
+			attributes=			"Military; MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"This is a heavier version of the Sung's innovative armor, used on its Dragon slavers."
+
+			useScreen=			"&dsRPGUseItemOnArmor;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.10"
+			>
+
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"250"
+				hpBonus=	"  +0,  +0, +50,+100,  +0, +25"
+
+				repairTech=	"6"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="0"
+				EMPDamageAdj=	"0"
+				radiationImmune="true"
 				/>
-	</StationType>
 
-	<!-- Sung Walls -->
+		<StaticData>
+			<Data id="RepairHP">125</Data>
+		</StaticData>
+	</ItemType>
 
-	<StationType UNID="&stSungNWWall;"
-			name=				"Sung defense tower"
-			sovereign=			"&svSung;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"4"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
+	<!-- Dragon Shields -->
 
-			mass=				"50000"
-			multiHull=			"true"
-			armorID=			"&itSungArmor;"
-			hitPoints=			"120"
-			structuralHitPoints="100"
-			fireRateAdj=		"30"
-			ejectaType=			"&vtWreckEjecta;"
+	<ItemType UNID="&itDragonShields;"
+			name=				"Dragon shield generator"
+			level=				"7"
+			value=				"50000"
+			mass=				"6000"
+			frequency=			"notRandom"
+			attributes=			"majorItem, military, notForSale; sungSlavers"
+
+			description=		"Used by the Sung Dragon slavers, these shields are a much enhanced version of the Yoroi S500."
 			>
 
-		<Image			imageID="&rsStations5;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
-		<Devices>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
-		</Devices>
+		<Shields
+				hitPoints=		"140"
+				hpBonus=		"  +0,+100,  +0,+400,  +0,+100"
+				regen=			"60"
+				depletionDelay=	"480"
+				powerUse=		"500"
+				/>
 
-	</StationType>
+	</ItemType>
 
-	<StationType UNID="&stSungNEWall;"
-			name=				"Sung defense tower"
-			sovereign=			"&svSung;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"4"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
+<!-- LEVEL VI ITEMS -->
 
-			mass=				"50000"
-			multiHull=			"true"
-			armorID=			"&itSungArmor;"
-			hitPoints=			"120"
-			structuralHitPoints="100"
-			fireRateAdj=		"30"
-			ejectaType=			"&vtWreckEjecta;"
+	<!-- CyberDeck (Lower Shields) -->
+
+	<ItemType UNID="&itCyberDeckLowerShields;"
+			name=				"CyberDeck lower shields"
+			virtual=			"true"
+			level=				"6"
 			>
 
-		<Image			imageID="&rsStations5;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+		<CyberDeckDevice
+				range=			"30"
+				attackChance=	"20"
+				aiLevel=		"6"
+				program=		"ShieldsDown"
+				programName=	"Shi3ldsDown 3.1.5"
+				/>
 
-		<Devices>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
-		</Devices>
+	</ItemType>
 
-	</StationType>
+	<!-- Longzhu Sphere -->
 
-	<StationType UNID="&stSungSEWall;"
-			name=				"Sung defense tower"
-			sovereign=			"&svSung;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"4"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
+	<ItemType UNID="&itLongzhuSphere;"
+			name=				"longzhu sphere"
+			level=				"6"
+			value=				"500"
+			mass=				"1"
+			frequency=			"rare"
+			numberAppearing=	"1"
+			attributes=			"antiMatter, confirmRefuel, consumable, fuel, 100MW, longzhuSphere, notStandardFuel, sungSlavers"
 
-			mass=				"50000"
-			multiHull=			"true"
-			armorID=			"&itSungArmor;"
-			hitPoints=			"120"
-			structuralHitPoints="100"
-			fireRateAdj=		"30"
-			ejectaType=			"&vtWreckEjecta;"
+			useScreen=			"&dsUseLongzhuSphere;"
+			data=				"500000"
+
+			description=		"Longzhu spheres are antimatter containment vessels used by the Sung Slavers as power sources."
 			>
 
-		<Image			imageID="&rsStations5;" imageX="128" imageY="128" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsItems1;" imageX="0" imageY="288" imageWidth="96" imageHeight="96"/>
+	</ItemType>
 
-		<Devices>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
-		</Devices>
+	<!-- Particle Bolt Cannon -->
 
-	</StationType>
+	<ItemType UNID="&itParticleBoltCannon;"
+			name=				"Nandao bolt cannon"
+			level=				"6"
+			value=				"25000"
+			mass=				"2000"
+			frequency=			"rare"
+			numberAppearing=	"1"
+			attributes=			"MajorItem; Military; NotForSale; sungSlavers"
 
-	<StationType UNID="&stSungSWWall;"
-			name=				"Sung defense tower"
-			sovereign=			"&svSung;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"4"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			canAttack=			"true"
-
-			mass=				"50000"
-			multiHull=			"true"
-			armorID=			"&itSungArmor;"
-			hitPoints=			"120"
-			structuralHitPoints="100"
-			fireRateAdj=		"30"
-			ejectaType=			"&vtWreckEjecta;"
+			description=		"The Nandao bolt cannon fires a sublight pulse of heavy ions. The weapon requires Nandao bolt cartridges."
 			>
 
-		<Image			imageID="&rsStations5;" imageX="0" imageY="128" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsItems6;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
 
-		<Devices>
-			<Device deviceID="&itParticleBeamWeapon;"	omnidirectional="true"/>
-		</Devices>
+		<Weapon
+				fireRate=			"30"
+				powerUse=			"40"
+				>
 
-	</StationType>
+			<Missiles>
+				<Missile ammoID="&itParticleBoltCartridge;"
+						type=			"missile"
+
+						lifetime=		"80"
+						damage=			"particle:15d8; WMD:4"
+						hitPoints=		"15"
+
+						missileSpeed=	"60"
+						sound=			"&snRecoillessCannon;"
+						>
+
+					<Effect>
+						<Starburst
+								spikeCount=		"1d6+2"
+								spikeLength=	"30-50"
+								primaryColor=	"#65ff2c"
+								secondaryColor=	"#808417"
+								/>
+						
+						<Orb
+								style=			"smooth"
+								radius=			"40"
+								intensity=		"20"
+								primaryColor=	"#65ff2c"
+								secondaryColor=	"#65ff2c"
+								/>
+					</Effect>
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Segment of Heavy Sung Armor -->
+
+	<ItemType UNID="&itHeavySungArmor;"
+			inherit=			"&baSungArmor;"
+			name=				"[segment(s) of ]super-heavy Sung armor"
+			level=				"6"
+			value=				"2300"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+			mass=				"7500"
+			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"This is a heavier version of the Sung's innovative armor, generally used on its Earth slavers."
+
+			useScreen=			"&dsRPGUseItemOnArmor;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.20"
+			>
+
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"180"
+				hpBonus=	"  +0,  +0, -25, +50,  +0, +25"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="25"
+				EMPDamageAdj=	"10"
+				/>
+
+		<StaticData>
+			<Data id="RepairHP">90</Data>
+		</StaticData>
+	</ItemType>
+
+<!-- LEVEL V ITEMS -->
+
+	<!-- CyberDeck (Disarm) -->
+
+	<ItemType UNID="&itCyberDeckDisarm;"
+			name=				"CyberDeck disarm"
+			virtual=			"true"
+			level=				"5"
+			>
+
+		<CyberDeckDevice
+				range=			"20"
+				attackChance=	"20"
+				aiLevel=		"5"
+				program=		"Disarm"
+				programName=	"PeacefulConstraint R1.1"
+				/>
+
+	</ItemType>
+
+	<!-- Particle bolt cartridge -->
+
+	<ItemType UNID="&itParticleBoltCartridge;"
+			name=				"Nandao bolt cartridge"
+			level=				"5"
+			value=				"35"
+			mass=				"10"
+			frequency=			"common"
+			numberAppearing=	"20d40"
+			attributes=			"Consumable; Missile; NotForSale; sungSlavers"
+
+			description=		"This energy cartridge is used by the Nandao bolt cannon."
+
+			sortName=			"~.Nandao bolt cartridge"
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
+	<!-- Segment of Sung Armor -->
+
+	<ItemType UNID="&itSungArmor;"
+			inherit=			"&baSungArmor;"
+			name=				"[segment(s) of ]Sung armor"
+			level=				"5"
+			value=				"600"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+			mass=				"2500"
+			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"This blast-resistant tiled armor can be cannibalized to repair other Sung armor segments."
+
+			useScreen=			"&dsRPGUseItemOnArmor;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.30"
+			>
+
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"70"
+				hpBonus=	"  +0,  +0, -25, +50,  +0"
+
+				repairTech=	"6"
+
+				blindingDamageAdj="0"
+				deviceDamageAdj="50"
+				EMPDamageAdj=	"25"
+				/>
+
+		<StaticData>
+			<Data id="RepairHP">35</Data>
+		</StaticData>
+	</ItemType>
+	
+<!-- LEVEL II ITEMS -->
+
+	<!-- Segment of Light Sung Armor -->
+
+	<ItemType UNID="&itLightSungArmor;"
+			inherit=			"&baSungArmor;"
+			name=				"[segment(s) of ]light Sung armor"
+			level=				"2"
+			value=				"60"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+			mass=				"1500"
+			attributes=			"MinorItem; NotForSale; sungSlavers; TiledArmor"
+
+			description=		"The Sung created this blast-resistant tiled armor for their Wind slavers. The tiles can be cannibalized to repair other Sung armor segments."
+
+			useScreen=			"&dsRPGUseItemOnArmor;"
+			useUninstalledOnly=	"true"
+
+			sortName=			"Sung armor.40"
+			>
+
+		<Image imageID="&rsItems2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"25"
+				hpBonus=	"  +0,  +0, -25, +50,  +0"
+
+				repairTech=	"6"
+
+				blindingDamageAdj="0"
+				EMPDamageAdj=	"25"
+				/>
+
+		<StaticData>
+			<Data id="RepairHP">12</Data>
+		</StaticData>
+	</ItemType>
 
 <!-- DOCK SCREENS -->
 

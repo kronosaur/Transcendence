@@ -87,116 +87,16 @@
 		</Language>
 	</Sovereign>
 
-	<!-- CorporateCruiser -->
-
-	<ShipClass UNID="&scCorporateCruiser;"
-			manufacturer=		"Rasiermesser"
-			class=				"corporate cruiser"
-			type=				""
-			defaultSovereign=	"&svCorporate;"
-
-			attributes=			"capitalShip, corporate, genericClass, majorShip"
-			inherit=			"&baHumanTechShip;"
+	<SystemMap unid="&smCorporateSpace;"
+			displayOn="&smHumanSpace;"
 			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+commonwealthCore;"	attributes="corporateCore"/>
+			<System criteria="+commonwealthSpace;"	attributes="corporateSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-		<!-- Hull -->
-
-		<Hull
-			size=				"275"
-			mass=				"25000"
-			cargoSpace=			"1000"
-
-			cyberDefenseLevel=	"8"
-			/>
-
-		<Drive
-			maxSpeed=			"20"
-			thrust=				"50000"
-			/>
-
-		<Maneuver
-			maxRotationRate=	"3.0"
-			rotationAccel=		"0.5"
-			/>
-
-		<Wreck
-			explosionType=		"&vtThermoExplosion3;"
-			/>
-
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itHexaCarbideArmor;"
-			count=				"16"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
-			<Device deviceID="&itPlasmaShieldGenerator;"/>
-		</Devices>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"300"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"100"
-
-					posX=		"-25"
-					posY=		"0"
-					sizeX=		"50"
-					sizeY=		"40"
-					/>
-		</Interior>
-
-		<Items>
-			<Item count="40d20" item="&itGotha10Missile;"/>
-			<Item count="2d12" item="&itPteracniumFuelRod;"/>
-		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsCorporateCruiser;" imageWidth="230" imageHeight="230"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
-		</Effects>
-		
-		<!-- AI and Behavior -->
-		
-		<AISettings
-			fireRateAdj=		"40"
-			fireAccuracy=		"95"
-			perception=			"4"
-
-			ignoreShieldsDown=	"true"
-			/>
-
-		<Events>
-			<OnDestroy>
-				(switch
-					;	We don't care if an object ascends or enters a stargate
-					
-					(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
-						Nil
-
-					;	Handle it
-
-					(block ()
-
-						;	Destroy items on the wreck, because we don't want too much loot
-
-						(if aWreckObj
-							(rpgDestroyItems aWreckObj)
-							)
-						)
-					)
-			</OnDestroy>
-		</Events>
-	</ShipClass>
+<!-- STATION TYPES -->
 
 	<!-- Adventurer Outfitters -->
 
@@ -219,10 +119,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"---ru cu--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"---ru cu--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsStations6;" imageX="0" imageY="640" imageWidth="128" imageHeight="256"/>
 
@@ -375,8 +283,11 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"ccuv- ----- ----- ----- -----"
-				locationCriteria=	"+planetary"
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"ccuv- ----- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
 				/>
 
 		<Names noArticle="true">Armor United; Brentano Armor; Carbellium Armor Systems;
@@ -543,8 +454,11 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"uccr- ----- ----- ----- -----"
-				locationCriteria=	"+planetary"
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"uccr- ----- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
 				/>
 
 		<Names noArticle="true">Azure Protection Systems; Bixbie Arms; Chiba Arms Dealers; 
@@ -696,9 +610,17 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"--rur v---- ----- ----- -----"
-			locationCriteria=	"+planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"--rur v---- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				/>
 
 		<Image			imageID="&rsCorporateArmsDealer;" imageWidth="148" imageHeight="226" viewportRatio="0.03125"/>
 
@@ -813,10 +735,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"---ru rv--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"---ru rv--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsCorporateArmsDealer;" imageWidth="148" imageHeight="226" viewportRatio="0.03125"/>
 
@@ -928,10 +858,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"--rcu ur--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"--rcu ur--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Names noArticle="true">Auton Universe; Brehzen's Used Autons; Chiba Auton Dealers;
 				Dresden Autonomous Defenders; Ehrlenmeyer Autons; Frenzy Autons;
@@ -1134,9 +1072,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"ruuur ----- ----- ----- -----"
-				locationCriteria=	"-asteroids"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"+corporateCore;"
+				levelFrequency=			"ruuur ----- ----- ----- -----"
+
+				locationCriteria=		"-asteroids"
+				enemyExclusionRadius=	"50"
 				/>
 
 		<!-- Trade and Items -->
@@ -1375,8 +1316,11 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"cccuu rv--- ----- ----- -----"
-				locationCriteria=	"-outerSystem, +planetary"
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"cccuu rv--- ----- ----- -----"
+
+				locationCriteria=		"-outerSystem, +planetary"
 				/>
 
 		<Names noArticle="true">Antares Fuel; Bapco Fuel; Cerulean Energy;
@@ -1522,11 +1466,20 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, Makayev, populated"
-			levelFrequency=		"----- rrur- ----- ----- -----"
-			unique=				"inSystem"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="75"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"+corporateCore;"
+				levelFrequency=			"----- rrur- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"75"
+
+				unique=					"inSystem"
+				/>
 
 		<Image imageID="&rsMakayevFactory;" imageX="0" imageY="0" imageWidth="150" imageHeight="256"/>
 
@@ -1715,11 +1668,21 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, friendly, independent, generic, human, majorStation, populated"
-			levelFrequency=		"-uuuu r---- ----- ----- -----"
-			unique=				"inSystem"
-			locationCriteria=	"-planetary"
 			>
 			
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"+corporateCore;"
+				levelFrequency=			"-uuuu r---- ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+				enemyExclusionRadius=	"75"
+
+				unique=					"inSystem"
+				/>
+
 		<Names noArticle="true">Arcoter Industrials; Bosen-Haggen Manufacturing; Cloud9 Industrials;
 			Dai-chi Plant %1%0; Electrox Manufacturing; Fahrenheit Technologies; Geotron Industries;
 			Honoku-Tomashi Plant %1%0%0; Irene Sanchez Factory; Jorrell Scientific Plant %1%0%0;
@@ -1961,9 +1924,17 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, majorStation, populated"
-			levelFrequency=		"uuurr v---- ----- ----- -----"
-			locationCriteria=	"*"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"uuurr v---- ----- ----- -----"
+
+				locationCriteria=		"*"
+				/>
 
 		<Names definiteArticle="true">Beta Gemini Hotel; Honoku-Tomashi Hotel; Manchurian Oriental Hotel;
 				Merchant Prince Hotel; Savanna Hotel; Seven Sisters Hotel;
@@ -2127,8 +2098,11 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"rccuu rv--- ----- ----- -----"
-				locationCriteria=	"++outerSystem"
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"rccuu rv--- ----- ----- -----"
+
+				locationCriteria=		"++outerSystem"
 				/>
 
 		<!-- Trade and Items -->
@@ -2272,9 +2246,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"----- -uur- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="75"
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- -uur- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"75"
 				/>
 
 		<!-- Trade and Items -->
@@ -2423,10 +2400,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"---rc uur-- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"---rc uur-- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsStations4;" imageX="0" imageY="448" imageWidth="192" imageHeight="192"/>
 
@@ -2920,10 +2905,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateArms, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"---ru ur--- ----- ----- -----"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="50"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"---ru ur--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsStations5;" imageX="128" imageY="384" imageWidth="128" imageHeight="256"/>
 
@@ -3023,6 +3016,121 @@
 			</Text>
 		</Language>
 	</StationType>
+
+<!-- SHIP CLASSES -->
+
+	<!-- CorporateCruiser -->
+
+	<ShipClass UNID="&scCorporateCruiser;"
+			manufacturer=		"Rasiermesser"
+			class=				"corporate cruiser"
+			type=				""
+			defaultSovereign=	"&svCorporate;"
+
+			attributes=			"capitalShip, corporate, genericClass, majorShip"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"275"
+			mass=				"25000"
+			cargoSpace=			"1000"
+
+			cyberDefenseLevel=	"8"
+			/>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"50000"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"3.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<Wreck
+			explosionType=		"&vtThermoExplosion3;"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHexaCarbideArmor;"
+			count=				"16"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
+			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
+			<Device deviceID="&itPlasmaShieldGenerator;"/>
+		</Devices>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"300"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"100"
+
+					posX=		"-25"
+					posY=		"0"
+					sizeX=		"50"
+					sizeY=		"40"
+					/>
+		</Interior>
+
+		<Items>
+			<Item count="40d20" item="&itGotha10Missile;"/>
+			<Item count="2d12" item="&itPteracniumFuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCorporateCruiser;" imageWidth="230" imageHeight="230"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+		
+		<AISettings
+			fireRateAdj=		"40"
+			fireAccuracy=		"95"
+			perception=			"4"
+
+			ignoreShieldsDown=	"true"
+			/>
+
+		<Events>
+			<OnDestroy>
+				(switch
+					;	We don't care if an object ascends or enters a stargate
+					
+					(or (= aDestroyReason 'ascended) (= aDestroyReason 'enteredStargate))
+						Nil
+
+					;	Handle it
+
+					(block ()
+
+						;	Destroy items on the wreck, because we don't want too much loot
+
+						(if aWreckObj
+							(rpgDestroyItems aWreckObj)
+							)
+						)
+					)
+			</OnDestroy>
+		</Events>
+	</ShipClass>
+
+<!-- GLOBALS -->
 
 	<Globals>
 		(block Nil
@@ -3152,6 +3260,8 @@
 				))
 			)
 	</Globals>
+
+<!-- DOCK SCREENS -->
 
 	<!-- Arms Dealer Screen -->
 

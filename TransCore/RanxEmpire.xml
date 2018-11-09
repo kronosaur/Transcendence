@@ -14,123 +14,147 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Segment of Depleted Uranium Armor -->
+	<SystemMap unid="&smRanxSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+outerRealm;"				attributes="ranxSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-	<ItemType UNID="&itDepletedUraniumArmor;"
-			name=				"[segment(s) of ]depleted uranium armor"
-			level=				"4"
-			value=				"500"
-			frequency=			"rare"
-			numberAppearing=	"1d4"
-			mass=				"5000"
-			attributes=			"minorItem, notForSale, ranx"
+<!-- ENCOUNTERS -->
 
-			description=		"Though dense and extremely strong, depleted uranium is difficult to repair."
+	<!-- Ranx Outpost -->
+
+	<StationType UNID="&stRanxOutpost;"
+			name=				"Ranx outpost"
+			sovereign=			"&svRanxEmpire;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itLightOrthoSteel;"
+			hitPoints=			"370"
+            regen=              "4"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, populated, ranx"
 			>
 
-		<Image imageID="&rsItems4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Armor
-				hitPoints=	"100"
-				hpBonus=	"  +0,  +0, +25, +25, +25, +25"
+		<Encounter
+				systemCriteria=			"+ranxSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"----- ucur- ----- ----- -----"
 
-				repairTech=	"6"
-				installCostAdj="150"
+				locationCriteria=		"-outerSystem, +planetary|+50"
+				enemyExclusionRadius=	"60"
 				/>
-	</ItemType>
 
-	<!-- Kiloton Cannon -->
+		<Image			imageID="&rsStations7;" imageX="0" imageY="256" imageWidth="192" imageHeight="192"/>
 
-	<ItemType UNID="&itKilotonCannon;"
-			name=				"kiloton cannon"
-			attributes=			"majorItem, military, ranx, specialty"
-			  
-			level=				"7"
-			frequency=			"uncommon"
+		<Devices>
+		</Devices>
 
-			value=				"45000"
-			mass=				"4000"
-			  
-			description=		"This heavy nuclear cannon requires kiloton cannon shells."
+		<Items value="standard:level=7:x=1.2">
+			<Item count="8d100"	item="&itAkan30CannonShell;" />
+			<Table chance="50">
+				<Lookup chance="40" count="1" table="&trConsumables8;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<Ships>
+			<Ship			count="2d4"	class="&scRanxGunship;"	orders="patrol" patrolDist="5"/>
+			<Ship			count="1d4"	class="&scRanxGunship;"	orders="guard" />
+		</Ships>
+
+		<Reinforcements minShips="4">
+			<Ship		count="1d4"		class="&scRanxGunship;" orders="patrol" patrolDist="5"/>
+		</Reinforcements>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbRanxEncounters;"/>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Ranx Fortress -->
+
+	<StationType UNID="&stRanxFortress;"
+			name=				"Ranx fortress(es)"
+			sovereign=			"&svRanxEmpire;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itOrthoSteel;"
+			hitPoints=			"2400"
+            regen=              "19"
+			explosionType=		"&vtThermoExplosion4;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, majorStation, populated, ranx"
 			>
 
-		<Image imageID="&rsItemsEI3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Weapon
-				fireRate=			"20"
-				powerUse=			"50"
-				>
+		<Encounter
+				systemCriteria=			"+ranxSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"----- -rcr- ----- ----- -----"
 
-			<Missiles>
-				<Missile ammoID="&itKilotonCannonShell;"
-						type=			"missile"
+				locationCriteria=		"-outerSystem, +planetary|+50"
+				enemyExclusionRadius=	"100"
+				/>
 
-						missileSpeed=	"50"
-						lifetime=		"120"
-						hitPoints=		"15"
+		<Image			imageID="&rsStations8;" imageX="0" imageY="192" imageWidth="256" imageHeight="256"/>
 
-						failsafe=		"10"
+		<Devices>
+		</Devices>
 
-						hitEffect=		"&efThermoFragmentExplosion;"
-						sound=			"&snMissileLauncher;"
-						>
+		<Items value="standard:level=8:x=2">
+			<Item count="10d100"	item="&itAkan30CannonShell;" />
+			<Item count="4d20"		item="&itKilotonCannonShell;" />
+			<Table count="1-2">
+				<Lookup chance="40" count="1" table="&trConsumables9;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem9;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem9;"/>
+			</Table>
+		</Items>
 
-					<Effect>
-						<ParticleJet
-								emitRate=			"20"
-								emitSpeed=			"40-50"
-								particleLifetime=	"10-30"
-								spreadAngle=		"2"
-								>
-							<ParticleEffect>
-								<Particle
-										style=			"plain"
-										minWidth=		"1"
-										maxWidth=		"3"
-										primaryColor=	"#effeff"
-										secondaryColor=	"#5b777a"
-										/>
-							</ParticleEffect>
-						</ParticleJet>
-						
-						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
-					</Effect>
+		<Ships>
+			<Ship			count="1d6"	class="&scRanxGunship;"	orders="patrol" patrolDist="5"/>
+			<Ship			count="1d6"	class="&scRanxGunship;"	orders="guard" />
+			<Ship					count="1"	class="&scRanxDreadnought;"	orders="patrol" patrolDist="150">
+				<Escorts>
+					<Ship			count="1d4"	class="&scRanxGunship;"	orders="escort"/>
+				</Escorts>
+			</Ship>
+		</Ships>
 
-					<Fragment 
-							count=				"50-70"
-							type=				"missile"
+		<Reinforcements minShips="5">
+			<Table>
+				<Ship chance="75"  count="1d4"	class="&scRanxGunship;" orders="patrol" patrolDist="5"/>
+				<Ship chance="25"  count="1"	class="&scRanxDreadnought;"	orders="patrol" patrolDist="25">
+					<Escorts>
+						<Ship			count="1d4"	class="&scRanxGunship;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Reinforcements>
 
-							damage=				"thermo:1d12+2; WMD:4"
-							missileSpeed=		"70-90"
-							lifetime=			"5"
-							
-							effect=				"&efThermoShellDefault;"
-							hitEffect=			"&efThermoFragmentHit;"
-							>
-					</Fragment>
-				</Missile>
-			</Missiles>
-		</Weapon>
-	</ItemType>
-
-	<!-- Kiloton Cannon Shell -->
-
-	<ItemType UNID="&itKilotonCannonShell;"
-			name=				"kiloton cannon shell"
-			attributes=			"consumable, military, missile, ranx, specialty"
-			  
-			level=				"6"
-			frequency=			"common"
-			numberAppearing=	"1d20"
-
-			value=				"120"
-			mass=				"50"
-			  
-			description=		"This shell cartridge is used by the kiloton cannon."
-			>
-
-		<Image imageID="&rsItemsEI3;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
-	</ItemType>
+		<Encounters frequency="common">
+			<Lookup table="&tbRanxEncounters;"/>
+		</Encounters>
+	</StationType>
+	
+<!-- SHIP CLASSES -->
 
 	<!-- Ranx Gunship -->
 
@@ -283,120 +307,126 @@
 
 	</ShipClass>
 
-	<!-- Ranx Outpost -->
+<!-- ITEM TYPES -->
 
-	<StationType UNID="&stRanxOutpost;"
-			name=				"Ranx outpost"
-			sovereign=			"&svRanxEmpire;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
+	<!-- Segment of Depleted Uranium Armor -->
 
-			multiHull=			"true"
-			armorID=			"&itLightOrthoSteel;"
-			hitPoints=			"370"
-            regen=              "4"
-			explosionType=		"&vtThermoExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
+	<ItemType UNID="&itDepletedUraniumArmor;"
+			name=				"[segment(s) of ]depleted uranium armor"
+			level=				"4"
+			value=				"500"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+			mass=				"5000"
+			attributes=			"minorItem, notForSale, ranx"
 
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, populated, ranx"
-			levelFrequency=		"----- ucur- ----- ----- -----"
-			locationCriteria=	"-outerSystem, +planetary|+50"
-			enemyExclusionRadius="60"
+			description=		"Though dense and extremely strong, depleted uranium is difficult to repair."
 			>
 
-		<Image			imageID="&rsStations7;" imageX="0" imageY="256" imageWidth="192" imageHeight="192"/>
+		<Image imageID="&rsItems4;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
-		<Devices>
-		</Devices>
+		<Armor
+				hitPoints=	"100"
+				hpBonus=	"  +0,  +0, +25, +25, +25, +25"
 
-		<Items value="standard:level=7:x=1.2">
-			<Item count="8d100"	item="&itAkan30CannonShell;" />
-			<Table chance="50">
-				<Lookup chance="40" count="1" table="&trConsumables8;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
-			</Table>
-		</Items>
+				repairTech=	"6"
+				installCostAdj="150"
+				/>
+	</ItemType>
 
-		<Ships>
-			<Ship			count="2d4"	class="&scRanxGunship;"	orders="patrol" patrolDist="5"/>
-			<Ship			count="1d4"	class="&scRanxGunship;"	orders="guard" />
-		</Ships>
+	<!-- Kiloton Cannon -->
 
-		<Reinforcements minShips="4">
-			<Ship		count="1d4"		class="&scRanxGunship;" orders="patrol" patrolDist="5"/>
-		</Reinforcements>
+	<ItemType UNID="&itKilotonCannon;"
+			name=				"kiloton cannon"
+			attributes=			"majorItem, military, ranx, specialty"
+			  
+			level=				"7"
+			frequency=			"uncommon"
 
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbRanxEncounters;"/>
-		</Encounters>
-
-	</StationType>
-
-	<!-- Ranx Fortress -->
-
-	<StationType UNID="&stRanxFortress;"
-			name=				"Ranx fortress(es)"
-			sovereign=			"&svRanxEmpire;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itOrthoSteel;"
-			hitPoints=			"2400"
-            regen=              "19"
-			explosionType=		"&vtThermoExplosion4;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envEarth, envAvoidsAir, generic, human, majorStation, populated, ranx"
-			levelFrequency=		"----- -rcr- ----- ----- -----"
-			locationCriteria=	"-outerSystem, +planetary|+50"
-			enemyExclusionRadius="100"
+			value=				"45000"
+			mass=				"4000"
+			  
+			description=		"This heavy nuclear cannon requires kiloton cannon shells."
 			>
 
-		<Image			imageID="&rsStations8;" imageX="0" imageY="192" imageWidth="256" imageHeight="256"/>
+		<Image imageID="&rsItemsEI3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
-		<Devices>
-		</Devices>
+		<Weapon
+				fireRate=			"20"
+				powerUse=			"50"
+				>
 
-		<Items value="standard:level=8:x=2">
-			<Item count="10d100"	item="&itAkan30CannonShell;" />
-			<Item count="4d20"		item="&itKilotonCannonShell;" />
-			<Table count="1-2">
-				<Lookup chance="40" count="1" table="&trConsumables9;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem9;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem9;"/>
-			</Table>
-		</Items>
+			<Missiles>
+				<Missile ammoID="&itKilotonCannonShell;"
+						type=			"missile"
 
-		<Ships>
-			<Ship			count="1d6"	class="&scRanxGunship;"	orders="patrol" patrolDist="5"/>
-			<Ship			count="1d6"	class="&scRanxGunship;"	orders="guard" />
-			<Ship					count="1"	class="&scRanxDreadnought;"	orders="patrol" patrolDist="150">
-				<Escorts>
-					<Ship			count="1d4"	class="&scRanxGunship;"	orders="escort"/>
-				</Escorts>
-			</Ship>
-		</Ships>
+						missileSpeed=	"50"
+						lifetime=		"120"
+						hitPoints=		"15"
 
-		<Reinforcements minShips="5">
-			<Table>
-				<Ship chance="75"  count="1d4"	class="&scRanxGunship;" orders="patrol" patrolDist="5"/>
-				<Ship chance="25"  count="1"	class="&scRanxDreadnought;"	orders="patrol" patrolDist="25">
-					<Escorts>
-						<Ship			count="1d4"	class="&scRanxGunship;"	orders="escort"/>
-					</Escorts>
-				</Ship>
-			</Table>
-		</Reinforcements>
+						failsafe=		"10"
 
-		<Encounters frequency="common">
-			<Lookup table="&tbRanxEncounters;"/>
-		</Encounters>
-	</StationType>
-	
+						hitEffect=		"&efThermoFragmentExplosion;"
+						sound=			"&snMissileLauncher;"
+						>
+
+					<Effect>
+						<ParticleJet
+								emitRate=			"20"
+								emitSpeed=			"40-50"
+								particleLifetime=	"10-30"
+								spreadAngle=		"2"
+								>
+							<ParticleEffect>
+								<Particle
+										style=			"plain"
+										minWidth=		"1"
+										maxWidth=		"3"
+										primaryColor=	"#effeff"
+										secondaryColor=	"#5b777a"
+										/>
+							</ParticleEffect>
+						</ParticleJet>
+						
+						<Image imageID="&rsMissiles;" imageX="0" imageY="48" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+					</Effect>
+
+					<Fragment 
+							count=				"50-70"
+							type=				"missile"
+
+							damage=				"thermo:1d12+2; WMD:4"
+							missileSpeed=		"70-90"
+							lifetime=			"5"
+							
+							effect=				"&efThermoShellDefault;"
+							hitEffect=			"&efThermoFragmentHit;"
+							>
+					</Fragment>
+				</Missile>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Kiloton Cannon Shell -->
+
+	<ItemType UNID="&itKilotonCannonShell;"
+			name=				"kiloton cannon shell"
+			attributes=			"consumable, military, missile, ranx, specialty"
+			  
+			level=				"6"
+			frequency=			"common"
+			numberAppearing=	"1d20"
+
+			value=				"120"
+			mass=				"50"
+			  
+			description=		"This shell cartridge is used by the kiloton cannon."
+			>
+
+		<Image imageID="&rsItemsEI3;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+	</ItemType>
+
 	<!-- Ranx Encounter Table -->
 	
 	<ShipTable unid="&tbRanxEncounters;">
@@ -421,7 +451,7 @@
 		</LevelTable>
 	</ShipTable>
 
-	<!-- Resources -->
+<!-- RESOURCES -->
 
 	<Image UNID="&rsRanxDreadnought;"			bitmap="Resources\RanxDreadnought.jpg"		bitmask="Resources\RanxDreadnoughtMask.bmp"	loadOnUse="true"/>
 	<Image UNID="&rsRanxGunshipHD;"				bitmap="Resources\RanxGunshipHD.jpg"		bitmask="Resources\RanxGunshipHDMask.bmp"  	loadOnUse="true"/>

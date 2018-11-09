@@ -12,45 +12,609 @@
 			alignment="destructive order"
 			/>
 
-	<!-- Charon Pirate Map ROM -->
+<!-- ENCOUNTERS -->
 
-	<ItemType UNID="&itCharonPirateMapROM;"
-			name=				"Charon base map ROM"
-			level=				"3"
-			value=				"100"
-			mass=				"1"
-			frequency=			"veryrare"
-			unknownType=		"&itUnknownROM;"
-			attributes=			"consumable, info, systemMap"
+	<!-- Charon Pirate Cache -->
 
-			description=		"This program contains the location of all Charon pirate bases in the system."
+	<StationType UNID="&stCharonPirateOutpost;"
+			name=				"Charon Pirates cache"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itUltraLightTitaniumArmor;"
+			hitPoints=			"70"
+			regen=				"1"
+			fireRateAdj=		"80"
+			explosionType=		"&vtKineticExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, pirates, populated"
 			>
 
-		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+		<!-- Encounter Info -->
 
-		<Invoke>
-			(block (found)
-				; We map all Charon stations
-				(enum (sysFindObject gSource "AT:charonPirates;") obj
-					(block Nil
-						(objSetKnown obj)
-						(setq found True)
-						)
-					)
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"cuv-- ----- ----- ----- -----"
 
-				(if found
-					(objSendMessage gSource Nil "Mapped all Charon pirate stations in system")
-					(objSendMessage gSource Nil "No Charon pirate stations in system")
-					)
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"50"
+				/>
 
-				; Remove ROM
-				(objRemoveItem gSource gItem 1)
+		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
 
-				; Identify the item
-				(itmSetKnown gItem)
-				)
-		</Invoke>
-	</ItemType>
+		<Devices>
+			<Device deviceID="&itLaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="85"	count="1d4"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="5"	count="1d2"	class="&scViking;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items>
+			<Lookup chance="50" table="&trStdLevelTreasure;"/>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="75" count="1"		class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship count="1d3" class="&scCorsair;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="25" count="1"		class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;"/>
+			</Table>
+		</Encounters>
+	</StationType>
+
+	<!-- Charon Pirate Outpost II -->
+
+	<StationType UNID="&stCharonPirateOutpost2;"
+			name=				"Charon Pirates outpost"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itReactiveArmor;"
+			hitPoints=			"90"
+			regen=				"1"
+			fireRateAdj=		"50"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, pirates, populated"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"-cuv- ----- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="35"	count="2d4"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d4+1"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="15"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1d3"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scViking;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items value="standard:level=2">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdTreasure;"/>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="50" count="1"	class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship count="1d4" class="&scCorsair;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="50" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Table>
+							<Null chance="50"/>
+							<Ship chance="50" count="1d3" class="&scCorsair;" orders="escort"/>
+						</Table>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Charon Pirate Outpost IIa -->
+
+	<StationType UNID="&stCharonPirateOutpost2a;"
+			name=				"Charon Pirates outpost"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			armorID=			"&itReactiveArmor;"
+			hitPoints=			"50"
+			regen=				"1"
+			fireRateAdj=		"60"
+			explosionType=		"&vtKineticExplosion1;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"r---- ----- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<Table>
+				<Ship chance="45"	count="2d3"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="40">
+					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="15"	count="1d4"	class="&scViking;"		orders="guard"/>
+			</Table>
+		</Ships>
+
+		<Items value="standard:level=1">
+			<Lookup	table="&trStdTreasure;"/>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="50" count="1"	class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship count="1d4" class="&scCorsair;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="50" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Table>
+							<Ship chance="50" count="1d3" class="&scCorsair;" orders="escort"/>
+							<Null chance="50"/>
+						</Table>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Encounters>
+
+	</StationType>
+
+	<!-- Charon Pirate Outpost III -->
+
+	<StationType UNID="&stCharonPirateOutpost3;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyReactiveArmor;"
+			hitPoints=			"200"
+            regen=              "5"
+			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			alertWhenDestroyed=	"30"
+
+			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, pirates, populated"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"-rcr- ----- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
+					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items value="standard:level=3:x=2.5">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdTreasure;"/>
+		</Items>
+
+		<Encounters frequency="common">
+			<Table>
+				<Ship chance="60" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Table>
+							<Ship chance="40" count="1d6" class="&scCorsair;" orders="escort"/>
+							<Ship chance="30" count="1" class="&scViking;" orders="escort"/>
+							<Ship chance="30" count="1" class="&scCorsair-II;" orders="escort"/>
+						</Table>
+					</Escorts>
+				</Ship>
+				<Ship chance="30" count="1"	class="&scCorsair-II;" eventHandler="&evStdPatrolEncounterBehavior;">
+					<Escorts>
+						<Ship chance="60" count="1d6" class="&scCorsair;" orders="escort"/>
+						<Ship chance="40" count="1" class="&scViking;" orders="escort"/>
+					</Escorts>
+				</Ship>
+				<Ship chance="10" count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
+					<OnCreate>(objFireEvent gSource "OrderAmbush")</OnCreate>
+				</Ship>
+			</Table>
+		</Encounters>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Charon Primary Stronghold 1 -->
+
+	<StationType UNID="&stCharonPrimaryStronghold1;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itReactiveArmor;"
+			hitPoints=			"100"
+			regen=				"3"
+			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
+			>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="35"	count="2d3"	class="&scCorsair;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scViking;"		orders="guard"/>
+				</Group>
+				<Ship chance="15"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Group chance="10">
+					<Ship			count="1d2"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scViking;"		orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d4" class="&scCorsair;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scViking;"		orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCorsair-II;"	orders="patrol" patrolDist="20">
+					<Escorts>
+						<Ship			count="1d6"	class="&scCorsair;"	orders="escort"/>
+					</Escorts>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Items value="standard">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdLevelTreasure;"/>
+		</Items>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Charon Primary Stronghold 2 -->
+
+	<StationType UNID="&stCharonPrimaryStronghold2;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyReactiveArmor;"
+			hitPoints=			"150"
+			regen=				"4"
+			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			alertWhenDestroyed=	"30"
+
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
+			>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
+					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items value="standard">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdLevelTreasure;"/>
+		</Items>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Charon Primary Stronghold 3 -->
+
+	<StationType UNID="&stCharonPrimaryStronghold3;"
+			name=				"Charon Pirates stronghold"
+			sovereign=			"&svPirates;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itHeavyReactiveArmor;"
+			hitPoints=			"200"
+			regen=				"5"
+			fireRateAdj=		"40"
+			explosionType=		"&vtKineticExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			alertWhenDestroyed=	"30"
+
+			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
+			>
+
+		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
+
+		<Devices>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
+			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
+		</Devices>
+
+		<Ships>
+			<!-- Docked -->
+
+			<Table>
+				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
+				<Group chance="30">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Group chance="15">
+					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
+					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
+				</Group>
+				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
+			</Table>
+
+			<!-- Patrol -->
+
+			<Table>
+				<Group chance="75">
+					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
+					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
+				</Group>
+				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
+					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
+				</Ship>
+			</Table>
+		</Ships>
+
+		<Reinforcements minShips="6">
+			<Table>
+				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
+				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
+				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
+				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
+			</Table>
+		</Reinforcements>
+
+		<Items value="standard">
+			<Item	count="2d8"	item="&itKM100Missile;" />
+			<Lookup				table="&trStdLevelTreasure;"/>
+		</Items>
+
+		<DockingPorts>
+			<Port x="51"	y="80" />
+			<Port x="91"	y="42" />
+			<Port x="101"	y="-54" />
+			<Port x="61"	y="-90" />
+			<Port x="-61"	y="-90" />
+			<Port x="-101"	y="-54" />
+			<Port x="-91"	y="42" />
+			<Port x="-51"	y="80" />
+		</DockingPorts>
+
+	</StationType>
+
+<!-- SHIP CLASSES -->
 
 	<!-- Corsair-class Gunship -->
 
@@ -591,569 +1155,47 @@
 		</Events>
 	</ShipClass>
 
-	<!-- Charon Pirate Cache -->
+<!-- ITEM TYPES -->
 
-	<StationType UNID="&stCharonPirateOutpost;"
-			name=				"Charon Pirates cache"
-			sovereign=			"&svPirates;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
+	<!-- Charon Pirate Map ROM -->
 
-			armorID=			"&itUltraLightTitaniumArmor;"
-			hitPoints=			"70"
-			regen=				"1"
-			fireRateAdj=		"80"
-			explosionType=		"&vtKineticExplosion1;"
-			ejectaType=			"&vtWreckEjecta;"
+	<ItemType UNID="&itCharonPirateMapROM;"
+			name=				"Charon base map ROM"
+			level=				"3"
+			value=				"100"
+			mass=				"1"
+			frequency=			"veryrare"
+			unknownType=		"&itUnknownROM;"
+			attributes=			"consumable, info, systemMap"
 
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, pirates, populated"
-			levelFrequency=		"cuv-- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
+			description=		"This program contains the location of all Charon pirate bases in the system."
 			>
 
-		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
-
-		<Devices>
-			<Device deviceID="&itLaserCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Table>
-				<Ship chance="85"	count="1d4"	class="&scCorsair;"		orders="guard"/>
-				<Group chance="10">
-					<Ship			count="1"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scViking;"		orders="guard"/>
-				</Group>
-				<Ship chance="5"	count="1d2"	class="&scViking;"		orders="guard"/>
-			</Table>
-		</Ships>
-
-		<Items>
-			<Lookup chance="50" table="&trStdLevelTreasure;"/>
-		</Items>
-
-		<Encounters frequency="common">
-			<Table>
-				<Ship chance="75" count="1"		class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
-					<Escorts>
-						<Ship count="1d3" class="&scCorsair;" orders="escort"/>
-					</Escorts>
-				</Ship>
-				<Ship chance="25" count="1"		class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;"/>
-			</Table>
-		</Encounters>
-	</StationType>
-
-	<!-- Charon Pirate Outpost II -->
-
-	<StationType UNID="&stCharonPirateOutpost2;"
-			name=				"Charon Pirates outpost"
-			sovereign=			"&svPirates;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			armorID=			"&itReactiveArmor;"
-			hitPoints=			"90"
-			regen=				"1"
-			fireRateAdj=		"50"
-			explosionType=		"&vtKineticExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, pirates, populated"
-			levelFrequency=		"-cuv- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
-			>
-
-		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Table>
-				<Ship chance="35"	count="2d4"	class="&scCorsair;"		orders="guard"/>
-				<Group chance="30">
-					<Ship			count="1d4+1"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scViking;"		orders="guard"/>
-				</Group>
-				<Ship chance="15"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				<Group chance="10">
-					<Ship			count="1d3"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scViking;"		orders="guard"/>
-			</Table>
-		</Ships>
-
-		<Items value="standard:level=2">
-			<Item	count="2d8"	item="&itKM100Missile;" />
-			<Lookup				table="&trStdTreasure;"/>
-		</Items>
-
-		<Encounters frequency="common">
-			<Table>
-				<Ship chance="50" count="1"	class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
-					<Escorts>
-						<Ship count="1d4" class="&scCorsair;" orders="escort"/>
-					</Escorts>
-				</Ship>
-				<Ship chance="50" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
-					<Escorts>
-						<Table>
-							<Null chance="50"/>
-							<Ship chance="50" count="1d3" class="&scCorsair;" orders="escort"/>
-						</Table>
-					</Escorts>
-				</Ship>
-			</Table>
-		</Encounters>
-
-	</StationType>
-
-	<!-- Charon Pirate Outpost IIa -->
-
-	<StationType UNID="&stCharonPirateOutpost2a;"
-			name=				"Charon Pirates outpost"
-			sovereign=			"&svPirates;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			armorID=			"&itReactiveArmor;"
-			hitPoints=			"50"
-			regen=				"1"
-			fireRateAdj=		"60"
-			explosionType=		"&vtKineticExplosion1;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, human, pirates, populated"
-			levelFrequency=		"r---- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
-			>
-
-		<Image			imageID="&rsStations1;" imageX="0" imageY="512" imageWidth="156" imageHeight="156"/>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<Table>
-				<Ship chance="45"	count="2d3"	class="&scCorsair;"		orders="guard"/>
-				<Group chance="40">
-					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scViking;"		orders="guard"/>
-				</Group>
-				<Ship chance="15"	count="1d4"	class="&scViking;"		orders="guard"/>
-			</Table>
-		</Ships>
-
-		<Items value="standard:level=1">
-			<Lookup	table="&trStdTreasure;"/>
-		</Items>
-
-		<Encounters frequency="common">
-			<Table>
-				<Ship chance="50" count="1"	class="&scCorsair;" eventHandler="&evStdPatrolEncounterBehavior;">
-					<Escorts>
-						<Ship count="1d4" class="&scCorsair;" orders="escort"/>
-					</Escorts>
-				</Ship>
-				<Ship chance="50" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
-					<Escorts>
-						<Table>
-							<Ship chance="50" count="1d3" class="&scCorsair;" orders="escort"/>
-							<Null chance="50"/>
-						</Table>
-					</Escorts>
-				</Ship>
-			</Table>
-		</Encounters>
-
-	</StationType>
-
-	<!-- Charon Pirate Outpost III -->
-
-	<StationType UNID="&stCharonPirateOutpost3;"
-			name=				"Charon Pirates stronghold"
-			sovereign=			"&svPirates;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itHeavyReactiveArmor;"
-			hitPoints=			"200"
-            regen=              "5"
-			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			alertWhenDestroyed=	"30"
-
-			attributes=			"charonPirates, enemy, envAir, envEarth, envFire, envWater, generic, human, majorStation, pirates, populated"
-			levelFrequency=		"-rcr- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
-			>
-
-		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
-		</Devices>
-
-		<Ships>
-			<!-- Docked -->
-
-			<Table>
-				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
-				<Group chance="30">
-					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
-					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Group chance="15">
-					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
-					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
-				</Group>
-				<Group chance="15">
-					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
-			</Table>
-
-			<!-- Patrol -->
-
-			<Table>
-				<Group chance="75">
-					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
-					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
-				</Group>
-				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
-					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
-				</Ship>
-			</Table>
-		</Ships>
-
-		<Reinforcements minShips="6">
-			<Table>
-				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
-				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
-				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
-			</Table>
-		</Reinforcements>
-
-		<Items value="standard:level=3:x=2.5">
-			<Item	count="2d8"	item="&itKM100Missile;" />
-			<Lookup				table="&trStdTreasure;"/>
-		</Items>
-
-		<Encounters frequency="common">
-			<Table>
-				<Ship chance="60" count="1"	class="&scViking;" eventHandler="&evStdPatrolEncounterBehavior;">
-					<Escorts>
-						<Table>
-							<Ship chance="40" count="1d6" class="&scCorsair;" orders="escort"/>
-							<Ship chance="30" count="1" class="&scViking;" orders="escort"/>
-							<Ship chance="30" count="1" class="&scCorsair-II;" orders="escort"/>
-						</Table>
-					</Escorts>
-				</Ship>
-				<Ship chance="30" count="1"	class="&scCorsair-II;" eventHandler="&evStdPatrolEncounterBehavior;">
-					<Escorts>
-						<Ship chance="60" count="1d6" class="&scCorsair;" orders="escort"/>
-						<Ship chance="40" count="1" class="&scViking;" orders="escort"/>
-					</Escorts>
-				</Ship>
-				<Ship chance="10" count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
-					<OnCreate>(objFireEvent gSource "OrderAmbush")</OnCreate>
-				</Ship>
-			</Table>
-		</Encounters>
-
-		<DockingPorts>
-			<Port x="51"	y="80" />
-			<Port x="91"	y="42" />
-			<Port x="101"	y="-54" />
-			<Port x="61"	y="-90" />
-			<Port x="-61"	y="-90" />
-			<Port x="-101"	y="-54" />
-			<Port x="-91"	y="42" />
-			<Port x="-51"	y="80" />
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Charon Primary Stronghold 1 -->
-
-	<StationType UNID="&stCharonPrimaryStronghold1;"
-			name=				"Charon Pirates stronghold"
-			sovereign=			"&svPirates;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itReactiveArmor;"
-			hitPoints=			"100"
-			regen=				"3"
-			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
-			>
-
-		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<Ships>
-			<!-- Docked -->
-
-			<Table>
-				<Ship chance="35"	count="2d3"	class="&scCorsair;"		orders="guard"/>
-				<Group chance="30">
-					<Ship			count="1d4"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scViking;"		orders="guard"/>
-				</Group>
-				<Ship chance="15"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				<Group chance="10">
-					<Ship			count="1d2"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scViking;"		orders="guard"/>
-			</Table>
-
-			<!-- Patrol -->
-
-			<Table>
-				<Group chance="75">
-					<Ship			count="1d4" class="&scCorsair;"		orders="patrol" patrolDist="15"/>
-					<Ship			count="1d2" class="&scViking;"		orders="patrol" patrolDist="15"/>
-				</Group>
-				<Ship chance="25"	count="1"	class="&scCorsair-II;"	orders="patrol" patrolDist="20">
-					<Escorts>
-						<Ship			count="1d6"	class="&scCorsair;"	orders="escort"/>
-					</Escorts>
-				</Ship>
-			</Table>
-		</Ships>
-
-		<Items value="standard">
-			<Item	count="2d8"	item="&itKM100Missile;" />
-			<Lookup				table="&trStdLevelTreasure;"/>
-		</Items>
-
-		<DockingPorts>
-			<Port x="51"	y="80" />
-			<Port x="91"	y="42" />
-			<Port x="101"	y="-54" />
-			<Port x="61"	y="-90" />
-			<Port x="-61"	y="-90" />
-			<Port x="-101"	y="-54" />
-			<Port x="-91"	y="42" />
-			<Port x="-51"	y="80" />
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Charon Primary Stronghold 2 -->
-
-	<StationType UNID="&stCharonPrimaryStronghold2;"
-			name=				"Charon Pirates stronghold"
-			sovereign=			"&svPirates;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itHeavyReactiveArmor;"
-			hitPoints=			"150"
-			regen=				"4"
-			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			alertWhenDestroyed=	"30"
-
-			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
-			>
-
-		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
-		</Devices>
-
-		<Ships>
-			<!-- Docked -->
-
-			<Table>
-				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
-				<Group chance="30">
-					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
-					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Group chance="15">
-					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
-					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
-				</Group>
-				<Group chance="15">
-					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
-			</Table>
-
-			<!-- Patrol -->
-
-			<Table>
-				<Group chance="75">
-					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
-					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
-				</Group>
-				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
-					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
-				</Ship>
-			</Table>
-		</Ships>
-
-		<Reinforcements minShips="6">
-			<Table>
-				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
-				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
-				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
-			</Table>
-		</Reinforcements>
-
-		<Items value="standard">
-			<Item	count="2d8"	item="&itKM100Missile;" />
-			<Lookup				table="&trStdLevelTreasure;"/>
-		</Items>
-
-		<DockingPorts>
-			<Port x="51"	y="80" />
-			<Port x="91"	y="42" />
-			<Port x="101"	y="-54" />
-			<Port x="61"	y="-90" />
-			<Port x="-61"	y="-90" />
-			<Port x="-101"	y="-54" />
-			<Port x="-91"	y="42" />
-			<Port x="-51"	y="80" />
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Charon Primary Stronghold 3 -->
-
-	<StationType UNID="&stCharonPrimaryStronghold3;"
-			name=				"Charon Pirates stronghold"
-			sovereign=			"&svPirates;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itHeavyReactiveArmor;"
-			hitPoints=			"200"
-			regen=				"5"
-			fireRateAdj=		"40"
-			explosionType=		"&vtKineticExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			alertWhenDestroyed=	"30"
-
-			attributes=			"charonPirates, enemy, human, majorStation, pirates, populated, primaryStronghold, uncharted"
-			>
-
-		<Image			imageID="&rsStations2;" imageX="0" imageY="768" imageWidth="180" imageHeight="180"/>
-
-		<Devices>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
-			<Device deviceID="&itTurbolaserCannon;"	omnidirectional="true" posAngle="215" posRadius="60"/>
-		</Devices>
-
-		<Ships>
-			<!-- Docked -->
-
-			<Table>
-				<Ship chance="10"	count="2d3"	class="&scViking;"		orders="guard"/>
-				<Group chance="30">
-					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1d4"	class="&scViking;"		orders="guard"/>
-					<Ship			count="1"	class="&scCorsair-II;"	orders="guard"/>
-				</Group>
-				<Group chance="15">
-					<Ship			count="1d2"	class="&scViking;"		orders="guard"/>
-					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
-				</Group>
-				<Group chance="15">
-					<Ship			count="1d6"	class="&scCorsair;"		orders="guard"/>
-					<Ship			count="1"	class="&scDrake;"		orders="guard"/>
-				</Group>
-				<Ship chance="10"	count="1d4"	class="&scCorsair-II;"	orders="guard"/>
-			</Table>
-
-			<!-- Patrol -->
-
-			<Table>
-				<Group chance="75">
-					<Ship			count="1d6" class="&scViking;"		orders="patrol" patrolDist="15"/>
-					<Ship			count="1d2" class="&scCorsair-II;"	orders="patrol" patrolDist="15"/>
-				</Group>
-				<Ship chance="25"	count="1"	class="&scCharonFrigateRaider;" eventHandler="&evCharonRaiderBehavior;">
-					<OnCreate>(objFireEvent gSource "OrderPatrol")</OnCreate>
-				</Ship>
-			</Table>
-		</Ships>
-
-		<Reinforcements minShips="6">
-			<Table>
-				<Ship chance="35"	count="1d6"	class="&scCorsair;"		orders="guard"/>
-				<Ship chance="35"	count="1d3"	class="&scViking;"		orders="guard"/>
-				<Ship chance="20"	count="1d2"	class="&scCorsair-II;"	orders="guard"/>
-				<Ship chance="10"	count="1"	class="&scDrake;"		orders="guard"/>
-			</Table>
-		</Reinforcements>
-
-		<Items value="standard">
-			<Item	count="2d8"	item="&itKM100Missile;" />
-			<Lookup				table="&trStdLevelTreasure;"/>
-		</Items>
-
-		<DockingPorts>
-			<Port x="51"	y="80" />
-			<Port x="91"	y="42" />
-			<Port x="101"	y="-54" />
-			<Port x="61"	y="-90" />
-			<Port x="-61"	y="-90" />
-			<Port x="-101"	y="-54" />
-			<Port x="-91"	y="42" />
-			<Port x="-51"	y="80" />
-		</DockingPorts>
-
-	</StationType>
+		<Image imageID="&rsItems1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Invoke>
+			(block (found)
+				; We map all Charon stations
+				(enum (sysFindObject gSource "AT:charonPirates;") obj
+					(block Nil
+						(objSetKnown obj)
+						(setq found True)
+						)
+					)
+
+				(if found
+					(objSendMessage gSource Nil "Mapped all Charon pirate stations in system")
+					(objSendMessage gSource Nil "No Charon pirate stations in system")
+					)
+
+				; Remove ROM
+				(objRemoveItem gSource gItem 1)
+
+				; Identify the item
+				(itmSetKnown gItem)
+				)
+		</Invoke>
+	</ItemType>
 
 <!-- SHIP ENCOUNTER TABLES ================================================ -->
 

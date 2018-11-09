@@ -12,6 +12,663 @@
 			alignment="destructive order"
 			/>
 
+<!-- STATION TYPES -->
+
+	<!-- Asteroid Mine, Titanium Ore -->
+
+	<StationType UNID="&stAsteroidMineTitanium;"
+			name=				"outlaw titanium mine"
+			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itCeramicPlate;"
+			hitPoints=			"75"
+			regen=				"1"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+
+			>
+
+		<!-- Encounter Info -->
+
+		<Names noArticle="true">Asteroid T%1%0%0%0</Names>
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"ucr-- ----- ----- ----- -----"
+
+				locationCriteria=		"++asteroids"
+				/>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Group value="standard:level=2">
+				<Item count="2d6"	item="&itTitaniumOre;"/>
+				<Lookup chance="80"	table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Table>
+				<Group chance="40">
+					<Ship			count="1d3"	class="&scBorer;"		orders="guard"/>
+					<Ship			count="2d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1d3"	class="&scBorer;"	orders="guard"/>
+					<Ship			count="1d3"	class="&scHammerhead;"	orders="guard"/>
+				</Group>
+				<Group chance="20">
+					<Ship			count="1"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scBorer;"		orders="guard"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d2"	class="&scBorer;"		orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+		
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Asteroid Mine, Palladium Ore -->
+
+	<StationType UNID="&stAsteroidMinePalladium;"
+			name=				"outlaw palladium mine"
+			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itHeavyCeramicPlate;"
+			hitPoints=			"90"
+			regen=				"1"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtKineticExplosion2;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+			>
+
+		<!-- Encounter Info -->
+		
+		<Names noArticle="true">Asteroid L%1%0%0%0</Names>
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"-ucr- ----- ----- ----- -----"
+
+				locationCriteria=		"++asteroids"
+				/>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Group value="standard:level=3">
+				<Item count="2d6"	item="&itPalladiumOre;"/>
+				<Lookup chance="50"	table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="25">
+					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d2"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Asteroid Mine, Ceralloy Ore -->
+
+	<StationType UNID="&stAsteroidMineCeralloy;"
+			name=				"outlaw ceralloy mine"
+			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"150"
+			regen=				"2"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion1;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+			>
+
+		<!-- Encounter Info -->
+		
+		<Names noArticle="true">Asteroid C%1%0%0%0</Names>
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"--uur ----- ----- ----- -----"
+
+				locationCriteria=		"++asteroids"
+				/>
+
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Group value="standard:level=4">
+				<Item count="2d6"	item="&itCeralloyOre;"/>
+				<Lookup chance="25"	table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scOromo;"		orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"		orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="35">
+					<Ship			count="2d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scSotho;"		orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Asteroid Mine, Duranium Ore -->
+
+	<StationType UNID="&stAsteroidMineDuralloy;"
+			name=				"outlaw duranium mine"
+			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itPlasteelPlate;"
+			hitPoints=			"150"
+			regen=				"2"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+			>
+
+		<!-- Encounter Info -->
+		
+		<Names noArticle="true">Asteroid D%1%0%0%0</Names>
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"---uc r---- ----- ----- -----"
+
+				locationCriteria=		"++asteroids"
+				enemyExclusionRadius=	"40"
+				/>
+		
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Group value="standard:level=5">
+				<Item count="3d8"	item="&itDuralloyOre;"/>
+				<Lookup chance="25"	table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+		
+		<!-- Satellites -->
+
+		<Satellites overlapCheck="asteroids">
+			<Orbitals distance="9" angle="45">
+				<Station type="&stOutlawTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="9" angle="225">
+				<Station type="&stOutlawTurret;" imageVariant="0"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="25">
+					<Ship			count="2d6"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d2"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"	orders="guard"/>
+				</Group>
+				<Group chance="10">
+					<Ship			count="1d8"	class="&scOromo;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
+		
+	</StationType>
+
+	<!-- Asteroid Mine, Pteracnium Ore -->
+
+	<StationType UNID="&stAsteroidMinePteracnium;"
+			name=				"outlaw pteracnium mine"
+			sovereign=			"&svOutlawMiners;"
+			inherit=			"&baOutlawMine;"
+				 
+			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itCeralloyArmor;"
+			hitPoints=			"250"
+			regen=				"2"
+			multiHull=			"true"
+				 
+			canAttack=			"true"
+			explosionType=		"&vtBlastExplosion2;"
+			ejectaType=			"&vtStoneAsteroidEjecta;"
+			>
+
+		<!-- Encounter Info -->
+		
+		<Names noArticle="true">Asteroid P%1%0%0%0</Names>
+
+		<Encounter
+				systemCriteria=			"+outlawSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"----u ur--- ----- ----- -----"
+
+				locationCriteria=		"++asteroids"
+				enemyExclusionRadius=	"40"
+				/>
+		
+		<Encounters frequency="uncommon">
+			<Lookup table="&tbOutlawMinerEncounters;"/>
+		</Encounters>
+		
+		<!-- Trade and Items -->
+		
+		<Items>
+			<Group value="standard:level=6">
+				<Item count="2d6"	item="&itPteracniumOre;"/>
+				<Lookup chance="50"	table="&trStdTreasure;"/>
+			</Group>
+		</Items>
+			
+		<!-- Satellites -->
+		
+		<Satellites overlapCheck="asteroids">
+			<Orbitals distance="9" angle="45">
+				<Station type="&stOutlawTurret;" imageVariant="2"/>
+			</Orbitals>
+
+			<Orbitals distance="9" angle="135">
+				<Station type="&stOutlawTurret;" imageVariant="1"/>
+			</Orbitals>
+
+			<Orbitals distance="9" angle="225">
+				<Station type="&stOutlawTurret;" imageVariant="0"/>
+			</Orbitals>
+
+			<Orbitals distance="9" angle="315">
+				<Station type="&stOutlawTurret;" imageVariant="3"/>
+			</Orbitals>
+		</Satellites>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Table>
+				<Group chance="25">
+					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d2"	class="&scSotho;"		orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="40">
+					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1d4"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
+				</Group>
+				<Group chance="35">
+					<Ship			count="2d6"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
+					<Ship			count="1d3"	class="&scBorer-II;"	orders="guard"/>
+					<Ship			count="1"	class="&scSotho;"	orders="guard"/>
+				</Group>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<LocationCriteriaTable>
+				<Variants criteria="*ice">
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*metallic">
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*primordial">
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				<Variants criteria="*volcanic">
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+				
+				<Variants criteria="*~">
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
+					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
+				</Variants>
+			</LocationCriteriaTable>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"120"
+				>
+		</DockingPorts>
+
+	</StationType>
+
+	<!-- Outlaw Turret -->
+
+	<StationType UNID="&stOutlawTurret;"
+			name=				"Outlaw defense turret"
+			sovereign=			"&svOutlawMiners;"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			mass=				"2000"
+			armorID=			"&itCeralloyArmor;"
+			hitPoints=			"90"
+			structuralHitPoints="25"
+			fireRateAdj=		"20"
+				 
+			canAttack=			"true"
+			ejectaType=			"&vtWreckEjecta;"
+			noMapLabel=			"true"
+			noFriendlyFire=		"true"
+			>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itShtormRepeater;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+		
+		<ImageVariants>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="448" imageWidth="42" imageHeight="42"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="490" imageWidth="42" imageHeight="42"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="532" imageWidth="42" imageHeight="42"/>
+			<Image			imageID="&rsStations4;" imageX="192" imageY="574" imageWidth="42" imageHeight="42"/>
+		</ImageVariants>
+
+		<DockingPorts
+				portCount=		"2"
+				portRadius=		"24"
+				maxDist=		"3"
+				/>
+
+	</StationType>
+	
+<!-- SHIP CLASSES -->
+
 	<!-- Borer-class Gunship -->
 
 	<ShipClass UNID="&scBorer;"
@@ -270,646 +927,6 @@
 			/>
 
 	</ShipClass>
-	
-<!-- STATION TYPES -->
-
-	<!-- Asteroid Mine, Titanium Ore -->
-
-	<StationType UNID="&stAsteroidMineTitanium;"
-			name=				"outlaw titanium mine"
-			sovereign=			"&svOutlawMiners;"
-			inherit=			"&baOutlawMine;"
-				 
-			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			armorID=			"&itCeramicPlate;"
-			hitPoints=			"75"
-			regen=				"1"
-			multiHull=			"true"
-				 
-			canAttack=			"true"
-			explosionType=		"&vtKineticExplosion2;"
-			ejectaType=			"&vtStoneAsteroidEjecta;"
-
-			>
-
-		<!-- Encounter Info -->
-
-		<Names noArticle="true">Asteroid T%1%0%0%0</Names>
-
-		<Encounter
-				levelFrequency=		"ucr-- ----- ----- ----- -----"
-				locationCriteria=	"++asteroids"
-				/>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
-
-		<!-- Trade and Items -->
-		
-		<Items>
-			<Group value="standard:level=2">
-				<Item count="2d6"	item="&itTitaniumOre;"/>
-				<Lookup chance="80"	table="&trStdTreasure;"/>
-			</Group>
-		</Items>
-
-		<!-- Ships and Defenses -->
-		
-		<Ships>
-			<Table>
-				<Group chance="40">
-					<Ship			count="1d3"	class="&scBorer;"		orders="guard"/>
-					<Ship			count="2d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1d3"	class="&scBorer;"	orders="guard"/>
-					<Ship			count="1d3"	class="&scHammerhead;"	orders="guard"/>
-				</Group>
-				<Group chance="20">
-					<Ship			count="1"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="10">
-					<Ship			count="1"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d4"	class="&scBorer;"		orders="guard"/>
-				</Group>
-				<Group chance="10">
-					<Ship			count="1d2"	class="&scBorer;"		orders="guard"/>
-					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
-				</Group>
-			</Table>
-		</Ships>
-		
-		<!-- Image and Effects -->
-		
-		<ImageVariants>
-			<LocationCriteriaTable>
-				<Variants criteria="*ice">
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*metallic">
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*primordial">
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*volcanic">
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				
-				<Variants criteria="*~">
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-			</LocationCriteriaTable>
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"8"
-				portRadius=		"120"
-				>
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Asteroid Mine, Palladium Ore -->
-
-	<StationType UNID="&stAsteroidMinePalladium;"
-			name=				"outlaw palladium mine"
-			sovereign=			"&svOutlawMiners;"
-			inherit=			"&baOutlawMine;"
-				 
-			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"90"
-			regen=				"1"
-			multiHull=			"true"
-				 
-			canAttack=			"true"
-			explosionType=		"&vtKineticExplosion2;"
-			ejectaType=			"&vtStoneAsteroidEjecta;"
-			>
-
-		<!-- Encounter Info -->
-		
-		<Names noArticle="true">Asteroid L%1%0%0%0</Names>
-
-		<Encounter
-				levelFrequency=		"-ucr- ----- ----- ----- -----"
-				locationCriteria=	"++asteroids"
-				/>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
-
-		<!-- Trade and Items -->
-		
-		<Items>
-			<Group value="standard:level=3">
-				<Item count="2d6"	item="&itPalladiumOre;"/>
-				<Lookup chance="50"	table="&trStdTreasure;"/>
-			</Group>
-		</Items>
-
-		<!-- Ships and Defenses -->
-		
-		<Ships>
-			<Table>
-				<Group chance="25">
-					<Ship			count="1d6"	class="&scBorer;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="40">
-					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scHammerhead-II;"	orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="25">
-					<Ship			count="1d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
-					<Ship			count="1d2"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scHammerhead-II;"	orders="guard"/>
-				</Group>
-				<Group chance="10">
-					<Ship			count="1d4"	class="&scHammerhead;"	orders="patrol" patrolDist="5"/>
-					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
-				</Group>
-			</Table>
-		</Ships>
-
-		<!-- Image and Effects -->
-		
-		<ImageVariants>
-			<LocationCriteriaTable>
-				<Variants criteria="*ice">
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*metallic">
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*primordial">
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*volcanic">
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				
-				<Variants criteria="*~">
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-			</LocationCriteriaTable>
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"8"
-				portRadius=		"120"
-				>
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Asteroid Mine, Ceralloy Ore -->
-
-	<StationType UNID="&stAsteroidMineCeralloy;"
-			name=				"outlaw ceralloy mine"
-			sovereign=			"&svOutlawMiners;"
-			inherit=			"&baOutlawMine;"
-				 
-			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"150"
-			regen=				"2"
-			multiHull=			"true"
-				 
-			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion1;"
-			ejectaType=			"&vtStoneAsteroidEjecta;"
-			>
-
-		<!-- Encounter Info -->
-		
-		<Names noArticle="true">Asteroid C%1%0%0%0</Names>
-
-		<Encounter
-				levelFrequency=		"--uur ----- ----- ----- -----"
-				locationCriteria=	"++asteroids"
-				/>
-
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
-
-		<!-- Trade and Items -->
-		
-		<Items>
-			<Group value="standard:level=4">
-				<Item count="2d6"	item="&itCeralloyOre;"/>
-				<Lookup chance="25"	table="&trStdTreasure;"/>
-			</Group>
-		</Items>
-
-		<!-- Ships and Defenses -->
-		
-		<Ships>
-			<Table>
-				<Group chance="25">
-					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d4"	class="&scOromo;"		orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="40">
-					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scSotho;"		orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="35">
-					<Ship			count="2d3"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
-					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scSotho;"		orders="guard"/>
-				</Group>
-			</Table>
-		</Ships>
-
-		<!-- Image and Effects -->
-		
-		<ImageVariants>
-			<LocationCriteriaTable>
-				<Variants criteria="*ice">
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*metallic">
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*primordial">
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*volcanic">
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				
-				<Variants criteria="*~">
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-			</LocationCriteriaTable>
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"8"
-				portRadius=		"120"
-				>
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Asteroid Mine, Duranium Ore -->
-
-	<StationType UNID="&stAsteroidMineDuralloy;"
-			name=				"outlaw duranium mine"
-			sovereign=			"&svOutlawMiners;"
-			inherit=			"&baOutlawMine;"
-				 
-			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			armorID=			"&itPlasteelPlate;"
-			hitPoints=			"150"
-			regen=				"2"
-			multiHull=			"true"
-				 
-			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtStoneAsteroidEjecta;"
-			>
-
-		<!-- Encounter Info -->
-		
-		<Names noArticle="true">Asteroid D%1%0%0%0</Names>
-
-		<Encounter
-				levelFrequency=		"---uc r---- ----- ----- -----"
-				locationCriteria=	"++asteroids"
-				enemyExclusionRadius="40"
-				/>
-		
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
-
-		<!-- Trade and Items -->
-		
-		<Items>
-			<Group value="standard:level=5">
-				<Item count="3d8"	item="&itDuralloyOre;"/>
-				<Lookup chance="25"	table="&trStdTreasure;"/>
-			</Group>
-		</Items>
-		
-		<!-- Satellites -->
-
-		<Satellites overlapCheck="asteroids">
-			<Orbitals distance="9" angle="45">
-				<Station type="&stOutlawTurret;" imageVariant="2"/>
-			</Orbitals>
-
-			<Orbitals distance="9" angle="225">
-				<Station type="&stOutlawTurret;" imageVariant="0"/>
-			</Orbitals>
-		</Satellites>
-
-		<!-- Ships and Defenses -->
-		
-		<Ships>
-			<Table>
-				<Group chance="25">
-					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="40">
-					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d4"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="25">
-					<Ship			count="2d6"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
-					<Ship			count="1d2"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scSotho;"	orders="guard"/>
-				</Group>
-				<Group chance="10">
-					<Ship			count="1d8"	class="&scOromo;"	orders="patrol" patrolDist="5"/>
-					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
-				</Group>
-			</Table>
-		</Ships>
-
-		<!-- Image and Effects -->
-		
-		<ImageVariants>
-			<LocationCriteriaTable>
-				<Variants criteria="*ice">
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*metallic">
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*primordial">
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*volcanic">
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				
-				<Variants criteria="*~">
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-			</LocationCriteriaTable>
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"8"
-				portRadius=		"120"
-				>
-		</DockingPorts>
-		
-	</StationType>
-
-	<!-- Asteroid Mine, Pteracnium Ore -->
-
-	<StationType UNID="&stAsteroidMinePteracnium;"
-			name=				"outlaw pteracnium mine"
-			sovereign=			"&svOutlawMiners;"
-			inherit=			"&baOutlawMine;"
-				 
-			attributes=			"asteroidBase, enemy, envEarth, envAvoidsAir, generic, human, outlawMiners, outlaws, populated, settlers"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"250"
-			regen=				"2"
-			multiHull=			"true"
-				 
-			canAttack=			"true"
-			explosionType=		"&vtBlastExplosion2;"
-			ejectaType=			"&vtStoneAsteroidEjecta;"
-			>
-
-		<!-- Encounter Info -->
-		
-		<Names noArticle="true">Asteroid P%1%0%0%0</Names>
-
-		<Encounter
-				levelFrequency=		"----u ur--- ----- ----- -----"
-				locationCriteria=	"++asteroids"
-				enemyExclusionRadius="40"
-				/>
-		
-		<Encounters frequency="uncommon">
-			<Lookup table="&tbOutlawMinerEncounters;"/>
-		</Encounters>
-		
-		<!-- Trade and Items -->
-		
-		<Items>
-			<Group value="standard:level=6">
-				<Item count="2d6"	item="&itPteracniumOre;"/>
-				<Lookup chance="50"	table="&trStdTreasure;"/>
-			</Group>
-		</Items>
-			
-		<!-- Satellites -->
-		
-		<Satellites overlapCheck="asteroids">
-			<Orbitals distance="9" angle="45">
-				<Station type="&stOutlawTurret;" imageVariant="2"/>
-			</Orbitals>
-
-			<Orbitals distance="9" angle="135">
-				<Station type="&stOutlawTurret;" imageVariant="1"/>
-			</Orbitals>
-
-			<Orbitals distance="9" angle="225">
-				<Station type="&stOutlawTurret;" imageVariant="0"/>
-			</Orbitals>
-
-			<Orbitals distance="9" angle="315">
-				<Station type="&stOutlawTurret;" imageVariant="3"/>
-			</Orbitals>
-		</Satellites>
-
-		<!-- Ships and Defenses -->
-		
-		<Ships>
-			<Table>
-				<Group chance="25">
-					<Ship			count="1d6"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d2"	class="&scSotho;"		orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="40">
-					<Ship			count="1d4"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1d4"	class="&scSotho;"	orders="patrol" patrolDist="5"/>
-				</Group>
-				<Group chance="35">
-					<Ship			count="2d6"	class="&scTenhoveSentinel;"	orders="patrol" patrolDist="5"/>
-					<Ship			count="1d3"	class="&scBorer-II;"	orders="guard"/>
-					<Ship			count="1"	class="&scSotho;"	orders="guard"/>
-				</Group>
-			</Table>
-		</Ships>
-
-		<!-- Image and Effects -->
-		
-		<ImageVariants>
-			<LocationCriteriaTable>
-				<Variants criteria="*ice">
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineIce;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*metallic">
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineMetallic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*primordial">
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMinePrimordial;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				<Variants criteria="*volcanic">
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineVolcanic;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-				
-				<Variants criteria="*~">
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="0"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="220"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="440"/>
-					<Image imageID="&rsOutlawMineRocky;"	imageWidth="220" imageHeight="220"	imageX="0"	imageY="660"/>
-				</Variants>
-			</LocationCriteriaTable>
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"8"
-				portRadius=		"120"
-				>
-		</DockingPorts>
-
-	</StationType>
-
-	<!-- Outlaw Turret -->
-
-	<StationType UNID="&stOutlawTurret;"
-			name=				"Outlaw defense turret"
-			sovereign=			"&svOutlawMiners;"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			mass=				"2000"
-			armorID=			"&itCeralloyArmor;"
-			hitPoints=			"90"
-			structuralHitPoints="25"
-			fireRateAdj=		"20"
-				 
-			canAttack=			"true"
-			ejectaType=			"&vtWreckEjecta;"
-			noMapLabel=			"true"
-			noFriendlyFire=		"true"
-			>
-
-		<!-- Configuration -->
-		
-		<Devices>
-			<Device deviceID="&itShtormRepeater;"	omnidirectional="true"/>
-		</Devices>
-
-		<!-- Image and Effects -->
-		
-		<ImageVariants>
-			<Image			imageID="&rsStations4;" imageX="192" imageY="448" imageWidth="42" imageHeight="42"/>
-			<Image			imageID="&rsStations4;" imageX="192" imageY="490" imageWidth="42" imageHeight="42"/>
-			<Image			imageID="&rsStations4;" imageX="192" imageY="532" imageWidth="42" imageHeight="42"/>
-			<Image			imageID="&rsStations4;" imageX="192" imageY="574" imageWidth="42" imageHeight="42"/>
-		</ImageVariants>
-
-		<DockingPorts
-				portCount=		"2"
-				portRadius=		"24"
-				maxDist=		"3"
-				/>
-
-	</StationType>
 	
 <!-- MISCELLANEOUS -->
 

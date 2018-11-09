@@ -12,6 +12,14 @@
 			alignment="destructive chaos"
 			/>
 
+	<SystemMap unid="&smRogueFleetSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+outerRealm;"				attributes="rogueFleetSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
 <!-- ENCOUNTERS -->
 
 	<!-- Rogue Fleet Cache -->
@@ -32,9 +40,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envAir, envAvoidsFire, generic, human, populated, rogue, rogueFleet"
-			levelFrequency=		"----- vcu-- ----- ----- -----"
-			locationCriteria=	"+asteroids"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+rogueFleetSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"----- vcu-- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<ImageVariants>
 			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
@@ -90,8 +107,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"----- -rcr- ----- ----- -----"
-				locationCriteria=	"+asteroids"
+				systemCriteria=			"+rogueFleetSpace;"
+				systemAffinity=			"+envAir; -envFire;"
+				levelFrequency=			"----- -rcr- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"50"
 				/>
 
 		<!-- Trade and Items -->

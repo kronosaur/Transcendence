@@ -29,8 +29,11 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"ucccu rrvv- ----- ----- -----"
-				locationCriteria=	"+asteroids"
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"ucccu rrvv- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
 				/>
 
 		<!-- Image and Effects
@@ -360,9 +363,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"debris,friendly,shipwreck"
-			levelFrequency=		"ucccu rrvv- ----- ----- -----"
-			locationCriteria=	"-planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"ucccu rrvv- ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+				/>
+
 		<ImageVariants>
 			<Shipwreck class="&scCorsair;"/>
 			<Shipwreck class="&scBorer;"/>
@@ -408,11 +420,20 @@
 			noMapIcon=			"true"
 
 			attributes=			"debris,friendly,shipwreck"
-			levelFrequency=		"-uccc urrvv ----- ----- -----"
-			locationCriteria=	"-planetary"
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"-uccc urrvv ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+				/>
+
 		<ImageVariants>
 			<Shipwreck class="&scRoninB;"/>
 			<Shipwreck class="&scSotho;"/>
@@ -461,11 +482,20 @@
 			noMapIcon=			"true"
 
 			attributes=			"debris,friendly,shipwreck"
-			levelFrequency=		"--ucc currv v---- ----- -----"
-			locationCriteria=	"-planetary"
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"--ucc currv v---- ----- -----"
+
+				locationCriteria=		"-planetary"
+				/>
+
 		<ImageVariants>
 			<Shipwreck class="&scRepentant;"/>
 			<Shipwreck class="&scEI100;"/>
@@ -517,11 +547,20 @@
 			radioactive=		"true"
 
 			attributes=			"debris,friendly,shipwreck"
-			levelFrequency=		"-rccc urv-- ----- ----- -----"
-			locationCriteria=	"-planetary"
 
 			ejectaType=			"&vtWreckEjecta;"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"-rccc urv-- ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+				/>
+
 		<ImageVariants>
 			<Shipwreck class="&scPlague;"/>
 			<Shipwreck class="&scEI100;"/>
@@ -576,9 +615,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"debris, friendly, shipwreck"
-			levelFrequency=		"----- rucur ----- ----- -----"
-			locationCriteria=	"-planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- rucur ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+				/>
+
 		<ImageShipwreck class="&scCenturionBlock2;"/>
 
 		<Items>
@@ -624,9 +672,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"debris, friendly, shipwreck"
-			levelFrequency=		"----- rucur ----- ----- -----"
-			locationCriteria=	"-planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- rucur ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+				/>
+
 		<ImageShipwreck class="&scSandstorm;"/>
 
 		<Items>
@@ -677,10 +734,18 @@
 			destroyWhenEmpty=	"true"
 
 			attributes=			"enemy, envEarth, envAvoidsAir, noSalvage"
-			levelFrequency=		"-ruuv ----- ----- ----- -----"
-			locationCriteria=	"--planetary"
-			enemyExclusionRadius="80"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+humanSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"-ruuv ----- ----- ----- -----"
+
+				locationCriteria=		"--planetary"
+				enemyExclusionRadius=	"80"
+				/>
 
 		<ImageVariants>
 			<Image			imageID="&rsStations1;" imageX="480" imageY="256" imageWidth="32" imageHeight="32" />
