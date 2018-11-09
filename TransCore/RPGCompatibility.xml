@@ -19,7 +19,7 @@
 	<DockScreen UNID="&dsRepairItem;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -111,7 +111,7 @@
 	<DockScreen UNID="&dsJettison;"
 			name=				"Ship's Cargo Hold"
 			type=				"itemPicker"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -235,7 +235,7 @@
 
 	<DockScreen UNID="&dsLoot;"
 			type=				"itemPicker"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -366,7 +366,7 @@
 	<DockScreen unid="&dsRPGDockServicesCompatible;"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 		<Panes>
 			<Default>
@@ -459,7 +459,7 @@
 	<DockScreen UNID="&dsRPGRemoveDevice;"
 			inherit=			"&dsDockScreenBase;"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 		<Panes>
 			<Default>
@@ -562,7 +562,7 @@
 	<DockScreen UNID="&dsRPGRepairArmor;"
 			type=				"itemPicker"
 			nestedScreen=		"true"
-			obsolete=			"37"
+			obsoleteVersion=			"37"
 			>
 
 		<ListOptions
@@ -666,16 +666,16 @@
 	</DockScreen>
 
 	<ShipClass UNID="&baStdAutonBaseObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</ShipClass>
 
 	<ItemType UNID="&baStdAuxMountDeviceBaseObsolete;"
-			obsolete="1">
+			obsoleteVersion="1">
 	</ItemType>
 
 	<ShipClass UNID="&baStdWingmanBaseObsolete;"
-			obsolete="1"
+			obsoleteVersion="1"
 			>
 	</ShipClass>
 
@@ -690,7 +690,7 @@
 -->
 
 	<DockScreen UNID="&dsRPGUseItem;"
-			obsolete=			"38"
+			obsoleteVersion=			"38"
 			>
 	</DockScreen>
 

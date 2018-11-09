@@ -121,6 +121,14 @@
 		</Language>
 	</Sovereign>
 	
+	<SystemMap unid="&smCSCOperationsSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+outerRealm;"			attributes="cscOperationsSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
 <!--
 
 PLAYER DATA
@@ -186,12 +194,21 @@ PLAYER DATA
 			sovereign=			"&svCommonwealthFleet;"
 
 			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- -ucu- ----- ----- -----"
-			maxAppearing=		"2-4"
-			unique=				"inSystem"
-			locationCriteria=	"+outerSystem, -planetary"
-			enemyExclusionRadius="120"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+cscOperationsSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- -ucu- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -planetary"
+				enemyExclusionRadius=	"120"
+
+				maxAppearing=			"2-4"
+				unique=					"inSystem"
+				/>
 
 		<StaticData>
 			<CSCData>
@@ -278,11 +295,20 @@ PLAYER DATA
 			sovereign=			"&svCommonwealthFleet;"
 
 			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- ruu-- ----- ----- -----"
-			maxAppearing=		"1"
-			locationCriteria=	"*"
-			enemyExclusionRadius="120"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+cscOperationsSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- ruu-- ----- ----- -----"
+
+				locationCriteria=		"*"
+				enemyExclusionRadius=	"120"
+
+				maxAppearing=			"1"
+				/>
 
 		<Ships>
 			<Ship	count="1"	class="&scCSCHospital;" orders="hold">
@@ -311,11 +337,20 @@ PLAYER DATA
 			sovereign=			"&svCommonwealthFleet;"
 
 			attributes=			"fleet,friendly,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- ruu-- ----- ----- -----"
-			maxAppearing=		"1"
-			locationCriteria=	"*"
-			enemyExclusionRadius="120"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+cscOperationsSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- ruu-- ----- ----- -----"
+
+				locationCriteria=		"*"
+				enemyExclusionRadius=	"120"
+
+				maxAppearing=			"1"
+				/>
 
 		<Ships>
 			<Ship	count="1"	class="&scCSCHospital;" orders="hold">

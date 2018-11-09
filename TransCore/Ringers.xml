@@ -2,6 +2,64 @@
 
 <TranscendenceModule>
 	
+<!-- RINGERS
+
+	PLAYER DATA
+
+	ringerCrime:	Description of the player's crime (e.g., "destruction of xyz")
+	ringerCrimeSeverity: The severity of the crime
+						0 = No crime
+						1 = Social violation
+						2 = Dangerous deviance
+						3 = Existential threat
+-->
+
+	<Sovereign UNID="&svRingers;"
+			name=":the Ringer civilization"
+			adjective="Ringer"
+			demonym=":a Ringer(s)"
+			plural="true"
+
+			alignment="constructive chaos"
+			>
+
+		<AttributeDesc>
+			<ItemAttribute id="ringer.valuable"	label="Ringer valuable"		criteriaLabel="Ringer valuables"		criteria="* +ringerValuable;"/>
+		</AttributeDesc>
+
+		<Events>
+			<GetGlobalDockScreen>
+				(switch
+					; This only applies to ringer stations
+					(not (objMatches gSource Nil "sTAV +ringers; +populated;"))
+						Nil
+						
+					; If the player has deviated socially, she is frozen
+					(geq (int (objGetData gPlayerShip "ringerCrimeSeverity")) 2)
+						{	screen:&dsRingerImprison;		priority:8		overrideOnly:true	}
+
+					Nil
+					)
+			</GetGlobalDockScreen>
+		</Events>
+	</Sovereign>
+
+	<SystemMap unid="&smRingerSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+outerRealm;"	attributes="ringerSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+	<EconomyType UNID="&ecRinEconomy;"
+			id=				"rin" 
+			currency=		"rin|rin"
+			conversion=		"500"
+			/>
+
+<!-- STATION TYPES -->
+
 	<!-- Ringers Collective -->
 
 	<StationType UNID="&stRingersCollective;"
@@ -22,10 +80,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
-			levelFrequency=		"----- rcurv ----- ----- -----"
-			locationCriteria=	"+outerSystem, +ringedGiant|+100"
-			enemyExclusionRadius="100"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+ringerSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"----- rcurv ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, +ringedGiant|+100"
+				enemyExclusionRadius=	"100"
+				/>
 
 		<Image			imageID="&rsStations6;" imageX="0" imageY="256" imageWidth="160" imageHeight="192"/>
 
@@ -187,10 +253,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
-			levelFrequency=		"----- -ruur ----- ----- -----"
-			locationCriteria=	"+outerSystem, +ringedGiant|+100"
-			enemyExclusionRadius="150"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+ringerSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"----- -ruur ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, +ringedGiant|+100"
+				enemyExclusionRadius=	"150"
+				/>
 
 		<Image			imageID="&rsStations7;" imageX="0" imageY="1024" imageWidth="256" imageHeight="256"/>
 
@@ -512,53 +586,5 @@
 			</OnDestroy>
 		</Events>
 	</Type>
-
-<!-- RINGERS
-
-	PLAYER DATA
-
-	ringerCrime:	Description of the player's crime (e.g., "destruction of xyz")
-	ringerCrimeSeverity: The severity of the crime
-						0 = No crime
-						1 = Social violation
-						2 = Dangerous deviance
-						3 = Existential threat
--->
-
-	<Sovereign UNID="&svRingers;"
-			name=":the Ringer civilization"
-			adjective="Ringer"
-			demonym=":a Ringer(s)"
-			plural="true"
-
-			alignment="constructive chaos"
-			>
-
-		<AttributeDesc>
-			<ItemAttribute id="ringer.valuable"	label="Ringer valuable"		criteriaLabel="Ringer valuables"		criteria="* +ringerValuable;"/>
-		</AttributeDesc>
-
-		<Events>
-			<GetGlobalDockScreen>
-				(switch
-					; This only applies to ringer stations
-					(not (objMatches gSource Nil "sTAV +ringers; +populated;"))
-						Nil
-						
-					; If the player has deviated socially, she is frozen
-					(geq (int (objGetData gPlayerShip "ringerCrimeSeverity")) 2)
-						{	screen:&dsRingerImprison;		priority:8		overrideOnly:true	}
-
-					Nil
-					)
-			</GetGlobalDockScreen>
-		</Events>
-	</Sovereign>
-
-	<EconomyType UNID="&ecRinEconomy;"
-			id=				"rin" 
-			currency=		"rin|rin"
-			conversion=		"500"
-			/>
 
 </TranscendenceModule>

@@ -4,108 +4,20 @@
 
 <!-- Freeworld Anarchists ================================================= -->
 
-	<!-- Earthzone Armed Shuttle -->
+	<Sovereign UNID="&svAnarchists;"
+			name="Anarchists"
+			alignment="destructive chaos"
+			/>
 
-	<ShipClass UNID="&scEarthzone;"
-			manufacturer=		"Revolution Designs"
-			class=				"Earthzone"
-			type=				"armed shuttle"
-			defaultSovereign=	"&svAnarchists;"
-
-			attributes=			"anarchists, genericClass"
-			   
-			size=				"21"
-			mass=				"50"
-			thrustRatio=		"4"
-			maxSpeed=			"20"
-			cargoSpace=			"50"
+	<SystemMap unid="&smAnarchistSpace;"
+			displayOn="&smHumanSpace;"
 			>
+		<TopologyProcessor priority="tertiaryColony">
+			<System criteria="+corporateSpace;"	attributes="anarchistSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
 
-		<!-- Configuration -->
-
-		<Armor
-			armorID=			"&itLightTitaniumArmor;"
-			count=				"4"
-			/>
-
-		<Devices>
-			<Device deviceID="&itLaserCannon;"/>
-			<Device deviceID="&itAClassDefenseScreen;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Items>
-			<Item count="2d6" item="&itHelium3FuelRod;"/>
-		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsEarthzoneHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
-			<Effect type="thrustMain"		posAngle="-158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
-		</Effects>
-		
-		<!-- AI and Behavior -->
-
-		<AISettings
-			fireRateAdj=		"20"
-			fireRangeAdj=		"50"
-			fireAccuracy=		"85"
-			perception=			"4"
-			
-			combatStyle=		"advanced"
-			/>
-
-	</ShipClass>
-
-	<!-- Hornet Battlepod -->
-
-	<ShipClass UNID="&scHornet;"
-			manufacturer=		"Earth Industries"
-			class=				"Hornet"
-			type=				"battlepod"
-			defaultSovereign=	"&svAnarchists;"
-
-			mass=				"5"
-			cargoSpace=			"0"
-			thrustRatio=		"16"
-			maxSpeed=			"35"
-
-			attributes=			"anarchists, EI, genericClass"
-			>
-
-		<Armor>
-			<ArmorSection start="0" span="360" armorID="&itUltraLightTitaniumCasing;"/>
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itLaserCannon;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"18.0"
-			rotationAccel=		"6.0"
-			/>
-
-		<Image imageID="&rsHornetHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="8"	posZ="0"	rotation="180"/>
-		</Effects>
-
-		<AISettings
-			fireRateAdj=		"30"
-			fireAccuracy=		"70"
-			perception=			"4"
-			/>
-
-	</ShipClass>
+<!-- STATION TYPES -->
 
 	<!-- Anarchist Camp -->
 
@@ -123,9 +35,17 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
-			levelFrequency=		"cuv-- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+anarchistSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"cuv-- ----- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				/>
 
 		<ImageVariants>
 			<Image		imageID="&rsAnarchistStations;" imageX="0"   imageY="0"   imageWidth="112" imageHeight="122"/>
@@ -180,10 +100,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
-			levelFrequency=		"rcuv- ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
-			enemyExclusionRadius="50"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+anarchistSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"rcuv- ----- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<ImageVariants>
 			<Image		imageID="&rsAnarchistStations;" imageX="0"   imageY="0"   imageWidth="112" imageHeight="122"/>
@@ -303,10 +231,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"anarchists, enemy, envEarth, envAvoidsAir, freeworldAnarchists, generic, human, populated"
-			levelFrequency=		"-rcuv ----- ----- ----- -----"
-			locationCriteria=	"+asteroids"
-			enemyExclusionRadius="75"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+anarchistSpace;"
+				systemAffinity=			"+envEarth; -envAir;"
+				levelFrequency=			"-rcuv ----- ----- ----- -----"
+
+				locationCriteria=		"+asteroids"
+				enemyExclusionRadius=	"75"
+				/>
 
 		<Image		imageID="&rsAnarchistStations;" imageX="0"   imageY="244" imageWidth="260" imageHeight="260"/>
 
@@ -352,6 +288,111 @@
 		</Encounters>
 	</StationType>
 	
+<!-- SHIP CLASSES -->
+
+	<!-- Earthzone Armed Shuttle -->
+
+	<ShipClass UNID="&scEarthzone;"
+			manufacturer=		"Revolution Designs"
+			class=				"Earthzone"
+			type=				"armed shuttle"
+			defaultSovereign=	"&svAnarchists;"
+
+			attributes=			"anarchists, genericClass"
+			   
+			size=				"21"
+			mass=				"50"
+			thrustRatio=		"4"
+			maxSpeed=			"20"
+			cargoSpace=			"50"
+			>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itLightTitaniumArmor;"
+			count=				"4"
+			/>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"/>
+			<Device deviceID="&itAClassDefenseScreen;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsEarthzoneHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+			<Effect type="thrustMain"		posAngle="-158"	posRadius="18"	posZ="0"	rotation="180"	sendToBack="*"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"85"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+	<!-- Hornet Battlepod -->
+
+	<ShipClass UNID="&scHornet;"
+			manufacturer=		"Earth Industries"
+			class=				"Hornet"
+			type=				"battlepod"
+			defaultSovereign=	"&svAnarchists;"
+
+			mass=				"5"
+			cargoSpace=			"0"
+			thrustRatio=		"16"
+			maxSpeed=			"35"
+
+			attributes=			"anarchists, EI, genericClass"
+			>
+
+		<Armor>
+			<ArmorSection start="0" span="360" armorID="&itUltraLightTitaniumCasing;"/>
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itLaserCannon;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
+
+		<Image imageID="&rsHornetHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="8"	posZ="0"	rotation="180"/>
+		</Effects>
+
+		<AISettings
+			fireRateAdj=		"30"
+			fireAccuracy=		"70"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
 	<!-- Anarchist Random Encounter Table -->
 	
 	<ShipTable UNID="&tbAnarchistEncounters;">

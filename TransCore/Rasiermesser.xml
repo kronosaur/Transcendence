@@ -92,9 +92,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, populated, rasiermesser"
-			levelFrequency=		"-rurv ----- ----- ----- -----"
-			locationCriteria=	"+planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"-rurv ----- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+				/>
 
 		<Image			imageID="&rsCorporateArmsDealer;" imageWidth="148" imageHeight="226" viewportRatio="0.03125"/>
 
@@ -218,11 +227,20 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, envAir, envEarth, envFire, envWater, friendly, generic, human, independent, majorStation, populated, rasiermesser"
-			levelFrequency=		"----- rur-- ----- ----- -----"
-			unique=				"inSystem"
-			locationCriteria=	"+planetary"
-			enemyExclusionRadius="75"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"+corporateCore;"
+				levelFrequency=			"----- rur-- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"75"
+
+				unique=					"inSystem"
+				/>
 
 		<Image imageID="&rsRasiermesserFactory;" imageX="0" imageY="0" imageWidth="192" imageHeight="256"/>
 		<HeroImage imageID="&rsRasiermesserFactoryHero;" imageWidth="600" imageHeight="528"/>

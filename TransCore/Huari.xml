@@ -84,6 +84,15 @@
 		</Language>
 	</Sovereign>
 
+	<SystemMap unid="&smHuariSpaceAttribs;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+ungoverned; -sungCore;"	attributes="huariSpace"/>
+			<System criteria="+outerRealm; -sungCore;"	attributes="huariSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
 <!-- ENCOUNTERS -->
 
 	<!-- Huari Temple -->
@@ -237,10 +246,18 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"enemy, envWater, envAvoidsEarth, generic, huari, human, majorStation, populated"
-			levelFrequency=		"---vu ur--- ----- ----- -----"
-			locationCriteria=	"-lifeZone, +planetary|+50"
-			enemyExclusionRadius="100"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+huariSpace;"
+				systemAffinity=			"+envWater; -envEarth;"
+				levelFrequency=			"---vu ur--- ----- ----- -----"
+
+				locationCriteria=		"-lifeZone, +planetary|+50"
+				enemyExclusionRadius=	"100"
+				/>
 
 		<Image			imageID="&rsStations6;" imageX="0" imageY="448" imageWidth="192" imageHeight="192"/>
 

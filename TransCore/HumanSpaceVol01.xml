@@ -1589,6 +1589,7 @@
 	<!ENTITY rsCorporateEnclave			"0x0010004A">
 	<!ENTITY rsCorporateArmorDealer		"0x0010004B">
 	<!ENTITY rsCorporateFuelDepot		"0x0010004C">
+	<!ENTITY smCorporateSpace			"0x0010004D">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
@@ -1678,16 +1679,20 @@
 	<!ENTITY rsAresAdvancedSentry		"0x001000AD">
 	<!ENTITY rsAresAdvancedSentryHero	"0x001000AE">
 	<!ENTITY tbAresFreighterTreasure	"0x001000AF">
+	<!ENTITY smAresSpace				"0x001000B0">
+	<!ENTITY smSpawnCompatibility		"0x001000B1">
 	
 	<!-- 00C0-00CF SALVAGERS -->
 	
 	<!ENTITY rsSalvagerNomad			"0x001000C0">
 	<!ENTITY svSalvagers				"0x001000C1">
+	<!ENTITY smSalvagerSpace			"0x001000C2">
 	
 	<!-- 00D0-00DF URAK WARLORDS -->
 	
 	<!ENTITY rsUrakDestroyer			"0x001000D0">
 	<!ENTITY rsUrakSentinelHD			"0x001000D1">
+	<!ENTITY smUrakSpace				"0x001000D2">
 	
 	<!-- 00E0-00EF BATTLE ARENA MAXIMUS -->
 	
@@ -1705,6 +1710,7 @@
 	
 	<!ENTITY rsHeliotropeFrigate		"0x001000F0">
 	<!ENTITY rsHeliotropeGunshipHD		"0x001000F1">
+	<!ENTITY smHeliotropeSpace			"0x001000F2">
 	
 	<!-- 0100-011F CHARON PIRATES AND MARAUDERS -->
 	
@@ -1745,11 +1751,13 @@
 	<!ENTITY rsWindSlaverHD				"0x00100124">
 	<!ENTITY rsSteelSlaverHD			"0x00100125">
 	<!ENTITY baSungArmor				"0x00100126">
+	<!ENTITY smSungSpace				"0x00100127">
 	
 	<!-- 0140-014F XENOPHOBES -->
 	
 	<!ENTITY rsXenophobeDefender		"0x00100140">
 	<!ENTITY rsXenophobeFighterHD		"0x00100141">
+	<!ENTITY smXenophobeSpace			"0x00100142">
 	
 	<!-- 0150-015F HUARI EMPIRE -->
 	
@@ -1757,6 +1765,7 @@
 	<!ENTITY msHuariAttackConvoy		"0x00100151">
 	<!ENTITY msHuariDefendFortress		"0x00100152">
 	<!ENTITY msHuariDestroyStation		"0x00100153">
+	<!ENTITY smHuariSpaceAttribs		"0x00100154">
 
 	<!-- 0160-017F MINING EQUIPMENT -->
 	
@@ -1800,6 +1809,7 @@
 	<!-- 0190-019F VENTARI SETTLERS -->
 	
 	<!ENTITY rsVentariDestroyer			"0x00100190">
+	<!ENTITY smVentariSpace				"0x00100191">
 	
 	<!-- 01A0-01BF EARTH INDUSTRIES CORPORATION -->
 	
@@ -1821,6 +1831,7 @@
     <!-- 01F0-01FF TINKERS -->
 	
 	<!ENTITY itAmmoBoxXM900 			"0x001001F0">
+	<!ENTITY smTinkerSpace	 			"0x001001F1">
     
     <!-- 0200-020F BLACK MARKET -->
     
@@ -1846,6 +1857,7 @@
 	<!ENTITY rsRepentantGunshipHero		"0x00100218">
 	<!ENTITY rsAtonementHeavyGunship	"0x00100219">
 	<!ENTITY rsAtonementHeavyGunshipHero	"0x0010021A">
+	<!ENTITY smPenitentSpace			"0x0010021B">
 	
 	<!-- 0230-024F CHARACTERS -->
 	
@@ -1906,15 +1918,18 @@
 	<!ENTITY baZoanthropeBase			"0x001002D1">
 	<!ENTITY rsZoanthropeRaiderHD		"0x001002D2">
 	<!ENTITY rsDwargBehemothHero		"0x001002D3">
+	<!ENTITY smDwargSpace				"0x001002D4">
 
 	<!-- 02F0-030F RINGERS -->
 
 	<!ENTITY baRingersStation			"0x001002F0">
+	<!ENTITY smRingerSpace				"0x001002F1">
 
 	<!-- 0310-032F TERATONS -->
 
 	<!ENTITY baTeratonNestBase			"0x00100310">
 	<!ENTITY msTeratonResearch			"0x00100311">
+	<!ENTITY smTeratonSpace				"0x00100312">
 
 	<!-- 0330-036F OUTLAWS II -->
 
@@ -1922,6 +1937,7 @@
 	<!ENTITY rsT31TransportHero			"0x00100331">
 	<!ENTITY rsT55Transport				"0x00100332">
 	<!ENTITY rsT55TransportHero			"0x00100333">
+	<!ENTITY smOutlawSpace				"0x00100334">
 
 	<!-- 0370-038F AUTONS -->
 
@@ -1952,11 +1968,13 @@
 	<!ENTITY rsRoninC					"0x0010039F">
 	<!ENTITY rsRoninCHero				"0x001003A0">
 	<!ENTITY rsIAVHeavyHero				"0x001003A1">
+	<!ENTITY smCommonwealthSpace		"0x001003A2">
 
 	<!-- 03B0-03CF SAPIENS -->
 
 	<!ENTITY rsPlagueHD					"0x001003B0">
 	<!ENTITY rsRevelationsHD			"0x001003B1">
+	<!ENTITY smSapiensSpace				"0x001003B2">
 
 	<!-- 03D0-03EF DEATH DRUGS CARTEL -->
 
@@ -1968,21 +1986,25 @@
 	<!ENTITY rsCentauriRaiderHD			"0x001003F1">
 	<!ENTITY evCentauriOccupation		"0x001003F2">
 	<!ENTITY evArcoVaughn				"0x001003F3">
+	<!ENTITY smCentauriWarlordsSpace	"0x001003F4">
 
 	<!-- 0410-042F KOBOL WARLORDS -->
 
 	<!ENTITY rsKobolGunshipDualHD		"0x00100410">
 	<!ENTITY rsKobolGunshipMissilesHD	"0x00100411">
 	<!ENTITY rsKobolGunshipOmniHD		"0x00100412">
+	<!ENTITY smKobolSpace				"0x00100413">
 
 	<!-- 0430-044F ANARCHISTS -->
 
 	<!ENTITY rsEarthzoneHD				"0x00100430">
 	<!ENTITY rsHornetHD					"0x00100431">
+	<!ENTITY smAnarchistSpace			"0x00100432">
 
 	<!-- 0450-046F RANX EMPIRE -->
 
 	<!ENTITY rsRanxGunshipHD			"0x00100450">
+	<!ENTITY smRanxSpace				"0x00100451">
 
 	<!-- 0470-048F FERIANS -->
 
@@ -1992,6 +2014,7 @@
 	<!ENTITY rsFerianColonyPrimordial	"0x00100473">
 	<!ENTITY rsFerianColonyRocky		"0x00100474">
 	<!ENTITY rsFerianColonyVolcanic		"0x00100475">
+	<!ENTITY smFerianSpace				"0x00100476">
 
 	<!-- 0490-04AF HIMAL SEPERATISTS -->
 
@@ -2003,6 +2026,7 @@
 	<!ENTITY rsHimalRefugeVolcanic		"0x00100495">
 	<!ENTITY rsHimalInterceptor			"0x00100496">
 	<!ENTITY rsHimalInterceptorHero		"0x00100497">
+	<!ENTITY smHimalSpace				"0x00100498">
 
 	<!-- 04B0-04CF COMMONWEALTH FLEET II -->
 
@@ -2034,6 +2058,7 @@
 	<!ENTITY rsMinotaurMHero			"0x001004C9">
 	<!ENTITY dsLamplighterInstall		"0x001004CA">
 	<!ENTITY tbCSCAresAttack			"0x001004CB">
+	<!ENTITY smCSCOperationsSpace		"0x001004CC">
 
 	<!-- 04D0-04EF NAMI CORPORATION -->
 
@@ -2053,6 +2078,7 @@
 
 	<!ENTITY rsLuminousDroneHD			"0x00100510">
 	<!ENTITY trLuminousTreasure			"0x00100511">
+	<!ENTITY smLuminousSpace			"0x00100512">
 
 	<!-- 0530-057F PLAYER SHIP UPGRADES -->
 
@@ -2087,6 +2113,7 @@
 	<!ENTITY rsCenturionXRogueHero		"0x00100585">
 	<!ENTITY rsAurochsRogue				"0x00100586">
 	<!ENTITY rsAurochsRogueHero			"0x00100587">
+	<!ENTITY smRogueFleetSpace			"0x00100588">
 
 	<!-- 05A0-05BF PACIFIC DEFENCE CORPORATION -->
 
@@ -2104,6 +2131,14 @@
 	<!ENTITY itNeuralProcessor			"0x001005E0">
 	<!ENTITY rsCargoContainer			"0x001005E1">
 	<!ENTITY baCashCard					"0x001005E2">
+
+	<!-- 0600-061F ABBASID -->
+
+	<!ENTITY smAbbasidSpace				"0x00100600">
+
+	<!-- 0620-063F GAIAN TERRAFORMERS -->
+
+	<!ENTITY smGaianSpace				"0x00100620">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>
@@ -2161,7 +2196,9 @@
 	<Module filename="Antarctica01.xml"/>
 	<Module filename="Antarctica02.xml"/>
 	<Module filename="AntarcticaD01.xml"/>
+	<Module filename="AresItems.xml"/>
 	<Module filename="AresOrthodoxy.xml"/>
+	<Module filename="AresShips.xml"/>
 	<Module filename="BlackMarket.xml"/>
 	<Module filename="BlackMarketMission00.xml"/>
 	<Module filename="BlackMarketMission01.xml"/>

@@ -195,7 +195,7 @@
 
 			<FillLocations
 					percentFull=		"80" 
-					stationCriteria=	"!primary; !debris; +envAir; -envAvoidsAir" 
+					stationCriteria=	"!primary; !debris;" 
 					percentEnemies=		"50"
 					separateEnemies=	"true"
 					/>

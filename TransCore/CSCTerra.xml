@@ -208,11 +208,20 @@
 			sovereign=			"&svCommonwealthFleet;"
 
 			attributes=			"fleet,friendly,primary,envAir,envEarth,envFire,envWater"
-			levelFrequency=		"----- ---c- ----- ----- -----"
-			maxAppearing=		"1"
-			locationCriteria=	"+outerSystem, -planetary"
-			enemyExclusionRadius="120"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+cscOperationsSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- ---c- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -planetary"
+				enemyExclusionRadius=	"120"
+
+				maxAppearing=			"1"
+				/>
 
 		<Ships>
 			<Ship	count="1"	class="&scCSCTerra;" orders="hold">

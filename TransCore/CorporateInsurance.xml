@@ -29,10 +29,20 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"corporate, corporateCustoms, corporateInsurance, envAir, envEarth, envFire, envWater, friendly, independent, generic, human, populated"
-			levelFrequency=		"-rrru r---- ----- ----- -----"
-			unique=				"inSystem"
-			locationCriteria=	"+planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"+corporateCore;"
+				levelFrequency=			"-rrru r---- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+
+				unique=					"inSystem"
+				/>
 
 		<Image			imageID="&rsStations2;" imageX="0" imageY="0" imageWidth="128" imageHeight="256"/>
 

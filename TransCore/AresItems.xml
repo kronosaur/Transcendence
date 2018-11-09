@@ -1,0 +1,594 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!-- ARMOR ITEMS -->
+
+	<!-- Level 6: Segment of light Tharsis plate -->
+
+	<ItemType UNID="&itLightTharsisPlate;"
+			name=				"[segment(s) of ]light Tharsis plate"
+			level=				"6"
+			value=				"750"
+			mass=				"1500"
+			attributes=			"Ares; MinorItem; NotForSale;"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"The standard armor used by Ares gunships is light, yet resistant to particle beam damage; it is, however, vulnerable to blast damage."
+
+			sortName=			"Tharsis plate, light, segment of"
+			>
+
+		<Image imageID="&rsItems6;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"60"
+				hpBonus=	"particle:+50; blast:-25"
+				/>
+	</ItemType>
+
+	<!-- Level 8: Segment of Tharsis plate -->
+
+	<ItemType UNID="&itTharsisPlate;"
+			name=				"[segment(s) of ]Tharsis plate"
+			level=				"8"
+			value=				"6000"
+			mass=				"4000"
+			attributes=			"Ares; Military; MinorItem; NotForSale;"
+			frequency=			"uncommon"
+			numberAppearing=	"1d4"
+
+			description=		"Tharsis plate is used by the Tundra heavy gunship; it is resistant to thermonuclear damage."
+
+			sortName=			"Tharsis plate, segment of"
+			>
+
+		<Image imageID="&rsItems6;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"200"
+				hpBonus=	"  +0,  +0, +50, +25, -25, +25"
+				/>
+
+	</ItemType>
+
+	<!-- Level 9: Segment of heavy Tharsis plate -->
+
+	<ItemType UNID="&itHeavyTharsisPlate;"
+			name=				"[segment(s) of ]massive Tharsis plate"
+			level=				"9"
+			value=				"18000"
+			mass=				"10000"
+			attributes=			"Ares; Military; MinorItem; NotForSale;"
+			frequency=			"rare"
+			numberAppearing=	"1d4"
+
+			description=		"This is a double layer of Tharsis plate."
+
+			sortName=			"Tharsis plate, heavy, segment of"
+			>
+
+		<Image imageID="&rsItems6;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"400"
+				hpBonus=	"  +0,  +0, +50, +25, -25, +25"
+				repairTech=	"8"
+				/>
+
+	</ItemType>
+
+	<!-- Level 10: Segment of massive Tharsis plate -->
+
+	<ItemType UNID="&itMassiveTharsisPlate;"
+			name=				"[segment(s) of ]dreadnought Tharsis plate"
+			level=				"10"
+			value=				"50000"
+			mass=				"25000"
+			attributes=			"Ares; Military; MinorItem; NotForSale;"
+			frequency=			"veryrare"
+			numberAppearing=	"1d4"
+
+			description=		"The capital ships of the Ares Orthodoxy use this armor."
+
+			sortName=			"Tharsis plate, massive, segment of"
+			>
+
+		<Image imageID="&rsItems6;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Armor
+				hitPoints=	"600"
+				hpBonus=	"  +0,  +0, +50, +25, -25, +25"
+				repairTech=	"8"
+				/>
+
+	</ItemType>
+
+<!-- SHIELD ITEMS -->
+
+	<!-- Level 6: Cydonian shields -->
+
+	<ItemType UNID="&itCydonianShields;"
+			name=				"Cydonian shield generator"
+			level=				"6"
+			value=				"20000"
+			mass=				"3000"
+			frequency=			"rare"
+			attributes=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"Ares engineers cloned the Yoroi S500 and added ion resistance."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"130"
+				hpBonus=		"  +0,  +0,  +0,  +0,+100,  +0"
+				regen=			"40"
+				depletionDelay=	"360"
+				powerUse=		"300"
+				/>
+
+		</ItemType>
+
+	<!-- Level 7: Cydonian heavy shields -->
+
+	<ItemType UNID="&itCydonianHeavyShields;"
+			name=				"Cydonian heavy shield generator"
+			level=				"7"
+			value=				"40000"
+			mass=				"6000"
+			frequency=			"veryrare"
+			attributes=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"This is a more powerful version of the Cydonian shield generator."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"270"
+				hpBonus=		"  +0,  +0,  +0,  +0,+100,  +0"
+				regen=			"30"
+				depletionDelay=	"540"
+				powerUse=		"500"
+				/>
+
+		</ItemType>
+
+	<!-- Level 9: Kaidun shields -->
+
+	<ItemType UNID="&itKaidunShields;"
+			name=				"Kaidun shield generator"
+			level=				"9"
+			value=				"150000"
+			mass=				"12000"
+			frequency=			"veryrare"
+			attributes=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"The most advanced shield generator in the Ares Orthodoxy, the Kaidun generator is used by the Ares dreadnought."
+			>
+
+		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Shields
+				hitPoints=		"800"
+				hpBonus=		"  +0,  +0,  +0,  +0, +50, +50"
+				regen=			"30"
+				depletionDelay=	"540"
+				powerUse=		"2000"
+				/>
+
+		</ItemType>
+
+<!-- WEAPON ITEMS -->
+
+	<!-- Level 7: Ares Lightning Cannon -->
+
+	<ItemType UNID="&itLightningCannon;"
+			name=				"Ares lightning cannon"
+			level=				"7"
+			value=				"24000"
+			mass=				"3000"
+			frequency=			"uncommon"
+			attributes=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
+
+			description=		"During the Syrtis War the lightning cannons of the Orthodoxy were devastating to the Earth Fleet."
+			>
+
+		<Image imageID="&rsItems7;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				damage=				"ion:4d6+2"
+				fireRate=			"15"
+				lifetime=			"30"
+				powerUse=			"350"
+
+				effect=				"&efIonBeamDefault;"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 8: Ares Launcher -->
+
+	<ItemType UNID="&itAresLauncher;"
+			name=				"Ares launcher"
+			level=				"8"
+			value=				"75000"
+			mass=				"4000"
+			frequency=			"rare"
+			attributes=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"These launchers can fire both a standard micronuke or the heavier and deadlier Warhammer nuke."
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"40"
+				powerUse=			"200"
+				launcher=			"true"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itWarhammerNuke;"/>
+				<Missile ammoID="&itMicronuke;"/>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 8: Ares Lightning Turret -->
+
+	<ItemType UNID="&itLightningTurret;"
+			name=				"Ares lightning turret"
+			level=				"8"
+			value=				"75000"
+			mass=				"6000"
+			frequency=			"veryrare"
+			attributes=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
+
+			description=		"This omnidirectional turret fires rapid bursts of ion energy, but requires periods of rest."
+			>
+
+		<Image imageID="&rsItems8;" imageX="288" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"beam"
+
+				omnidirectional=	"true"
+				damage=				"ion:4d6+2"
+				fireRate=			"4"
+				lifetime=			"40"
+				powerUse=			"1000"
+
+				counter=			"capacitor"
+				counterActivate=	"-5"
+				counterUpdate=		"2"
+				counterUpdateRate=	"6"
+
+				effect=				"&efIonBeamDefault;"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 8: Ares Micronuke Cannon -->
+
+	<ItemType UNID="&itMicronukeCannon;"
+			name=				"Ares micronuke cannon"
+			level=				"8"
+			value=				"66000"
+			mass=				"4000"
+			frequency=			"uncommon"
+			attributes=			"Ares; MajorItem; Military; NotForSale;"
+
+			description=		"These cannons can launch a micronuke warhead at 60% of lightspeed."
+			>
+
+		<Image imageID="&rsItems8;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				fireRate=			"40"
+				powerUse=			"100"
+				reportAmmo=			"true"
+				>
+
+			<Missiles>
+				<Missile ammoID="&itMicronuke;"/>
+			</Missiles>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 8: Hecates Cannon -->
+
+	<ItemType UNID="&itHecatesCannon;"
+			name=				"Hecates cannon"
+			level=				"8"
+			value=				"94000"
+			mass=				"6000"
+			frequency=			"veryrare"
+			numberAppearing=	"1"
+			attributes=			"Ares; Howitzer; MajorItem; Military; NotForSale;"
+
+			description=		"The Hecates cannon is a fusion howitzer used by Ares destroyers."
+			>
+
+		<Image imageID="&rsItems8;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"thermo:11d12; momentum:3; WMD:7"
+				fireRate=			"50"
+				missileSpeed=		"50"
+				lifetime=			"120"
+				hitPoints=			"10"
+				powerUse=			"1200"
+				recoil=				"2"
+
+				effect=				"&efThermoShellDefault;"
+				sound=				"&snRecoillessCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 9: Ares positron cannon -->
+
+	<ItemType UNID="&itAresArchcannon;"
+			name=				"Ares positron cannon"
+			level=				"9"
+			value=				"150000"
+			mass=				"1500"
+			frequency=			"uncommon"
+			attributes=			"Ares; EnergyWeapon; Military; MajorItem; NotForSale;"
+
+			description=		"Ares engineers created this weapon after the Commonwealth developed defenses against their lightning cannon."
+			>
+
+		<Image imageID="&rsItems9;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"missile"
+
+				damage=				"positron:6d8; shield:8"
+				fireRate=			"15"
+				missileSpeed=		"80"
+				interaction=		"0"
+				lifetime=			"60"
+				powerUse=			"2000"
+
+				effect=				"&efPositronBeamDefault;"
+				sound=				"&snLaserCannon;"
+				>
+		</Weapon>
+	</ItemType>
+
+	<!-- Level 10: Ares plasma cannon -->
+
+	<ItemType UNID="&itAresPlasmaCannon;"
+			name=				"Ares plasma archcannon"
+			level=				"10"
+			value=				"500000"
+			mass=				"10000"
+			frequency=			"veryrare"
+			attributes=			"Ares; Howitzer; MajorItem; Military; NotForSale"
+
+			description=		"The most powerful weapon in the Ares fleet. The plasma archcannon can destroy anything that's not protected by massive shields and armor."
+			>
+
+		<Image imageID="&rsItems10;" imageX="288" imageY="0" imageWidth="96" imageHeight="96"/>
+
+		<Weapon
+				type=				"particles"
+				damage=				"plasma:300; WMD:7"
+				
+				fireRate=			"80"
+				hitPoints=			"30"
+
+				deviceSlots=		"2"
+				powerUse=			"3000"
+				sound=				"&snRecoillessCannon;"
+				>
+			
+			<ParticleSystem
+					style=				"comet"
+					emitLifetime=		"1"
+					emitRate=			"150"
+					emitSpeed=			"50-70"
+					emitWidth=			"50"
+					
+					particleLifetime=	"120"
+					particleEffect=		"&efPlasmaParticleDefault;"
+					>
+			</ParticleSystem>
+			
+			<Effect>
+				<ParticleSystem
+						style=				"jet"
+						fixedPos=			"true"
+						emitRate=			"2-4"
+						tangentSpeed=		"-8-8"
+						particleLifetime=	"10"
+						XformTime=			"30"
+						>
+					<ParticleEffect>
+						<Orb
+								instance=			"owner"
+						
+								style=				"smooth"
+								animate=			"fade"
+								radius=				"20"
+								lifetime=			"10"
+								intensity=			"20"
+						
+								blendMode=			"screen"
+								primaryColor=		"#feff00"
+								secondaryColor=		"#ff7f00"
+								/>
+					</ParticleEffect>
+				</ParticleSystem>
+			</Effect>
+		</Weapon>
+	</ItemType>
+
+<!-- AMMO ITEMS -->
+
+	<!-- Level 7: Micronuke -->
+
+	<ItemType UNID="&itMicronuke;"
+			name=				"Ares micronuke"
+			level=				"7"
+			value=				"60"
+			mass=				"10"
+			attributes=			"Ares; Consumable; Military; Missile; NotForSale;"
+			frequency=			"common"
+			numberAppearing=	"12d20"
+
+			description=		"The compact warheads detonate into an expanding shockwave of thermonuclear damage. They require a launcher."
+
+			sortName=			"Ares.30"
+			>
+
+		<Image imageID="&rsItems1;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				lifetime=		"180"
+				missileSpeed=	"60"
+				hitPoints=		"20"
+
+				fragmentCount=	"1"
+				failsafe=		"6"
+
+				hitEffect=		"&efThermoShockwaveExplosion;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Effect>
+				<ParticleJet
+						fixedPos=			"true"
+						emitRate=			"40"
+						tangentSpeed=		"3d2-3"
+						particleLifetime=	"10-30"
+						XformTime=			"20"
+								>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"4"
+								primaryColor=	"#f7ffc6"
+								secondaryColor=	"#b63718"
+										/>
+					</ParticleEffect>
+				</ParticleJet>
+
+				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+			</Effect>
+
+			<Fragment
+					type=			"area"
+
+					damage=			"thermo:1d10; WMD3"
+					expansionSpeed=	"35"
+					missileSpeed=	"0"
+					lifetime=		"24"
+					>
+
+				<Effect>
+					<Shockwave
+							fadeStart=	"70"
+									>
+						<Image imageID=				"&rsShockwave2;"
+								imageX=				"0"
+								imageY=				"0"
+								imageWidth=			"512"
+								imageHeight=		"128"/>
+					</Shockwave>
+				</Effect>
+			</Fragment>
+		</Missile>
+	</ItemType>
+
+	<!-- Level 9: Ares Warhammer nuke -->
+
+	<ItemType UNID="&itWarhammerNuke;"
+			name=				"Ares Warhammer nuke"
+			level=				"9"
+			value=				"150"
+			mass=				"20"
+			attributes=			"Ares; Consumable; Military; Missile; NotForSale;"
+			frequency=			"rare"
+			numberAppearing=	"1d6"
+
+			description=		"These long-range thermonuclear missiles are fired by Ares launchers."
+
+			sortName=			"Ares.10"
+			>
+
+		<Image imageID="&rsItems1;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
+
+		<Missile
+				type=			"missile"
+				lifetime=		"480"
+				missileSpeed=	"30"
+				hitPoints=		"30"
+
+				fragmentCount=	"1"
+				failsafe=		"15"
+
+				hitEffect=		"&efThermoShockwaveExplosion;"
+				sound=			"&snMissileLauncher;"
+				>
+
+			<Effect>
+				<ParticleJet
+						fixedPos=			"true"
+						emitRate=			"60"
+						tangentSpeed=		"3d2-3"
+						particleLifetime=	"10-30"
+						XformTime=			"30"
+								>
+					<ParticleEffect>
+						<Particle
+								style=			"plain"
+								minWidth=		"1"
+								maxWidth=		"5"
+								primaryColor=	"#f7ffc6"
+								secondaryColor=	"#b63718"
+										/>
+					</ParticleEffect>
+				</ParticleJet>
+
+				<Image imageID="&rsMissiles;" imageX="0" imageY="32" imageWidth="16" imageHeight="16" imageFrameCount="12" imageTicksPerFrame="3"/>
+			</Effect>
+
+			<Fragment
+					type=			"area"
+
+					damage=			"thermo:2d10; WMD7"
+					expansionSpeed=	"25"
+					missileSpeed=	"0"
+					lifetime=		"24"
+					>
+
+				<Effect>
+					<Shockwave
+							fadeStart=	"70"
+									>
+						<Image imageID=				"&rsShockwave2;"
+								imageX=				"0"
+								imageY=				"0"
+								imageWidth=			"512"
+								imageHeight=		"128"/>
+					</Shockwave>
+				</Effect>
+			</Fragment>
+		</Missile>
+	</ItemType>
+
+</TranscendenceModule>

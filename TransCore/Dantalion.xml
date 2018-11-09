@@ -24,7 +24,7 @@
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary,!debris,+envFire,-envAvoidsFire" 
+					stationCriteria=	"!primary, !debris" 
 					percentEnemies=		"75"
 					separateEnemies=	"true"
 					/>

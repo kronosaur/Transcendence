@@ -14,6 +14,297 @@
 			alignment="destructive order"
 			/>
 
+	<SystemMap unid="&smHeliotropeSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+ungoverned;"				attributes="heliotropeSpace"/>
+			<System criteria="+newBeyond; +envFire;"	attributes="heliotropeSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- STATION TYPES -->
+
+	<!-- Heliotrope Colony -->
+
+	<StationType UNID="&stHeliotropeColony;"
+			name=				"Heliotrope colony|Heliotrope colonies"
+			sovereign=			"&svHeliotropes;"
+				 
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itSolarArmor;"
+			hitPoints=			"420"
+			multiHull=			"true"
+            regen=              "8"
+				 
+			canAttack=			"true"
+			fireRateAdj=		"20"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+heliotropeSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"---cu r---- ----- ----- -----"
+
+				locationCriteria=		"+innerSystem, -void"
+				enemyExclusionRadius=	"50"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items value="standard:level=4:x=2.5">
+			<Item count="3d12" item="&itHelium3FuelRod;"/>
+			<Item count="3d12" item="&itHeliotropeFuel;"/>
+			<Lookup chance="50" table="&trStdTreasure;"/>
+		</Items>
+
+		<!-- Configuration -->
+
+		<Devices>
+			<Device deviceID="&itSunflareCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Table>
+				<Ship  chance="25"	count="2d6"	class="&scHeliotropeGunship;"	orders="patrol:5"/>
+				<Group chance="60">
+					<Ship			count="2d4"	class="&scHeliotropeGunship;"	orders="guard"/>
+					<Ship			count="1"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
+				</Group>
+				<Ship  chance="15"	count="1d4"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
+			</Table>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations4;" imageX="0" imageY="0" imageWidth="192" imageHeight="192"/>
+
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"115"
+				>
+		</DockingPorts>
+		
+		<!-- Random Encounters -->
+		
+		<Encounters frequency="common">
+			<Lookup table="&tbHeliotropeEncounters;"/>
+		</Encounters>
+	</StationType>
+
+	<!-- Heliotrope Outpost -->
+
+	<StationType UNID="&stHeliotropeOutpost;"
+			name=				"Heliotrope outpost"
+			sovereign=			"&svHeliotropes;"
+				 
+			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
+				 
+			abandonedScreen=	"&dsAbandonedStation;"
+				 
+			armorID=			"&itHeavyCeramicPlate;"
+			hitPoints=			"120"
+            regen=              "1"
+				 
+			canAttack=			"true"
+			fireRateAdj=		"40"
+			explosionType=		"&vtBlastExplosion3;"
+			ejectaType=			"&vtWreckEjecta;"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+heliotropeSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"--cuv ----- ----- ----- -----"
+
+				locationCriteria=		"+innerSystem, -void"
+				/>
+
+		<!-- Trade and Items -->
+		
+		<Items value="standard:level=3">
+			<Item count="1d12" item="&itHelium3FuelRod;"/>
+			<Item count="1d6" item="&itHeliotropeFuel;"/>
+			<Table chance="20">
+				<Lookup chance="40" count="1" table="&trConsumables4;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
+			</Table>
+		</Items>
+
+		<!-- Configuration -->
+		
+		<Devices>
+			<Device deviceID="&itSunflareCannon;"	omnidirectional="true"/>
+		</Devices>
+
+		<!-- Ships and Defenses -->
+		
+		<Ships>
+			<Ship count="1d4+1"	class="&scHeliotropeGunship;"	orders="guard"/>
+		</Ships>
+
+		<!-- Image and Effects -->
+		
+		<Image			imageID="&rsStations3;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		
+		<DockingPorts
+				portCount=		"8"
+				portRadius=		"82"
+				>
+		</DockingPorts>
+		
+		<!-- Random Encounters -->
+
+		<Encounters frequency="common">
+			<Lookup table="&tbHeliotropeEncounters;"/>
+		</Encounters>
+	</StationType>
+
+<!-- SHIP CLASSES -->
+
+	<!-- Heliotrope Frigate -->
+
+	<ShipClass UNID="&scHeliotropeFrigate;"
+			manufacturer=		"Heliotrope"
+			class=				""
+			type=				"frigate"
+			defaultSovereign=	"&svHeliotropes;"
+
+			attributes=			"genericClass, heliotropes"
+
+			size=				"100"
+			mass=				"5000"
+			thrustRatio=		"2"
+			maxSpeed=			"15"
+			cargoSpace=			"50"
+			>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itSolarArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itSunflareCannon;"/>
+			<Device deviceID="&itSolonShieldGenerator;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"80"
+
+					posX=		"-24"
+					posY=		"0"
+					sizeX=		"48"
+					sizeY=		"48"
+					/>
+		</Interior>
+
+		<Items>
+			<Item				count="2d6"	item="&itHeliotropeFuel;"/>
+			<Lookup				count="1"	table="&trConsumables3;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsHeliotropeFrigate;" imageWidth="120" imageHeight="120"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-25"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="-12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="-12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="12"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="25"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireAccuracy=		"85"
+			perception=			"4"
+			/>
+
+	</ShipClass>
+
+	<!-- Heliotrope Gunship -->
+
+	<ShipClass UNID="&scHeliotropeGunship;"
+			manufacturer=		"Heliotrope"
+			class=				""
+			type=				"gunship"
+			defaultSovereign=	"&svHeliotropes;"
+
+			mass=				"25"
+			cargoSpace=			"5"
+			thrustRatio=		"14"
+			maxSpeed=			"20"
+
+			attributes=			"genericClass,heliotropes"
+			>
+
+		<Armor>
+			<ArmorSection start="270" span="180" armorID="&itCeramicPlate;" areaSet="0,2,3,7" />
+			<ArmorSection start="90"  span="180" armorID="&itCeramicPlate;" areaSet="1,4" />
+		</Armor>
+
+		<Devices>
+			<Device deviceID="&itBlinderCannon;"/>
+			<Device deviceID="&itTurbolaserCannon;"/>
+			<Device deviceID="&itSolarPanelArray;"/>
+		</Devices>
+
+		<Maneuver
+			maxRotationRate=	"12.0"
+			rotationAccel=		"2.0"
+			/>
+
+		<Image imageID="&rsHeliotropeGunshipHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"20"
+			fireRangeAdj=		"50"
+			fireAccuracy=		"85"
+			perception=			"4"
+			
+			combatStyle=		"advanced"
+			/>
+
+	</ShipClass>
+
+<!-- ITEM TYPES -->
+	
 	<!-- Heliotrope Fuel -->
 
 	<ItemType UNID="&itHeliotropeFuel;"
@@ -146,276 +437,6 @@
 
 	</ItemType>
 
-	<!-- Heliotrope Frigate -->
-
-	<ShipClass UNID="&scHeliotropeFrigate;"
-			manufacturer=		"Heliotrope"
-			class=				""
-			type=				"frigate"
-			defaultSovereign=	"&svHeliotropes;"
-
-			attributes=			"genericClass, heliotropes"
-
-			size=				"100"
-			mass=				"5000"
-			thrustRatio=		"2"
-			maxSpeed=			"15"
-			cargoSpace=			"50"
-			>
-
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itSolarArmor;"
-			count=				"12"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itSunflareCannon;"/>
-			<Device deviceID="&itSolonShieldGenerator;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
-			/>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"100"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"80"
-
-					posX=		"-24"
-					posY=		"0"
-					sizeX=		"48"
-					sizeY=		"48"
-					/>
-		</Interior>
-
-		<Items>
-			<Item				count="2d6"	item="&itHeliotropeFuel;"/>
-			<Lookup				count="1"	table="&trConsumables3;"/>
-		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsHeliotropeFrigate;" imageWidth="120" imageHeight="120"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="-25"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="-12"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="-12"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="160"	posRadius="54"	posZ="12"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-160"	posRadius="54"	posZ="12"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="48"	posZ="25"	rotation="180"/>
-		</Effects>
-		
-		<!-- AI and Behavior -->
-
-		<AISettings
-			aggressor=			"true"
-			fireRateAdj=		"20"
-			fireAccuracy=		"85"
-			perception=			"4"
-			/>
-
-	</ShipClass>
-
-	<!-- Heliotrope Gunship -->
-
-	<ShipClass UNID="&scHeliotropeGunship;"
-			manufacturer=		"Heliotrope"
-			class=				""
-			type=				"gunship"
-			defaultSovereign=	"&svHeliotropes;"
-
-			mass=				"25"
-			cargoSpace=			"5"
-			thrustRatio=		"14"
-			maxSpeed=			"20"
-
-			attributes=			"genericClass,heliotropes"
-			>
-
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itCeramicPlate;" areaSet="0,2,3,7" />
-			<ArmorSection start="90"  span="180" armorID="&itCeramicPlate;" areaSet="1,4" />
-		</Armor>
-
-		<Devices>
-			<Device deviceID="&itBlinderCannon;"/>
-			<Device deviceID="&itTurbolaserCannon;"/>
-			<Device deviceID="&itSolarPanelArray;"/>
-		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"12.0"
-			rotationAccel=		"2.0"
-			/>
-
-		<Image imageID="&rsHeliotropeGunshipHD;" imageX="0" imageY="0" imageWidth="32" imageHeight="32" rotationCount="120" rotationColumns="12" />
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="10"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-		<AISettings
-			aggressor=			"true"
-			fireRateAdj=		"20"
-			fireRangeAdj=		"50"
-			fireAccuracy=		"85"
-			perception=			"4"
-			
-			combatStyle=		"advanced"
-			/>
-
-	</ShipClass>
-
-	<!-- Heliotrope Colony -->
-
-	<StationType UNID="&stHeliotropeColony;"
-			name=				"Heliotrope colony|Heliotrope colonies"
-			sovereign=			"&svHeliotropes;"
-				 
-			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			armorID=			"&itSolarArmor;"
-			hitPoints=			"420"
-			multiHull=			"true"
-            regen=              "8"
-				 
-			canAttack=			"true"
-			fireRateAdj=		"20"
-			explosionType=		"&vtThermoExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-			>
-
-		<!-- Encounter Info -->
-
-		<Encounter
-				levelFrequency=		"---cu r---- ----- ----- -----"
-				locationCriteria=	"+innerSystem, -void"
-				enemyExclusionRadius="50"
-				/>
-
-		<!-- Trade and Items -->
-		
-		<Items value="standard:level=4:x=2.5">
-			<Item count="3d12" item="&itHelium3FuelRod;"/>
-			<Item count="3d12" item="&itHeliotropeFuel;"/>
-			<Lookup chance="50" table="&trStdTreasure;"/>
-		</Items>
-
-		<!-- Configuration -->
-
-		<Devices>
-			<Device deviceID="&itSunflareCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<!-- Ships and Defenses -->
-		
-		<Ships>
-			<Table>
-				<Ship  chance="25"	count="2d6"	class="&scHeliotropeGunship;"	orders="patrol:5"/>
-				<Group chance="60">
-					<Ship			count="2d4"	class="&scHeliotropeGunship;"	orders="guard"/>
-					<Ship			count="1"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
-				</Group>
-				<Ship  chance="15"	count="1d4"	class="&scHeliotropeFrigate;"	orders="patrol:5"/>
-			</Table>
-		</Ships>
-
-		<!-- Image and Effects -->
-		
-		<Image			imageID="&rsStations4;" imageX="0" imageY="0" imageWidth="192" imageHeight="192"/>
-
-		<DockingPorts
-				portCount=		"8"
-				portRadius=		"115"
-				>
-		</DockingPorts>
-		
-		<!-- Random Encounters -->
-		
-		<Encounters frequency="common">
-			<Lookup table="&tbHeliotropeEncounters;"/>
-		</Encounters>
-	</StationType>
-
-	<!-- Heliotrope Outpost -->
-
-	<StationType UNID="&stHeliotropeOutpost;"
-			name=				"Heliotrope outpost"
-			sovereign=			"&svHeliotropes;"
-				 
-			attributes=			"enemy, envFire, envAvoidsWater, generic, heliotropes, human, populated"
-				 
-			abandonedScreen=	"&dsAbandonedStation;"
-				 
-			armorID=			"&itHeavyCeramicPlate;"
-			hitPoints=			"120"
-            regen=              "1"
-				 
-			canAttack=			"true"
-			fireRateAdj=		"40"
-			explosionType=		"&vtBlastExplosion3;"
-			ejectaType=			"&vtWreckEjecta;"
-			>
-
-		<!-- Encounter Info -->
-
-		<Encounter
-				levelFrequency=		"--cuv ----- ----- ----- -----"
-				locationCriteria=	"+innerSystem, -void"
-				/>
-
-		<!-- Trade and Items -->
-		
-		<Items value="standard:level=3">
-			<Item count="1d12" item="&itHelium3FuelRod;"/>
-			<Item count="1d6" item="&itHeliotropeFuel;"/>
-			<Table chance="20">
-				<Lookup chance="40" count="1" table="&trConsumables4;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem4;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem4;"/>
-			</Table>
-		</Items>
-
-		<!-- Configuration -->
-		
-		<Devices>
-			<Device deviceID="&itSunflareCannon;"	omnidirectional="true"/>
-		</Devices>
-
-		<!-- Ships and Defenses -->
-		
-		<Ships>
-			<Ship count="1d4+1"	class="&scHeliotropeGunship;"	orders="guard"/>
-		</Ships>
-
-		<!-- Image and Effects -->
-		
-		<Image			imageID="&rsStations3;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
-		
-		<DockingPorts
-				portCount=		"8"
-				portRadius=		"82"
-				>
-		</DockingPorts>
-		
-		<!-- Random Encounters -->
-
-		<Encounters frequency="common">
-			<Lookup table="&tbHeliotropeEncounters;"/>
-		</Encounters>
-	</StationType>
-	
 	<!-- Heliotrope Encounters -->
 
 	<ShipTable UNID="&tbHeliotropeEncounters;">

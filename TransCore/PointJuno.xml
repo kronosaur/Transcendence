@@ -640,7 +640,7 @@
 	<Image UNID="&rsPointJunoHero;"		bitmap="Resources\PointJunoHero.jpg" bitmask="Resources\PointJunoHeroMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsCSCWreckage;"		bitmap="Resources\CSCWreckage.jpg" bitmask="Resources\CSCWreckageMask.bmp" loadOnUse="true" />
 
-	<Image UNID="&rsStationsPointJuno;"	obsolete="39" bitmap="Resources\StationsPointJuno.jpg" bitmask="Resources\StationsPointJunoMask.bmp" />
-	<Image UNID="&rsPointJunoBkgnd;"	obsolete="39" bitmap="Resources\PointJunoBack.jpg" loadOnUse="true" />
+	<Image UNID="&rsStationsPointJuno;"	obsoleteVersion="39" bitmap="Resources\StationsPointJuno.jpg" bitmask="Resources\StationsPointJunoMask.bmp" />
+	<Image UNID="&rsPointJunoBkgnd;"	obsoleteVersion="39" bitmap="Resources\PointJunoBack.jpg" loadOnUse="true" />
 
 </TranscendenceModule>

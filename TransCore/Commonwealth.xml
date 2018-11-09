@@ -2,6 +2,156 @@
 
 <TranscendenceModule>
 
+<!-- BASIC COMMONWEALTH RULES
+
+	PLAYER DATA
+	
+	commonCrime:	Description of the player's crime (e.g., "slave-trading")
+	commonCrimeSeverity: The severity of the crime
+						0 = No crime
+						1 = Misdemeanor (drug possession)
+						2 = Felony (piracy)
+						3 = Crimes against Humanity (slave-trading, genocide, mass-destruction)
+	commonCrimeRecord: Number of times player has been caught and released for a felony
+	
+-->
+
+	<Sovereign UNID="&svCommonwealth;"
+			name=":the Commonwealth"
+			adjective="Commonwealth"
+			demonym=":a Commonwealth citizen(s)"
+
+			alignment="constructive chaos"
+			inherit="&unidCommonText;"
+			>
+
+		<AttributeDesc>
+			<!-- These item attributes are used across all Human Space (not just for
+				Commonwealth). -->
+
+			<ItemAttribute id="human.basicFood"	label="basic food"			criteriaLabel="basic foods"				criteria="* +food; -lux; -illegal;"/>
+			<ItemAttribute id="human.lux"		label="luxury good"			criteriaLabel="luxury goods"			criteria="* +lux; -illegal;"/>
+			<ItemAttribute id="human.meds"		label="medical supplies"	criteriaLabel="medical supplies"		criteria="* +meds;"/>
+			<ItemAttribute id="human.res"		label="industrial resource"	criteriaLabel="industrial resources"	criteria="*~f +res; -ore; -illegal;"/>
+		</AttributeDesc>
+
+		<Events>
+			<GetGlobalAchievements>
+				(append
+					;	Crime record
+					
+					(if (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
+						{
+							desc: (typTranslate gType 'textWantedFor { crimeText: (objGetData gPlayerShip 'commonCrime) })
+							sectionID: 'criminalRecord
+							}
+						)
+					)
+			</GetGlobalAchievements>
+
+			<GetGlobalDockScreen>
+				; If the player has docked with an active commonwealth station
+				; with customs, then we need to check for various things
+				; (like radiation poisoning and smuggling).
+				;
+				; NOTE: We return a screen and a priority. The priority is used
+				; to decide whether other screens should be shown before or after
+				; these. Follow these rules:
+				;
+				; Screens that prevent docking:				10
+				; Screens that imprison the player:			8
+				; Screens that confiscate:					6
+				; Screens that complete missions:			4
+				
+				(switch
+					; This does not apply to stations without customs
+					(not (objMatches gSource Nil "sTAV +commonwealthCustoms;"))
+						Nil
+
+					; If customs is temporarily disabled, then we don't do anything.
+					(= (objFireEvent gSource 'GetCommonwealthCustomsStatus) 'disabled)
+						Nil
+
+					; If the player ship is radioactive, then we need to
+					; decontaminate.
+					(shpIsRadioactive gPlayerShip)
+						{	screen:&dsCommonwealthDecon;		priority:10		overrideOnly:true	}
+
+					; If the player has sold slaves then he/she is arrested.
+					(geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
+						{	screen:&dsCommonwealthImprison;		priority:8		overrideOnly:true	}
+						
+					; If the player has slaves then free them
+					(and (objGetItems gPlayerShip "*+Slaves;")
+							(not (objGetData gPlayerShip "00001002_ConfiscateSlaves"))
+							)
+						{	screen:&dsCommonwealthFreeSlaves;	priority:8		overrideOnly:true	}
+						
+					; If the player has a black market container, then she is imprisoned
+					(and (not (objGetItems gPlayerShip "*I+SmugglersHold;")) 
+							(objGetItems gPlayerShip "*U+SealedContainer;")
+							(not (objGetData gPlayerShip "00001002_ConfiscateSealedContainer"))
+							)
+						(block Nil
+							; This side-effect is OK because it is OK if we call it multiple
+							; times, and it is OK if some other screen takes priority.
+							(intCommonwealthCrime 2 "smuggling")
+							
+							{	screen:&dsCommonwealthImprison;	priority:8		overrideOnly:true	}
+							)
+							
+					; If we have illegal items in the cargo hold then we need
+					; to confiscate them
+					(and (not (objGetItems gPlayerShip "*I+SmugglersHold"))
+							(or (objGetItems gPlayerShip "*U+Illegal; -ID")
+								(and (objGetItems gPlayerShip "*U+Military") (not (objGetItems gPlayerShip "*+MilitaryID")))))
+						{	screen:&dsCommonwealthConfiscate;	priority:6		overrideOnly:true	}
+
+					Nil
+					)
+			</GetGlobalDockScreen>
+			
+			<OnGlobalPlayerSoldItem>
+				(switch
+					;	If the player sold slaves, chance they get caught
+					
+					(itmHasAttribute gItem 'slaves)
+						(block (
+							;	2% chance of arrest per slave sold.
+							(chanceOfArrest 2)
+							)
+							(objIncData gPlayerShip 'slaveSales (ecoExchange aPrice aCurrency 'credit))
+
+							(if (rollChance chanceOfArrest (itmGetCount gItem))
+								(intCommonwealthCrime 2 "slave-trading")
+								)
+							)
+					)
+			</OnGlobalPlayerSoldItem>
+		</Events>
+		
+		<Language>
+			<Text id="textWantedFor">Wanted by the Commonwealth for %crimeText%</Text>
+		</Language>
+	</Sovereign>
+
+	<SystemMap unid="&smCommonwealthSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="primaryColony">
+			<System criteria="+newBeyond;"	attributes="commonwealthCore, commonwealthSpace"/>
+			<System criteria="+nodeID:SK;"	attributes="commonwealthCapital, commonwealthCore, commonwealthSpace"/>
+			<System criteria="+ungoverned;" attributes="commonwealthCore, commonwealthSpace"/>
+			<System criteria="+outerRealm;" attributes="commonwealthCore, commonwealthSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+	<EconomyType UNID="&ecCreditEconomy;"
+			id=				"credit" 
+			currency=		"credit(s)"
+			conversion=		"100"
+			/>
+
 <!-- STATION TYPES -->
 
 	<!-- Commonwealth Colony -->
@@ -33,9 +183,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"cuc-- ----- ----- ----- -----"
-				locationCriteria=	"-outerSystem, +planetary"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"cuc-- ----- ----- ----- -----"
+
+				locationCriteria=		"-outerSystem, +planetary"
+				enemyExclusionRadius=	"50"
 				/>
 
 		<Names noArticle="true">
@@ -287,9 +440,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"---uu cu--- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="60"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"---uu cu--- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"60"
 				/>
 
 		<!-- Trade and Items -->
@@ -479,10 +635,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"uucuu r---- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				unique=				"inSystem"
-				enemyExclusionRadius="75"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"uucuu r---- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"75"
+
+				unique=					"inSystem"
 				/>
 
 		<!-- Trade and Items -->
@@ -641,10 +801,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"uuurr ----- ----- ----- -----"
-				locationCriteria=	"-outerSystem, +planetary"
-				unique=				"inSystem"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"uuurr ----- ----- ----- -----"
+
+				locationCriteria=		"-outerSystem, +planetary"
+				enemyExclusionRadius=	"50"
+
+				unique=					"inSystem"
 				/>
 
 		<Names noArticle="true">
@@ -1063,9 +1227,17 @@
 			ejectaType=			"&vtWreckEjecta;"
 
 			attributes=			"commonwealth, friendly, generic, human, populated"
-			levelFrequency=		"uur-- ----- ----- ----- -----"
-			locationCriteria=	"-planetary"
 			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"+commonwealthCore;"
+				levelFrequency=			"uur-- ----- ----- ----- -----"
+
+				locationCriteria=		"-planetary"
+				/>
 
 		<ImageVariants>
 			<Image	imageID="&rsCommonwealthSlumsImage;" imageX="0" imageY="128" imageWidth="64" imageHeight="64"/>
@@ -1289,9 +1461,12 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"----- -ucr- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+commonwealthSpace;"
+				systemAffinity=			"*"
+				levelFrequency=			"----- -ucr- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
 				/>
 
 		<!-- Trade and Items -->
@@ -2581,145 +2756,6 @@
 			</Text>
 		</Language>
 	</DockScreen>
-
-<!-- BASIC COMMONWEALTH RULES
-
-	PLAYER DATA
-	
-	commonCrime:	Description of the player's crime (e.g., "slave-trading")
-	commonCrimeSeverity: The severity of the crime
-						0 = No crime
-						1 = Misdemeanor (drug possession)
-						2 = Felony (piracy)
-						3 = Crimes against Humanity (slave-trading, genocide, mass-destruction)
-	commonCrimeRecord: Number of times player has been caught and released for a felony
-	
--->
-
-	<Sovereign UNID="&svCommonwealth;"
-			name=":the Commonwealth"
-			adjective="Commonwealth"
-			demonym=":a Commonwealth citizen(s)"
-
-			alignment="constructive chaos"
-			inherit="&unidCommonText;"
-			>
-
-		<AttributeDesc>
-			<!-- These item attributes are used across all Human Space (not just for
-				Commonwealth). -->
-
-			<ItemAttribute id="human.basicFood"	label="basic food"			criteriaLabel="basic foods"				criteria="* +food; -lux; -illegal;"/>
-			<ItemAttribute id="human.lux"		label="luxury good"			criteriaLabel="luxury goods"			criteria="* +lux; -illegal;"/>
-			<ItemAttribute id="human.meds"		label="medical supplies"	criteriaLabel="medical supplies"		criteria="* +meds;"/>
-			<ItemAttribute id="human.res"		label="industrial resource"	criteriaLabel="industrial resources"	criteria="*~f +res; -ore; -illegal;"/>
-		</AttributeDesc>
-
-		<Events>
-			<GetGlobalAchievements>
-				(append
-					;	Crime record
-					
-					(if (geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
-						{
-							desc: (typTranslate gType 'textWantedFor { crimeText: (objGetData gPlayerShip 'commonCrime) })
-							sectionID: 'criminalRecord
-							}
-						)
-					)
-			</GetGlobalAchievements>
-
-			<GetGlobalDockScreen>
-				; If the player has docked with an active commonwealth station
-				; with customs, then we need to check for various things
-				; (like radiation poisoning and smuggling).
-				;
-				; NOTE: We return a screen and a priority. The priority is used
-				; to decide whether other screens should be shown before or after
-				; these. Follow these rules:
-				;
-				; Screens that prevent docking:				10
-				; Screens that imprison the player:			8
-				; Screens that confiscate:					6
-				; Screens that complete missions:			4
-				
-				(switch
-					; This does not apply to stations without customs
-					(not (objMatches gSource Nil "sTAV +commonwealthCustoms;"))
-						Nil
-
-					; If customs is temporarily disabled, then we don't do anything.
-					(= (objFireEvent gSource 'GetCommonwealthCustomsStatus) 'disabled)
-						Nil
-
-					; If the player ship is radioactive, then we need to
-					; decontaminate.
-					(shpIsRadioactive gPlayerShip)
-						{	screen:&dsCommonwealthDecon;		priority:10		overrideOnly:true	}
-
-					; If the player has sold slaves then he/she is arrested.
-					(geq (int (objGetData gPlayerShip "commonCrimeSeverity")) 2)
-						{	screen:&dsCommonwealthImprison;		priority:8		overrideOnly:true	}
-						
-					; If the player has slaves then free them
-					(and (objGetItems gPlayerShip "*+Slaves;")
-							(not (objGetData gPlayerShip "00001002_ConfiscateSlaves"))
-							)
-						{	screen:&dsCommonwealthFreeSlaves;	priority:8		overrideOnly:true	}
-						
-					; If the player has a black market container, then she is imprisoned
-					(and (not (objGetItems gPlayerShip "*I+SmugglersHold;")) 
-							(objGetItems gPlayerShip "*U+SealedContainer;")
-							(not (objGetData gPlayerShip "00001002_ConfiscateSealedContainer"))
-							)
-						(block Nil
-							; This side-effect is OK because it is OK if we call it multiple
-							; times, and it is OK if some other screen takes priority.
-							(intCommonwealthCrime 2 "smuggling")
-							
-							{	screen:&dsCommonwealthImprison;	priority:8		overrideOnly:true	}
-							)
-							
-					; If we have illegal items in the cargo hold then we need
-					; to confiscate them
-					(and (not (objGetItems gPlayerShip "*I+SmugglersHold"))
-							(or (objGetItems gPlayerShip "*U+Illegal; -ID")
-								(and (objGetItems gPlayerShip "*U+Military") (not (objGetItems gPlayerShip "*+MilitaryID")))))
-						{	screen:&dsCommonwealthConfiscate;	priority:6		overrideOnly:true	}
-
-					Nil
-					)
-			</GetGlobalDockScreen>
-			
-			<OnGlobalPlayerSoldItem>
-				(switch
-					;	If the player sold slaves, chance they get caught
-					
-					(itmHasAttribute gItem 'slaves)
-						(block (
-							;	2% chance of arrest per slave sold.
-							(chanceOfArrest 2)
-							)
-							(objIncData gPlayerShip 'slaveSales (ecoExchange aPrice aCurrency 'credit))
-
-							(if (rollChance chanceOfArrest (itmGetCount gItem))
-								(intCommonwealthCrime 2 "slave-trading")
-								)
-							)
-					)
-			</OnGlobalPlayerSoldItem>
-		</Events>
-		
-		<Language>
-			<Text id="textWantedFor">Wanted by the Commonwealth for %crimeText%</Text>
-		</Language>
-	</Sovereign>
-
-	<EconomyType UNID="&ecCreditEconomy;"
-			id=				"credit" 
-			currency=		"credit(s)"
-			conversion=		"100"
-			/>
 
 <!-- BEHAVIORS -->
 

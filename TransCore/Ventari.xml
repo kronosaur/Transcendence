@@ -14,6 +14,80 @@
 			alignment="destructive order"
 			/>
 
+	<SystemMap unid="&smVentariSpace;"
+			displayOn="&smHumanSpace;"
+			>
+		<TopologyProcessor priority="secondaryColony">
+			<System criteria="+outerRealm;"				attributes="ventariSpace"/>
+		</TopologyProcessor>
+	</SystemMap>
+
+<!-- ENCOUNTERS -->
+
+	<!-- Ventari Colony -->
+
+	<StationType UNID="&stVentariColony;"
+			name=				"Ventari colony|Ventari colonies"
+			sovereign=			"&svVentariSettlers;"
+			abandonedScreen=	"&dsAbandonedStation;"
+			dockingPorts=		"8"
+			canAttack=			"true"
+
+			multiHull=			"true"
+			armorID=			"&itOrthoSteel;"
+			hitPoints=			"740"
+            regen=              "15"
+			fireRateAdj=		"40"
+			explosionType=		"&vtThermoExplosion2;"
+			ejectaType=			"&vtWreckEjecta;"
+
+			attributes=			"enemy, envFire, envAvoidsWater, generic, human, majorStation, populated"
+			>
+
+		<!-- Encounter Info -->
+
+		<Encounter
+				systemCriteria=			"+ventariSpace;"
+				systemAffinity=			"+envFire; -envWater;"
+				levelFrequency=			"----- ucur- ----- ----- -----"
+
+				locationCriteria=		"+outerSystem, -planetary"
+				enemyExclusionRadius=	"100"
+				/>
+
+		<Image			imageID="&rsStations7;" imageX="0" imageY="448" imageWidth="192" imageHeight="192"/>
+
+		<Devices>
+			<Device deviceID="&itIonCannon;"	omnidirectional="true" posAngle="60"  posRadius="85"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="155" posRadius="90"/>
+			<Device deviceID="&itIonCannon;"	omnidirectional="true" posAngle="240" posRadius="100"/>
+			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="330" posRadius="110"/>
+		</Devices>
+
+		<Items>
+			<Table>
+				<Lookup chance="40" count="1" table="&trConsumables8;"/>
+				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
+				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
+			</Table>
+		</Items>
+
+		<Ships>
+			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
+		</Ships>
+
+		<Reinforcements minShips="1">
+			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
+		</Reinforcements>
+
+		<Encounters frequency="common">
+			<Ship count="1"	class="&scVentariDestroyer;" orders="wander"	maxShips="6"/>
+		</Encounters>
+
+	</StationType>
+
+<!-- SHIP CLASSES -->
+
 	<!-- Ventari Destroyer -->
 
 	<ShipClass UNID="&scVentariDestroyer;"
@@ -97,59 +171,7 @@
 
 	</ShipClass>
 
-	<!-- Ventari Colony -->
-
-	<StationType UNID="&stVentariColony;"
-			name=				"Ventari colony|Ventari colonies"
-			sovereign=			"&svVentariSettlers;"
-			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
-			canAttack=			"true"
-
-			multiHull=			"true"
-			armorID=			"&itOrthoSteel;"
-			hitPoints=			"740"
-            regen=              "15"
-			fireRateAdj=		"40"
-			explosionType=		"&vtThermoExplosion2;"
-			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"enemy, envFire, envAvoidsWater, generic, human, majorStation, populated"
-			levelFrequency=		"----- ucur- ----- ----- -----"
-			locationCriteria=	"+outerSystem, -planetary"
-			enemyExclusionRadius="100"
-			>
-
-		<Image			imageID="&rsStations7;" imageX="0" imageY="448" imageWidth="192" imageHeight="192"/>
-
-		<Devices>
-			<Device deviceID="&itIonCannon;"	omnidirectional="true" posAngle="60"  posRadius="85"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="155" posRadius="90"/>
-			<Device deviceID="&itIonCannon;"	omnidirectional="true" posAngle="240" posRadius="100"/>
-			<Device deviceID="&itTeV9Blaster;"	omnidirectional="true" posAngle="330" posRadius="110"/>
-		</Devices>
-
-		<Items>
-			<Table>
-				<Lookup chance="40" count="1" table="&trConsumables8;"/>
-				<Lookup chance="40" count="1" table="&trMinorItem8;"/>
-				<Lookup chance="20" count="1" table="&trMajorItem8;"/>
-			</Table>
-		</Items>
-
-		<Ships>
-			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
-		</Ships>
-
-		<Reinforcements minShips="1">
-			<Ship					count="1d2"	class="&scVentariDestroyer;"	orders="patrol" patrolDist="40"/>
-		</Reinforcements>
-
-		<Encounters frequency="common">
-			<Ship count="1"	class="&scVentariDestroyer;" orders="wander"	maxShips="6"/>
-		</Encounters>
-
-	</StationType>
+<!-- RESOURCES -->
 
 	<Image UNID="&rsVentariDestroyer;"	bitmap="Resources\VentariDestroyer.jpg" bitmask="Resources\VentariDestroyerMask.bmp" loadOnUse="true"/>
 	

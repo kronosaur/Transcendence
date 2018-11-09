@@ -169,10 +169,14 @@
 		<!-- Encounter Info -->
 
 		<Encounter
-				levelFrequency=		"ccc-- ----- ----- ----- -----"
-				locationCriteria=	"+planetary"
-				unique=				"inSystem"
-				enemyExclusionRadius="50"
+				systemCriteria=			"+corporateSpace;"
+				systemAffinity=			"+corporateCore;"
+				levelFrequency=			"ccc-- ----- ----- ----- -----"
+
+				locationCriteria=		"+planetary"
+				enemyExclusionRadius=	"50"
+
+				unique=					"inSystem"
 				/>
 
 		<!-- Trade and Items -->

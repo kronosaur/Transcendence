@@ -44,11 +44,6 @@
 			alignment="destructive order"
 			/>
 
-	<Sovereign UNID="&svOutlaw;"
-			name="Outlaws"
-			alignment="destructive order"
-			/>
-
 	<Sovereign UNID="&svSettlers;"
 			name="Settlers"
 			alignment="destructive order"
@@ -58,11 +53,6 @@
 
 	<Sovereign UNID="&svDestructiveChaos;"
 			name="(destructive chaos)"
-			alignment="destructive chaos"
-			/>
-
-	<Sovereign UNID="&svAnarchists;"
-			name="Anarchists"
 			alignment="destructive chaos"
 			/>
 

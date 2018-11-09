@@ -76,6 +76,9 @@
     <Filter Include="Human Space Library\Sung Slavers">
       <UniqueIdentifier>{fb38e338-1ce7-4323-8cae-1c58f0d6e634}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Human Space Library\Ares Orthodoxy">
+      <UniqueIdentifier>{4dcfeca2-2723-4a4f-af5e-501c47fec0ea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Transcendence.xml" />
@@ -219,9 +222,6 @@
     </None>
     <None Include="RPGAnalyzers.xml">
       <Filter>RPG Library</Filter>
-    </None>
-    <None Include="AresOrthodoxy.xml">
-      <Filter>Human Space Library\Misc Encounters</Filter>
     </None>
     <None Include="CentauriWarlords.xml">
       <Filter>Human Space Library\Misc Encounters</Filter>
@@ -378,6 +378,9 @@
     </None>
     <None Include="SungSlavers.xml">
       <Filter>Human Space Library\Sung Slavers</Filter>
+    </None>
+    <None Include="AresOrthodoxy.xml">
+      <Filter>Human Space Library\Ares Orthodoxy</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -758,6 +761,12 @@
     </Xml>
     <Xml Include="Barricades.xml">
       <Filter>Human Space Library\Items</Filter>
+    </Xml>
+    <Xml Include="AresItems.xml">
+      <Filter>Human Space Library\Ares Orthodoxy</Filter>
+    </Xml>
+    <Xml Include="AresShips.xml">
+      <Filter>Human Space Library\Ares Orthodoxy</Filter>
     </Xml>
   </ItemGroup>
 </Project>
