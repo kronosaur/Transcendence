@@ -271,7 +271,7 @@
 			</Text>
 			<Text id="Briefing">
 				(msnTranslate gSource 'textBriefing {
-					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gateID)))
+					gateName: (objGetName (objGetObjByID (msnGetData gSource 'gate1ID)))
 					})
 			</Text>
 			<Text id="textBriefing">
