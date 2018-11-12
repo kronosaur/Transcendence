@@ -13,7 +13,7 @@
 			level=				"1"
 			frequency=			"rare"
 			  
-			value=				"250"
+			value=				"120"
 			mass=				"1000"
 
 			description=		"Though obsoleted by EI's series of deflectors, these shield generators are cheap and effective for small ships."
@@ -24,7 +24,7 @@
 		<Shields
 				hitPoints=		"25"
 				regen=			"6"
-				depletionDelay=	"600"
+				depletionDelay=	"300"
 				powerUse=		"5"
 				/>
 	</ItemType>
@@ -34,7 +34,7 @@
 	<ItemType UNID="&itClass1Deflector;"
 			name=				"class I deflector"
 			level=				"1"
-			value=				"500"
+			value=				"350"
 			mass=				"1000"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, EI, majorItem"
@@ -60,7 +60,7 @@
 	<ItemType UNID="&itCyclotronDeflectorI;"
 			name=				"Cyclotron S10 deflector"
 			level=				"1"
-			value=				"500"
+			value=				"350"
 			mass=				"1000"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, majorItem, NAMI"
@@ -84,7 +84,7 @@
 	<ItemType UNID="&itLaserDeflector;"
 			name=				"laser deflector"
 			level=				"1"
-			value=				"750"
+			value=				"500"
 			mass=				"1200"
 			frequency=			"rare"
 			attributes=			"commonwealth, majorItem, NAMI"
@@ -98,7 +98,7 @@
 		<Shields
 				hitPoints=		"30"
 				hpBonus=		"+200,  +0,  +0,  +0"
-				regen=			"8"
+				regen=			"6"
 				depletionDelay=	"360"
 				powerUse=		"10"
 				/>
@@ -110,7 +110,7 @@
 			name=				"class II deflector"
 			level=				"2"
 			value=				"1000"
-			mass=				"1150"
+			mass=				"1200"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, EI, majorItem"
 			showReference=		"true"
@@ -125,7 +125,7 @@
 		<Shields
 				hitPoints=		"45"
 				regen=			"16"
-				depletionDelay=	"360"
+				depletionDelay=	"300"
 				powerUse=		"20"
 				/>
 	</ItemType>
@@ -135,7 +135,7 @@
 	<ItemType UNID="&itHullPlateIonizer;"
 			name=				"hull plate ionizer"
 			level=				"2"
-			value=				"1500"
+			value=				"1100"
 			mass=				"1500"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, majorItem, NAMI"
@@ -163,7 +163,7 @@
 	<ItemType UNID="&itCyclotronDeflectorIII;"
 			name=				"Cyclotron S55 deflector"
 			level=				"3"
-			value=				"2000"
+			value=				"1850"
 			mass=				"1500"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, majorItem, NAMI"
@@ -210,7 +210,7 @@
 	<ItemType UNID="&itSolonShieldGenerator;"
 			name=				"Solon shield generator"
 			level=				"3"
-			value=				"2500"
+			value=				"1850"
 			mass=				"1500"
 			frequency=			"rare"
 			attributes=			"commonwealth, majorItem, solon"
@@ -235,7 +235,7 @@
 	<ItemType UNID="&itCeratopsQuasiArmor1;"
 			name=				"Ceratops 1T quasi-armor"
 			level=				"4"
-			value=				"5000"
+			value=				"6000"
 			mass=				"1900"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, EI, majorItem"
@@ -248,7 +248,7 @@
 		<Image imageID="&rsItemsEI2;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"70"
+				hitPoints=		"65"
 				hpBonus=		"   +0, +50,  +0,+200,  +0, +25"
 				regen=			"20"
 				depletionDelay=	"360"
@@ -260,7 +260,7 @@
 	<ItemType UNID="&itClass3Deflector;"
 			name=				"class III deflector"
 			level=				"4"
-			value=				"4000"
+			value=				"4500"
 			mass=				"1600"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, EI, majorItem"
@@ -275,7 +275,7 @@
 		<Shields
 				hitPoints=		"80"
 				regen=			"28"
-				depletionDelay=	"360"
+				depletionDelay=	"300"
 				powerUse=		"100"
 				/>
 
@@ -286,7 +286,7 @@
 	<ItemType UNID="&itCyclotronDeflectorIV;"
 			name=				"Cyclotron S1200 deflector"
 			level=				"4"
-			value=				"4000"
+			value=				"5500"
 			mass=				"1500"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, majorItem, NAMI"
@@ -323,9 +323,9 @@
 		<Shields
 				hitPoints=		"90"
 				hpBonus=		" -25, -25,  +0,  +0, +75, +25"
-				regen=			"30"
+				regen=			"32"
 				depletionDelay=	"360"
-				powerUse=		"200"
+				powerUse=		"100"
 				/>
 
 	</ItemType>
@@ -337,7 +337,7 @@
 	<ItemType UNID="&itNephrenP25;"
 			name=				"Nephren P25 shield generator"
 			level=				"5"
-			value=				"12000"
+			value=				"9500"
 			mass=				"3500"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, kabuto, majorItem"
@@ -352,7 +352,7 @@
 				hpBonus=		"  +0,  +0,+100,  +0, +75,  +0"
 				regen=			"25"
 				depletionDelay=	"360"
-				powerUse=		"300"
+				powerUse=		"200"
 				/>
 
 	</ItemType>
@@ -362,7 +362,7 @@
 	<ItemType UNID="&itSuperconductingShields;"
 			name=				"superconducting shield generator"
 			level=				"5"
-			value=				"8000"
+			value=				"8500"
 			mass=				"1600"
 			frequency=			"rare"
 			attributes=			"commonwealth, kartal, majorItem, specialty"
@@ -440,7 +440,7 @@
 	<ItemType UNID="&itYoroiS100;"
 			name=				"Yoroi S100 shield generator"
 			level=				"5"
-			value=				"8000"
+			value=				"8500"
 			mass=				"3000"
 			frequency=			"common"
 			attributes=			"bushido, commonwealth, majorItem, specialty"
@@ -453,7 +453,7 @@
 		<Image imageID="&rsItemsBushido1;" imageX="0" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"100"
+				hitPoints=		"120"
 				regen=			"36"
 				depletionDelay=	"360"
 				powerUse=		"200"
@@ -479,7 +479,7 @@
 		<Image imageID="&rsItemsEI2;" imageX="288" imageY="192" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"125"
+				hitPoints=		"135"
 				hpBonus=		"  +0,  +0,  +0,+100,  +0,+200,  +0, +50"
 				regen=			"24"
 				depletionDelay=	"360"
@@ -493,7 +493,7 @@
 	<ItemType UNID="&itInvincibleDeflector;"
 			name=				"Invincible-class deflector"
 			level=				"6"
-			value=				"20000"
+			value=				"18500"
 			mass=				"6000"
 			frequency=			"rare"
 			attributes=			"commonwealth, majorItem, military, onorad"
@@ -527,7 +527,7 @@
 	<ItemType UNID="&itMammoth25Deflector;"
 			name=				"Mammoth 25MW deflector"
 			level=				"6"
-			value=				"16000"
+			value=				"18500"
 			mass=				"3000"
 			frequency=			"uncommon"
 			attributes=			"bushido, commonwealth, majorItem"
@@ -541,7 +541,7 @@
 
 		<Shields
 				hitPoints=		"270"
-				regen=			"20"
+				regen=			"24"
 				depletionDelay=	"480"
 				powerUse=		"250"
 				/>
@@ -553,7 +553,7 @@
 	<ItemType UNID="&itOmskDeflectorI;"
 			name=				"mark I Omsk deflector"
 			level=				"6"
-			value=				"25000"
+			value=				"18500"
 			mass=				"5000"
 			frequency=			"rare"
 			attributes=			"commonwealth, majorItem, specialty, makayev, omskDeflector, omskDS"
@@ -608,9 +608,9 @@
 		<Shields
 				hitPoints=		"135"
 				hpBonus=		"  +0,  +0,  +0,  +0, +75, +25"
-				regen=			"48"
+				regen=			"46"
 				depletionDelay=	"360"
-				powerUse=		"400"
+				powerUse=		"320"
 				/>
 
 	</ItemType>
@@ -633,8 +633,8 @@
 		<Image imageID="&rsItemsBushido1;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"135"
-				regen=			"45"
+				hitPoints=		"160"
+				regen=			"46"
 				depletionDelay=	"360"
 				powerUse=		"300"
 				/>
@@ -648,7 +648,7 @@
 	<ItemType UNID="&itMammoth50Deflector;"
 			name=				"Mammoth 50MW deflector"
 			level=				"7"
-			value=				"32000"
+			value=				"39000"
 			mass=				"4000"
 			frequency=			"uncommon"
 			attributes=			"bushido, commonwealth, majorItem, military"
@@ -661,7 +661,7 @@
 		<Image imageID="&rsItemsBushido2;" imageX="0" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"350"
+				hitPoints=		"400"
 				regen=			"28"
 				depletionDelay=	"480"
 				powerUse=		"500"
@@ -674,7 +674,7 @@
 	<ItemType UNID="&itNephrenB700;"
 			name=				"Nephren B700 shield generator"
 			level=				"7"
-			value=				"45000"
+			value=				"42000"
 			mass=				"3500"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, kabuto, majorItem, military"
@@ -685,11 +685,11 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"175"
+				hitPoints=		"200"
 				hpBonus=		"  +0,  +0, -25,+100, -25, +50"
-				regen=			"48"
+				regen=			"60"
 				depletionDelay=	"360"
-				powerUse=		"750"
+				powerUse=		"500"
 				/>
 
 	</ItemType>
@@ -699,7 +699,7 @@
 	<ItemType UNID="&itTrentonFieldGenerator;"
 			name=				"Trenton field generator"
 			level=				"7"
-			value=				"40000"
+			value=				"39000"
 			mass=				"2300"
 			frequency=			"rare"
 			attributes=			"commonwealth, majorItem, onorad, specialty"
@@ -724,7 +724,7 @@
 	<ItemType UNID="&itYoroiMX;"
 			name=				"Yoroi MX shield generator"
 			level=				"7"
-			value=				"32000"
+			value=				"39000"
 			mass=				"5000"
 			frequency=			"uncommon"
 			attributes=			"bushido, commonwealth, majorItem, military, specialty"
@@ -737,7 +737,7 @@
 		<Image imageID="&rsItemsBushido2;" imageX="96" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"175"
+				hitPoints=		"220"
 				regen=			"60"
 				depletionDelay=	"360"
 				powerUse=		"500"
@@ -751,7 +751,7 @@
 	<ItemType UNID="&itIonReflector;"
 			name=				"ion reflector"
 			level=				"8"
-			value=				"90000"
+			value=				"78500"
 			mass=				"4000"
 			frequency=			"rare"
 			attributes=			"commonwealth, kabuto, majorItem, military"
@@ -775,7 +775,7 @@
 	<ItemType UNID="&itMammoth100Deflector;"
 			name=				"Mammoth 100MW deflector"
 			level=				"8"
-			value=				"65000"
+			value=				"90000"
 			mass=				"5000"
 			attributes=			"bushido, commonwealth, majorItem, military"
 			frequency=			"uncommon"
@@ -789,7 +789,7 @@
 
 		<Shields
 				hitPoints=		"600"
-				regen=			"28"
+				regen=			"30"
 				depletionDelay=	"480"
 				powerUse=		"1000"
 				/>
@@ -801,7 +801,7 @@
 	<ItemType UNID="&itOmskDeflectorII;"
 			name=				"mark II Omsk deflector"
 			level=				"8"
-			value=				"90000"
+			value=				"78500"
 			mass=				"6000"
 			frequency=			"rare"
 			attributes=			"commonwealth, majorItem, makayev, military, omskDeflector, omskDS, specialty"
@@ -843,7 +843,7 @@
 	<ItemType UNID="&itPlasmaShieldGenerator;"
 			name=				"plasma shield generator"
 			level=				"8"
-			value=				"65000"
+			value=				"75000"
 			mass=				"2000"
 			attributes=			"commonwealth, majorItem, military, pacificDefense"
 			frequency=			"common"
@@ -854,7 +854,7 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"225"
+				hitPoints=		"260"
 				regen=			"80"
 				depletionDelay=	"360"
 				powerUse=		"1000"
@@ -867,7 +867,7 @@
 	<ItemType UNID="&itR9Deflector;"
 			name=				"R9 deflector"
 			level=				"8"
-			value=				"100000"
+			value=				"110000"
 			mass=				"6000"
 			attributes=			"commonwealth, majorItem, military, pacificDefense"
 			frequency=			"rare"
@@ -905,9 +905,9 @@
 		<Shields
 				hitPoints=		"250"
 				hpBonus=		"  +0,  +0,  +0,  +0, -25,+100, -25, +25"
-				regen=			"60"
+				regen=			"70"
 				depletionDelay=	"360"
-				powerUse=		"1300"
+				powerUse=		"1000"
 				/>
 
 	</ItemType>
@@ -919,7 +919,7 @@
 	<ItemType UNID="&itJotunDeflector;"
 			name=				"Jotun deflector"
 			level=				"9"
-			value=				"130000"
+			value=				"158000"
 			mass=				"5000"
 			frequency=			"rare"
 			unknownType=		"&itUnknownAlienDevice;"
@@ -962,7 +962,7 @@
 	<ItemType UNID="&itNephrenX1;"
 			name=				"Nephren X1 shield generator"
 			level=				"9"
-			value=				"190000"
+			value=				"158000"
 			mass=				"4500"
 			frequency=			"uncommon"
 			attributes=			"commonwealth, kabuto, majorItem, military"
@@ -989,7 +989,7 @@
 	<ItemType UNID="&itLazarusShieldGenerator;"
 			name=				"Lazarus shield generator"
 			level=				"10"
-			value=				"250000"
+			value=				"320000"
 			mass=				"2500"
 			frequency=			"rare"
 			attributes=			"commonwealth, kabuto, majorItem, military"
@@ -1014,7 +1014,7 @@
 	<ItemType UNID="&itTaikon200Deflector;"
 			name=				"Taikon-200 deflector"
 			level=				"10"
-			value=				"250000"
+			value=				"350000"
 			mass=				"5500"
 			frequency=			"rare"
 			attributes=			"commonwealth, majorItem, military, taikon"
@@ -1025,9 +1025,9 @@
 		<Image imageID="&rsItemsTaikon1;" imageX="192" imageY="96" imageWidth="96" imageHeight="96"/>
 
 		<Shields
-				hitPoints=		"380"
+				hitPoints=		"420"
 				hpBonus=		"  +0,  +0,  +0,  +0, -25,+100, -25, +25"
-				regen=			"100"
+				regen=			"120"
 				depletionDelay=	"360"
 				powerUse=		"1900"
 				/>

@@ -173,9 +173,11 @@
 		<Image imageID="&rsItems1;" imageX="192" imageY="0" imageWidth="96" imageHeight="96"/>
 
 		<Shields
+				deviceSlots=	"2"
+
 				hitPoints=		"800"
 				hpBonus=		"  +0,  +0,  +0,  +0, +50, +50"
-				regen=			"30"
+				regen=			"40"
 				depletionDelay=	"540"
 				powerUse=		"2000"
 				/>

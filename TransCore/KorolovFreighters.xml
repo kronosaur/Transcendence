@@ -715,7 +715,7 @@
 	<ItemType UNID="&itClass5Deflector;"
 			name=				"class V deflector"
 			level=				"5"
-			value=				"15000"
+			value=				"14000"
 			mass=				"2500"
 			frequency=			"notrandom"
 			attributes=			"EI; MajorItem; NotForSale"
