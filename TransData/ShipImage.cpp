@@ -91,7 +91,7 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 	//	Create a rotation structure (to track ship thrusters)
 
 	CIntegralRotation Rotation;
-	Rotation.Init(pClass->GetRotationDesc());
+	Rotation.Init(pClass->GetIntegralRotationDesc());
 
 	//	Paint
 
@@ -106,13 +106,13 @@ void GenerateShipImage (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		//	Set the ship rotation
 
-		Rotation.SetRotationAngle(pClass->GetRotationDesc(), pClass->GetRotationDesc().GetRotationAngle(i));
+		Rotation.SetRotationAngle(pClass->GetIntegralRotationDesc(), pClass->GetIntegralRotationDesc().GetRotationAngle(i));
 
 		//	Set the paint context (we need to do this after the rotation setting)
 
 		Ctx.iTick = 0;
 		Ctx.iVariant = Rotation.GetFrameIndex();
-		Ctx.iRotation = Rotation.GetRotationAngle(pClass->GetRotationDesc());
+		Ctx.iRotation = Rotation.GetRotationAngle(pClass->GetIntegralRotationDesc());
 		Ctx.iDestiny = 0;
 		Ctx.iMaxLength = -1;
 

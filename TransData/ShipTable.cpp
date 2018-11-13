@@ -12,6 +12,7 @@
 #define MAX_LEVEL			25
 
 #define FIELD_BALANCE							CONSTLIT("balance")
+#define FIELD_HULL_POINTS_STATS					CONSTLIT("hullPointsStats")
 #define FIELD_LEVEL								CONSTLIT("level")
 #define FIELD_MANEUVER							CONSTLIT("maneuver")
 #define FIELD_NAME								CONSTLIT("name")
@@ -74,7 +75,18 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (j != 0)
 			printf("\t");
 
-		printf(Cols[j].GetASCIIZPointer());
+		if (strEquals(Cols[j], FIELD_HULL_POINTS_STATS))
+			{
+			for (int k = 0; k < CHullPointsCalculator::fieldCount; k++)
+				{
+				if (k != 0)
+					printf("\t");
+
+				printf((LPSTR)CHullPointsCalculator::GetFieldName(k));
+				}
+			}
+		else
+			printf(Cols[j].GetASCIIZPointer());
 		}
 
 	printf("\n");
@@ -130,6 +142,18 @@ void GenerateShipTable (CUniverse &Universe, CXMLElement *pCmdLine)
 				printf("%.1f", pResult->GetIntegerValue() / 1000.0);
 			else if (strEquals(sField, FIELD_SCORE_CALC))
 				printf("%d", pClass->CalcScore());
+			else if (strEquals(sField, FIELD_HULL_POINTS_STATS))
+				{
+				CHullPointsCalculator Calc(*pClass);
+
+				for (int k = 0; k < Calc.GetFieldCount(); k++)
+					{
+					if (k != 0)
+						printf("\t");
+
+					printf("%.1f", Calc.GetField(k) * 10.0);
+					}
+				}
 			else
 				{
 				CString sValue = pResult->Print(&g_pUniverse->GetCC(), PRFLAG_NO_QUOTES | PRFLAG_ENCODE_FOR_DISPLAY);

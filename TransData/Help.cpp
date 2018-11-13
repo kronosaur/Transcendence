@@ -280,6 +280,9 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/fireRateAdj]        AI fire rate adjustment (%% of normal).\n");
 		printf("      [/genericName]        generic name.\n");
 		printf("      [/hullMass]           mass of hull only (in tons).\n");
+		printf("      [/hullPoints]         total points used to calculate hull value.\n");
+		printf("      [/hullPointsStats]    points used to calculate hull value.\n");
+		printf("      [/hullValue]          value of hull only (credits).\n");
 		printf("      [/launcher]           launcher.\n");
 		printf("      [/maneuver]           time for a complete rotation.\n");
 		printf("      [/manufacturer]       ship manufacturer.\n");
