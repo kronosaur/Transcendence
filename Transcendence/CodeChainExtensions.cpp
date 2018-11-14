@@ -1447,12 +1447,20 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
             ICCItem *pResult = pCC->CreateSymbolTable();
 
+			pResult->SetIntegerAt(*pCC, CONSTLIT("type"), CurFrame.pRoot ? CurFrame.pRoot->GetUNID() : 0);
+
             bool bNotUNID;
             DWORD dwScreen = strToInt(sScreen, 0, &bNotUNID);
             if (bNotUNID)
+				{
                 pResult->SetStringAt(*pCC, CONSTLIT("screen"), sScreen);
-            else
+				pResult->SetStringAt(*pCC, CONSTLIT("screenName"), sScreen);
+				}
+			else
+				{
                 pResult->SetIntegerAt(*pCC, CONSTLIT("screen"), dwScreen);
+				pResult->SetIntegerAt(*pCC, CONSTLIT("screenType"), dwScreen);
+				}
 
             pResult->SetStringAt(*pCC, CONSTLIT("pane"), CurFrame.sPane);
             if (CurFrame.pStoredData)
