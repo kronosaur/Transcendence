@@ -1573,6 +1573,7 @@
 	<!ENTITY stCathedralOfDomina		"0x00100034">
 	<!ENTITY rsCathedralOfDomina		"0x00100035">
 	<!ENTITY rsHandOfDominaHero			"0x00100036">
+	<!ENTITY dsDominaPowersHelp			"0x00100037">
 	
 	<!-- 0040-005F CORPORATE HIERARCHY -->
 	
@@ -2139,6 +2140,10 @@
 	<!-- 0620-063F GAIAN TERRAFORMERS -->
 
 	<!ENTITY smGaianSpace				"0x00100620">
+
+	<!-- 0640-065F DOMINA -->
+
+	<!ENTITY baDominaPower				"0x00100640">
 
     <!-- 1000-FFFF RESERVED: DO NOT USE -->
 	]>

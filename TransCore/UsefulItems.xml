@@ -1319,7 +1319,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownHaloGem;"
-			attributes=			"CannotOrder; HaloGem; MinorItem; Psionic"
+			attributes=			"cannotOrder, communion, haloGem, minorItem, psionic"
 
 			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
 			>
@@ -1355,7 +1355,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownHaloGem;"
-			attributes=			"CannotOrder; HaloGem; MinorItem; Psionic"
+			attributes=			"cannotOrder, communion, haloGem, minorItem, psionic"
 
 			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
 			>
@@ -1387,7 +1387,7 @@
 			mass=				"1"
 			frequency=			"veryrare"
 			unknownType=		"&itUnknownHaloGem;"
-			attributes=			"HaloGem; MinorItem; CannotOrder"
+			attributes=			"cannotOrder, communion, haloGem, minorItem, psionic"
 
 			description=		"These gems are used by the Halo Races, though their exact purpose is unknown. The dark-energies embedded in the gem have an influence over spacetime that is not yet fully understood."
 			>

@@ -127,7 +127,7 @@
 			value=				"500"
 			mass=				"5"
 			frequency=			"veryrare"
-			attributes=			"Consumable; Info; Soul; NotForSale"
+			attributes=			"communion, consumable, info, soul, notForSale"
 
 			description=		"This is a neural network initialized from the cerebral patterns of one or more Scholars of Abbasid. The legal, ethical, and moral knowledge of the Abbasid is contained and interpreted by these constructs."
 			>

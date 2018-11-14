@@ -371,7 +371,7 @@
 			value=				"0"
 			mass=				"1000"
 			frequency=			"notRandom"
-			attributes=			"alien, notForSale, questItem"
+			attributes=			"alien, communion, notForSale, questItem"
 
 			description=		"This is a one-meter sphere of a dark metal, etched with a network of thin lines and complex shapes."
 			>

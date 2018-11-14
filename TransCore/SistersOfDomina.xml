@@ -10,7 +10,7 @@
 			value=				"500"
 			mass=				"1"
 			frequency=			"rare"
-			attributes=			"Art; Consumable; Lux; Psionic"
+			attributes=			"art, communion, consumable, lux, psionic"
 
 			description=		"A beautiful prayer stone cut out of a crystal of some sort; the symbol of Domina is carved on one face."
 			>
@@ -27,7 +27,7 @@
 			value=				"2000"
 			mass=				"10"
 			frequency=			"rare"
-			attributes=			"Art; Consumable; Lux; Psionic"
+			attributes=			"art, communion, consumable, lux, psionic"
 
 			description=		"A heavy, pure crystal set in a platinum band; the symbol of Domina is inscribed on one face."
 			>
@@ -44,7 +44,7 @@
 			value=				"5000"
 			mass=				"100"
 			frequency=			"rare"
-			attributes=			"Art; Consumable; Lux; Psionic; RingerValuable"
+			attributes=			"art, communion, consumable, lux, psionic, ringerValuable"
 
 			description=		"These hyperdense crystals are formed inside black holes; they resonate with transcendent consciousness."
 			>
@@ -574,10 +574,16 @@
 			<Default>
 				<OnPaneInit>
 					(switch
-						(eq (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
+						(= (objGetProperty gPlayerShip 'characterClass) &unidPilgrimClass;)
 							(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'Welcome))
-							
-						(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'WelcomeNonPilgrim))
+
+						(block ()							
+							(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'WelcomeNonPilgrim))
+
+							;	Help on Domina powers only available to pilgrims
+
+							(scrEnableAction gScreen 'actionPowersHelp Nil)
+							)
 						)
 				</OnPaneInit>
 
@@ -650,17 +656,17 @@
 							)
 					</Action>
 
+					<Action id="actionPowersHelp">
+						(scrShowScreen gScreen &dsDominaPowersHelp;)
+					</Action>
+
 					<Action id="actionDone" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
 			</Default>
 
-			<RefuelShip>
-				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'RefuelShipDesc))
-				</OnPaneInit>
-
+			<RefuelShip descID="RefuelShipDesc">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						<ShowPane pane="Default"/>
@@ -668,11 +674,7 @@
 				</Actions>
 			</RefuelShip>
 
-			<RepairArmor>
-				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'RepairArmorDesc))
-				</OnPaneInit>
-
+			<RepairArmor descID="RepairArmorDesc">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						<ShowPane pane="Default"/>
@@ -680,11 +682,7 @@
 				</Actions>
 			</RepairArmor>
 
-			<NoDamage>
-				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'NoDamageDesc))
-				</OnPaneInit>
-
+			<NoDamage descID="NoDamageDesc">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						<ShowPane pane="Default"/>
@@ -692,11 +690,7 @@
 				</Actions>
 			</NoDamage>
 
-			<UnableToRepair>
-				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'UnableToRepairDesc))
-				</OnPaneInit>
-
+			<UnableToRepair descID="UnableToRepairDesc">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						<ShowPane pane="Default"/>
@@ -704,11 +698,7 @@
 				</Actions>
 			</UnableToRepair>
 
-			<TooRich>
-				<OnPaneInit>
-					(scrSetDesc gScreen (typTranslate &dsSistersDockServices; 'TooRichDesc))
-				</OnPaneInit>
-
+			<TooRich descID="TooRichDesc">
 				<Actions>
 					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen)
@@ -718,6 +708,8 @@
 		</Panes>
 		
 		<Language>
+			<Text id="actionPowersHelp">Domina [P]owers</Text>
+
 			<Text id="Welcome">
 
 				"Welcome, Pilgrim! Your journey to the Galactic Core will be 
@@ -760,6 +752,119 @@
 				Open yourself to Domina and leave your worthless ship behind."
 
 			</Text>
+		</Language>
+	</DockScreen>
+
+	<!-- Domina Powers Help -->
+
+	<DockScreen unid="&dsDominaPowersHelp;"
+			nestedScreen=		"true"
+			inherit=			"&dsDockScreenBase;"
+			>
+
+		<Display type="customPicker"
+				rowHeight="64"
+				>
+			<OnDisplayInit>
+				(map (typFind "p +domina;") thePower
+					(block (
+						(status (typFireEvent thePower 'GetInvokeStatus))
+						(rank (typGetStaticData thePower 'rank))
+						)
+						{
+						title: (typGetProperty thePower 'name)
+						desc: (switch
+							(= status 'tooHighLevel)
+								(scrTranslate gScreen 'textNotAvailable)
+
+							(= status 'cooldown)
+								(scrTranslate gScreen 'textCooldown)
+
+							(or (typTranslate thePower 'power.lineDesc)
+								(scrTranslate gScreen 'textReadyToInvoke)
+								)
+							)
+					
+						powerType: thePower
+						rank: rank
+						rankNoun: (typTranslate &svDomina; 'nounRank { rank:rank gender:(plyGetGenome gPlayer) })
+						status: status
+						}
+						)
+					)
+			</OnDisplayInit>
+		</Display>
+		
+		<Panes>
+			<Default>
+				<OnPaneInit>
+					(block (
+						(theEntry (scrGetListEntry gScreen))
+						(thePower (@ theEntry 'powerType))
+						(status (@ theEntry 'status))
+						)
+						(scrSetControlValue gScreen 'powerDesc
+							(scrTranslate gScreen 'descPower {
+								powerName: (typGetProperty thePower 'name)
+								powerDesc: (typTranslate thePower 'power.desc)
+								})
+							)
+
+						(switch
+							(= status 'tooHighLevel)
+								(scrSetDescTranslate gScreen 'descTooHighLevel {
+									rankNeeded: (fmtNoun (@ theEntry 'rankNoun) 1 'article)
+									})
+
+							(= status 'cooldown)
+								(scrSetDescTranslate gScreen 'descCooldown)
+
+							(scrSetDescTranslate gScreen 'descInvokeHelp {
+								key: (uiKeyLabel 'InvokePower)
+								})
+							)
+						)
+				</OnPaneInit>
+
+				<Controls>
+					<Text id="powerDesc"/>
+					<Text id="desc"/>
+				</Controls>
+
+				<Actions>
+					<Action id="actionDone" default="1" cancel="1">
+						(scrExitScreen gScreen)
+					</Action>
+				</Actions>
+			</Default>
+		</Panes>
+
+		<Language>
+			<String id="descPower">
+				{/rtf {/f:LargeBold;/c:#d9ecff; %powerName%}\n{/f:Medium;/lineSpacing:0; %powerDesc%}}
+			</String>
+			<Text id="descTooHighLevel">
+
+				You must be %rankNeeded% in the service of Domina before you can
+				invoke this power.
+
+				You can strengthen your relationship with Domina by contemplating
+				and by donating items to commune with her.
+
+			</Text>
+			<Text id="descCooldown">
+
+				You must wait for this power to be recharged.
+
+			</Text>
+			<Text id="descInvokeHelp">
+
+				Use the [%key%] key to invoke the powers of Domain.
+				
+			</Text>
+			<Text id="textNotAvailable">Not available</Text>
+			<Text id="textCooldown">Recharging</Text>
+			<Text id="textReadyToInvoke">Ready to invoke</Text>
 		</Language>
 	</DockScreen>
 

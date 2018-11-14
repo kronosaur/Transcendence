@@ -166,7 +166,7 @@
 			value=				"5000"
 			mass=				"100"
 			frequency=			"rare"
-			attributes=			"Consumable; Info; Soul; NotForSale"
+			attributes=			"communion, consumable, info, soul, notForSale"
 
 			description=		"This rare optical cube contains the memory patterns of a denizen of the Concatenated Digital Metropolis."
 			>
@@ -276,7 +276,7 @@
 			value=				"3500"
 			mass=				"50"
 			frequency=			"rare"
-			attributes=			"Consumable; Info; Soul; NotForSale"
+			attributes=			"communion, consumable, info, soul, notForSale"
 
 			description=		"The thoughts and memories of a human being are encoded into this holographic cube. These mementos of the dead were popular last century."
 			>
@@ -537,7 +537,7 @@
 			mass=				"250"
 			frequency=			"rare"
 			numberAppearing=	"1"
-			attributes=			"Consumable; Illegal; Soul"
+			attributes=			"communion, consumable, illegal, soul"
 
 			description=		"The traffic in human cadavers is common in the Outer Realm. Many people believe that Teratons use human cadavers for strange experiments."
 			>
@@ -897,7 +897,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d2"
-			attributes=			"consumable, info"
+			attributes=			"communion, consumable, info"
 
 			description=		"Neural processors are key components in AI systems."
 			>
@@ -990,7 +990,7 @@
 			mass=				"500"
 			frequency=			"uncommon"
 			numberAppearing=	"1d2"
-			attributes=			"Consumable; Info"
+			attributes=			"communion, consumable, info"
 
 			description=		"This quantum-optical system is used to store and process large amounts of information."
 			>

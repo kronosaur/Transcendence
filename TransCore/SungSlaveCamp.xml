@@ -238,7 +238,7 @@
 			mass=				"500"
 			frequency=			"rare"
 			numberAppearing=	"1d3"
-			attributes=			"Illegal; MinorItem; Slaves; Soul"
+			attributes=			"communion, illegal, minorItem, slaves, soul"
 
 			description=		"The Sung Slavers of Jiang's Star transport their slaves in life-support canisters that keep their captive occupants in biological suspension."
 			>
