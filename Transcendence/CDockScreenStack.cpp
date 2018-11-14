@@ -5,6 +5,8 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
+const SDockFrame CDockScreenStack::m_NullFrame;
+
 void CDockScreenStack::DeleteAll (void)
 
 //	DeleteAll
@@ -23,6 +25,9 @@ const SDockFrame &CDockScreenStack::GetCurrent (void) const
 //	Returns the top of the stack
 
 	{
+	if (IsEmpty())
+		return m_NullFrame;
+
 	int iTop = m_Stack.GetCount() - 1;
 	return m_Stack[iTop];
 	}

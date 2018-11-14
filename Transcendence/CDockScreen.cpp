@@ -1241,12 +1241,11 @@ void CDockScreen::InitDisplayControlRect (CXMLElement *pDesc, const RECT &rcFram
 
 ALERROR CDockScreen::InitScreen (HWND hWnd, 
 								 RECT &rcRect, 
-								 const SDockFrame &Frame,
+								 CDockScreenStack &FrameStack,
 								 CExtension *pExtension,
 								 CXMLElement *pDesc, 
 								 const CString &sPane,
 								 ICCItem *pData,
-								 CString *retsPane,
 								 AGScreen **retpScreen,
 								 CString *retsError)
 
@@ -1268,6 +1267,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 
 	//	Init some variables
 
+	SDockFrame Frame = FrameStack.GetCurrent();
 	m_pLocation = Frame.pLocation;
 	m_pRoot = Frame.pRoot;
 	m_sScreen = Frame.sScreen;
@@ -1297,12 +1297,7 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	//	continue (OnScreenInit has navigated to a different screen).
 
 	if (m_pScreen)
-		{
-		if (retsPane)
-			*retsPane = NULL_STR;
-
 		return NOERROR;
-		}
 
 	//	Create a new screen
 
@@ -1500,8 +1495,6 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 	if (!sPane.IsBlank())
 		{
 		ShowPane(sPane);
-		if (retsPane)
-			*retsPane = sPane;
 		}
 	else
 		{
@@ -1512,9 +1505,13 @@ ALERROR CDockScreen::InitScreen (HWND hWnd,
 		if (sPane.IsBlank())
 			sPane = CONSTLIT("Default");
 
+		//	Set the pane for the current frame stack, now that we've figured it out.
+
+		FrameStack.SetCurrentPane(sPane);
+
+		//	Show it
+
 		ShowPane(sPane);
-		if (retsPane)
-			*retsPane = sPane;
 		}
 
 	//	Done

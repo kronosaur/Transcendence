@@ -263,7 +263,8 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 
             "screenDesc:\n\n"
 
-            "   'screen: Current screen\n"
+            "   'type: UNID of screen or root type\n"
+            "   'screenName: Screen name, if type is not a dock screen\n"
             "   'pane: Current pane\n"
             "   'data: Associated data",
 
@@ -1443,23 +1444,32 @@ ICCItem *fnScrGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
                 return pCC->CreateNil();
 
             const SDockFrame &CurFrame = DockFrames.GetCurrent();
-            CString sScreen = CurFrame.sScreen;
+			DWORD dwRootUNID = (CurFrame.pResolvedRoot ? CurFrame.pResolvedRoot->GetUNID() : 0);
+            CString sScreen = CurFrame.sResolvedScreen;
 
             ICCItem *pResult = pCC->CreateSymbolTable();
 
-			pResult->SetIntegerAt(*pCC, CONSTLIT("type"), CurFrame.pRoot ? CurFrame.pRoot->GetUNID() : 0);
+			pResult->SetIntegerAt(*pCC, CONSTLIT("type"), dwRootUNID);
 
-            bool bNotUNID;
-            DWORD dwScreen = strToInt(sScreen, 0, &bNotUNID);
-            if (bNotUNID)
+			if (sScreen.IsBlank())
 				{
-                pResult->SetStringAt(*pCC, CONSTLIT("screen"), sScreen);
-				pResult->SetStringAt(*pCC, CONSTLIT("screenName"), sScreen);
+                pResult->SetIntegerAt(*pCC, CONSTLIT("screen"), dwRootUNID);
+				pResult->SetIntegerAt(*pCC, CONSTLIT("screenType"), dwRootUNID);
 				}
 			else
 				{
-                pResult->SetIntegerAt(*pCC, CONSTLIT("screen"), dwScreen);
-				pResult->SetIntegerAt(*pCC, CONSTLIT("screenType"), dwScreen);
+				bool bNotUNID;
+				DWORD dwScreen = strToInt(sScreen, 0, &bNotUNID);
+				if (bNotUNID)
+					{
+					pResult->SetStringAt(*pCC, CONSTLIT("screen"), sScreen);
+					pResult->SetStringAt(*pCC, CONSTLIT("screenName"), sScreen);
+					}
+				else
+					{
+					pResult->SetIntegerAt(*pCC, CONSTLIT("screen"), dwScreen);
+					pResult->SetIntegerAt(*pCC, CONSTLIT("screenType"), dwScreen);
+					}
 				}
 
             pResult->SetStringAt(*pCC, CONSTLIT("pane"), CurFrame.sPane);

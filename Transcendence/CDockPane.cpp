@@ -933,7 +933,7 @@ ALERROR CDockPane::InitPane (CDockScreen *pDockScreen, CXMLElement *pPaneDesc, c
 
 	CString sResolvedScreen;
 	CDesignType *pResolvedRoot = m_pDockScreen->GetResolvedRoot(&sResolvedScreen);
-	g_pUniverse->FireOnGlobalPaneInit(m_pDockScreen, pResolvedRoot, sResolvedScreen, m_pPaneDesc->GetTag());
+	g_pUniverse->FireOnGlobalPaneInit(m_pDockScreen, pResolvedRoot, sResolvedScreen, m_pPaneDesc->GetTag(), pData);
 	if (m_pDockScreen->GetScreen() == NULL)
 		return NOERROR;
 

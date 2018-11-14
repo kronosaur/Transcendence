@@ -392,12 +392,11 @@ class CDockScreen : public IScreenController
 		void HandleKeyDown (int iVirtKey);
 		ALERROR InitScreen (HWND hWnd, 
 							RECT &rcRect, 
-							const SDockFrame &Frame,
+							CDockScreenStack &FrameStack,
 							CExtension *pExtension,
 							CXMLElement *pDesc, 
 							const CString &sPane,
 							ICCItem *pData,
-							CString *retsPane,
 							AGScreen **retpScreen,
 							CString *retsError = NULL);
 		inline bool InOnInit (void) const { return m_bInOnInit; }
@@ -578,6 +577,8 @@ class CDockScreenStack
 
 	private:
 		TArray<SDockFrame> m_Stack;
+
+		static const SDockFrame m_NullFrame;
 	};
 
 #include "DockScreenDisplayImpl.h"

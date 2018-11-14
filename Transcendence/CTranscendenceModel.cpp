@@ -2470,19 +2470,21 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 	//	again from inside <OnScreenInit>). In case of recursion, the
 	//	deepest call will set up sNewPane while the others will
 	//	return NULL_STR.
-
-	CString sNewPane;
+	//
+	//	LATER: We might want to decompose InitScreen into separate pieces, so
+	//	that CTranscendenceModel (or some other class) can orchestrate the call
+	//	to determine what pane to show. Otherwise, we need to pass in m_DockFrames
+	//	into InitScreen so that it can set the pane name on the stack.
 
 	m_Universe.SetLogImageLoad(false);
 	CString sError;
 	error = pSession->GetDockScreen().InitScreen(m_HI.GetHWND(),
 			g_pTrans->m_rcMainScreen,
-			NewFrame,
+			m_DockFrames,
 			pExtension,
 			pScreen,
 			sPane,
 			pData,
-			&sNewPane,
 			&g_pTrans->m_pCurrentScreen,
 			&sError);
 	m_Universe.SetLogImageLoad(true);
@@ -2502,16 +2504,6 @@ ALERROR CTranscendenceModel::ShowScreen (CDesignType *pRoot, const CString &sScr
 		if (retsError) *retsError = sError;
 		return error;
 		}
-
-	//	If no frames then we exited inside of InitScreen
-
-	if (m_DockFrames.IsEmpty())
-		return NOERROR;
-
-	//	Update frame
-
-	if (!sNewPane.IsBlank())
-		m_DockFrames.SetCurrentPane(sNewPane);
 
 	return NOERROR;
 
