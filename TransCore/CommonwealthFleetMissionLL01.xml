@@ -263,6 +263,8 @@
 				(list
 					{
 						descID: 'textJuanCarlosThanks
+						translateType: &msCSCCollectDataROM;
+
 						nextPane: 'forceUndock
 						nextCode: 
 							(lambda ()
@@ -273,10 +275,14 @@
 			</Text>
 			<Text id="textJuanCarlosThanks">
 
-				"You got good weapons on your ship, compadre! Thank you for helping me out;
-				but now you have to get that data back to the Fleet. The ROM has experimental
-				results from a secret project called Lamplighter&mdash;I do not know any more
-				than that. All I know is that it is important. See you out there, friend!"
+				"You got good weapons on your ship, compadre!
+				
+				"Thank you for helping me out; but now you have to get that data 
+				back to the Fleet. The ROM has experimental results from a secret 
+				project called Lamplighter&mdash;I do not know more
+				than that. All I know is that it's important.
+				
+				"See you out there, friend!"
 
 			</Text>
 		</Language>
@@ -314,15 +320,15 @@
 		</Events>
 
 		<Language>
-			<Text id="RefuseRadioactive">
-				"\"Mierda&mdash;you're glowing! I cannot help you; get back to the carrier!\""
-			</Text>
-			<Text id="RefuseUnderAttack">
-				"\"No time to talk, compadre: I've got a fight on my hands!\""
-			</Text>
-			<Text id="RefusePlayerUnderAttack">
-				"\"No time to talk, compadre: you have a fight on your hands!\""
-			</Text>
+			<String id="RefuseRadioactive">
+				"Mierda&mdash;you're glowing! I cannot help you; get back to the carrier!"
+			</String>
+			<String id="RefuseUnderAttack">
+				"No time to talk, compadre: I've got a fight on my hands!"
+			</String>
+			<String id="RefusePlayerUnderAttack">
+				"No time to talk, compadre: you have a fight on your hands!"
+			</String>
 		</Language>
 	</Type>
 
