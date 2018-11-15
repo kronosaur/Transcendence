@@ -2664,12 +2664,13 @@
 						<Actions>
 							<Action id="actionPlaceOrder" default="1">
 								(block (
-										; Create a transport at the nearest gate and put the item on it
-										(transport (sysCreateShip &scEI100; (objGetNearestStargate gSource) &svCorporate;))
-										(theItem (scrGetData gScreen 'orderItem))
-										(theCost (scrGetData gScreen 'totalCost))
-										)
+									(theItem (scrGetData gScreen 'orderItem))
+									(theCost (scrGetData gScreen 'totalCost))
+									transport
+									)
 										
+									; Create a transport at the nearest gate and put the item on it
+									(setq transport (sysCreateShip &scEI100; (objGetNearestStargate gSource) &svCorporate;))
 									(objAddItem transport theItem)
 
 									; Order the transport to dock with the station and then gate out
@@ -2881,7 +2882,33 @@
 				
 				Please buy our in-stock items or visit another Trading Post at a system near you.
 			</Text>
-            <Text id="core.mapDescMain">Catalog ordering available</Text>
+
+            <Text id="core.mapDescCustom">
+				(block (
+					(status (objGetData gSource 'MissionStatus))
+					)
+					(switch
+						(= status 'intransit)
+							(objTranslate gSource 'mapDesc.intransit)
+
+						(= status 'arrived)
+							(objTranslate gSource 'mapDesc.arrived)
+
+						(= status 'failed)
+							(objTranslate gSource 'mapDesc.failed)
+
+						(geq (objGetData gSource 'OrderCount) 1)
+							(objTranslate gSource 'mapDesc.notAvailable)
+
+						(objTranslate gSource 'mapDesc.available)
+						)
+					)
+            </Text>
+			<Text id="mapDesc.available">Catalog ordering available &mdash; %tradeDesc%</Text>
+			<Text id="mapDesc.notAvailable">%tradeDesc%</Text>
+			<Text id="mapDesc.intransit">Order in transit &mdash; %tradeDesc%</Text>
+			<Text id="mapDesc.arrived">Order ready for pick up &mdash; %tradeDesc%</Text>
+			<Text id="mapDesc.failed">Order destroyed in transit &mdash; %tradeDesc%</Text>
         </Language>
 	</StationType>
 
