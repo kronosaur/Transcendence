@@ -2243,6 +2243,7 @@
 	<Module filename="CommonwealthStarCarrier.xml"/>
 	<Module filename="CorporateHierarchy.xml"/>
 	<Module filename="CorporateInsurance.xml"/>
+	<Module filename="CorporateTradingPost.xml"/>
 	<Module filename="CSCTerra.xml"/>
 	<Module filename="Dall01.xml"/>
 	<Module filename="DeathDrugsCartel.xml"/>

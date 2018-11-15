@@ -768,5 +768,8 @@
     <Xml Include="AresShips.xml">
       <Filter>Human Space Library\Ares Orthodoxy</Filter>
     </Xml>
+    <Xml Include="CorporateTradingPost.xml">
+      <Filter>Human Space Library\Corporate Hierarchy</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
