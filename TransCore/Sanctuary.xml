@@ -14,7 +14,8 @@
 				 
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-				 
+
+			level=				"8"				 
 			size=				"565"
 			armorID=			"&itHeavyMeteorsteel;"
 			hitPoints=			"1680"
