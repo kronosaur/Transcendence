@@ -1591,6 +1591,7 @@
 	<!ENTITY rsCorporateArmorDealer		"0x0010004B">
 	<!ENTITY rsCorporateFuelDepot		"0x0010004C">
 	<!ENTITY smCorporateSpace			"0x0010004D">
+	<!ENTITY tbCorporateDeliveryTransport		"0x0010004E">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	

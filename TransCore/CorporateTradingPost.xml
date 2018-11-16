@@ -262,7 +262,7 @@
 								)
 									
 								(if (gr itemCount 1)
-									(setq multipleItems (scrTranslate gScreen 'priceForMultiple { itemCount:itemCount itemsCost:itemsCost } ))
+									(setq multipleItems (scrTranslate gScreen 'priceForMultiple { itemCount:itemCount itemsCost:(fmtCurrency 'credit itemsCost) } ))
 									(setq multipleItems " ")
 									)
 								(if (gr totalCost (plyGetCredits gPlayer))
@@ -275,12 +275,12 @@
 									
 								(scrSetData gScreen 'totalCost totalCost)
 								(scrSetDescTranslate gScreen 'descConfirmOrder {
-									itemName:(itmGetName theItem 0x108)
-									unitCost:unitCost
-									multipleItems:multipleItems
-									shippingCost:shippingCost
-									totalCost:totalCost
-									finalString:finalString
+									itemName: (itmGetName theItem 0x108)
+									unitCost: (fmtCurrency 'credit unitCost)
+									multipleItems: multipleItems
+									shippingCost: (fmtCurrency 'credit shippingCost)
+									totalCost: (fmtCurrency 'credit totalCost)
+									finalString: finalString
 									})
 								)
 						</OnPaneInit>
@@ -294,13 +294,19 @@
 									)
 										
 									; Create a transport at the nearest gate and put the item on it
-									(setq transport (sysCreateShip &scEI100; (objGetNearestStargate gSource) &svCorporate;))
+									(setq transport (sysCreateShip &tbCorporateDeliveryTransport; (objGetNearestStargate gSource) &svCorporate;))
 									(objAddItem transport theItem)
+									(objSetProperty transport 'exitGateTimer (random 120 180))
+									(objSetProperty transport 'identified True)
 
 									; Order the transport to dock with the station and then gate out
-									(shpOrderDock transport gSource)
-									(shpOrderWait transport (random 5 10))
-									(shpOrderGate transport)
+									(shpCancelOrders transport)
+									(shpOrder transport 'sendMessage gPlayerShip (objTranslate gSource 'msgTransportArrived))
+									(shpOrder transport 'dock gSource)
+									(shpOrder transport 'wait (random 5 10))
+									(shpOrder transport 'gate)
+
+									(objSetShowAsDestination transport '(autoClearOnDock autoClearOnDestroyed))
 
 									; Register the transport so we know if it got destroyed
 									(objRegisterForEvents gSource transport)
@@ -349,10 +355,25 @@
 				<Panes>
 					<Default>
 						<OnPaneInit>
-							(scrSetDescTranslate gScreen 'descInTransit {
-								itemName:(itmGetName (objGetData gSource "Order") 0x108)
-								distance:(objGetDistance gSource (objGetObjRefData gSource "Transport"))
-								})
+							(block (
+								(transportObj (objGetObjRefData gSource 'Transport))
+								)
+								(switch
+									;	If transport is still in gate, then not yet arrived
+
+									(objGetProperty transportObj 'exitGateTimer)
+										(scrSetDescTranslate gScreen 'descInGate {
+											itemName:(itmGetName (objGetData gSource "Order") 0x108)
+											})
+
+									;	Otherwise, transport is en route.
+
+									(scrSetDescTranslate gScreen 'descInTransit {
+										itemName:(itmGetName (objGetData gSource "Order") 0x108)
+										distance:(fmtNumber (objGetDistance gSource transportObj))
+										})
+									)
+								)
 						</OnPaneInit>
 
 						<Actions>
@@ -447,65 +468,106 @@
 			<Text id="actionPlaceOrder">[P]lace Order</Text>
 			
 			<Text id="descMain">
+
 				You are docked at a corporate trading post.
+
 			</Text>
 			<Text id="descOrderDefault">
+
 				Please enter an item to search for in our catalog database:
+
 			</Text>
 			<Text id="descOneAvailable">
+
 				The catalog contains a listing for %pluralName%.
 				There is one left in the warehouse.
 				
 				Do you wish to order it?
+
 			</Text>
 			<Text id="descGetCount">
+
 				The catalog contains a listing for %pluralName%.
 				There are %maxCount% left in the warehouse.
 				
 				How many do you wish to order?
+
 			</Text>
 			<Text id="descConfirmOrder">
+
 				Order: %itemName%\n
 				Unit price: %unitCost% %multipleItems%\n
 				Shipping &amp; Handling: %shippingCost%\n
 				Total: %totalCost%
 				
 				%finalString%
+
 			</Text>
 			<String id="priceForMultiple">(%itemCount% for %itemsCost%)</String>
 			<Text id="notEnoughCredits">
+
 				Unfortunately, you do not have enough credits to complete the order.
+
 			</Text>
 			<Text id="confirmOrderQuery">
+
 				Do you wish to place the order?
+
 			</Text>
 			<Text id="descThankYou">
-				Your order has been placed and will be ready as soon as it arrives. Please check back at this screen to see the status of your order.
+
+				Your order has shipped! A transport carrying your order has been 
+				dispatched and will arrive soon.
+				
+				Please check back at this screen to see the status of your order.
+
 			</Text>
 			<Text id="descUnknownItem">
+
 				Sorry, there are no items in the catalog matching that description.
+
+			</Text>
+			<Text id="descInGate">
+
+				Your order for %itemName% has shipped and is en route.
+				The transport holding your order is currently in another system.
+			
 			</Text>
 			<Text id="descInTransit">
-				Your order for %itemName% has been placed and is in route.
+
+				Your order for %itemName% has shipped and is en route.
 				The transport holding your order is currently %distance% light-seconds away.
+
 			</Text>
 			<Text id="descOrderReady">
+
 				Your order for %itemName% has arrived and has been placed in your cargo hold.
 				
 				Thank you for your business!
+
 			</Text>
 			<Text id="descNoSpace">
-				Your order for %itemName% is ready. Unfortunately, you do not have enough room in your cargo hold. Please return when you have freed up enough room.
+
+				Your order for %itemName% is ready. Unfortunately, you do not have enough 
+				room in your cargo hold. Please return when you have freed up enough room.
+
 			</Text>
 			<Text id="descOrderFailed">
+
 				We regret to inform you that your order for %itemName% has been destroyed in transit.
-				As we are not liable for losses due to external events, we respectfully recommend that you pursue the matter with your insurance company, if any.
+				As we are not liable for losses due to external events, we respectfully recommend 
+				that you pursue the matter with your insurance company, if any.
+
 			</Text>
 			<Text id="descQuotaExceeded">
+
 				Sorry, only one order per customer!
 				
 				Please buy our in-stock items or visit another Trading Post at a system near you.
+
 			</Text>
+
+			<Text id="msgTransportArrived">Freighter arrived</Text>
 
             <Text id="core.mapDescCustom">
 				(block (
@@ -535,6 +597,17 @@
 			<Text id="mapDesc.failed">Order destroyed in transit &mdash; %tradeDesc%</Text>
         </Language>
 	</StationType>
+
+<!-- TABLES -->
+
+	<ShipTable unid="&tbCorporateDeliveryTransport;">
+		<LevelTable>
+			<Ship levelFrequency="ccrv- -----" count="1" class="&scEI100;" orders="gateOnThreat"/>
+			<Ship levelFrequency="-ccrv -----" count="1" class="&scEI200;" orders="gateOnThreat"/>
+			<Ship levelFrequency="--ccr v----" count="1" class="&scEI500;" orders="gateOnThreat"/>
+			<Ship levelFrequency="---cc rvvvv" count="1" class="&scEI7000;" orders="gateOnThreat"/>
+		</LevelTable>
+	</ShipTable>
 
 <!-- RESOURCES -->
 
