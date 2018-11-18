@@ -298,6 +298,43 @@ void CTranscendenceController::DisplayMultiverseStatus (const CString &sStatus, 
 	pStatus->SetPropertyString(PROP_TEXT, sStatus);
 	}
 
+void CTranscendenceController::InitDebugConsole (void)
+
+//	InitDebugConsole
+//
+//	Initialize the debug console
+
+	{
+	static const Metric DEBUG_CONSOLE_WIDTH	= 0.5;
+	static const Metric DEBUG_CONSOLE_HEIGHT = 0.8;
+
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	RECT rcScreen = VI.GetScreenRect();
+
+	//	Calculate size
+
+	RECT rcRect;
+	int cxDebugWin = mathRound(RectWidth(rcScreen) * DEBUG_CONSOLE_WIDTH);
+	int cyDebugWin = mathRound(RectHeight(rcScreen) * DEBUG_CONSOLE_HEIGHT);
+	rcRect.left = rcScreen.right - (cxDebugWin + 4);
+	rcRect.top = (RectHeight(rcScreen) - cyDebugWin) / 2;
+	rcRect.right = rcRect.left + cxDebugWin;
+	rcRect.bottom = rcRect.top + cyDebugWin;
+
+	//	Initialize
+
+	m_DebugConsole.Init(rcRect);
+
+	//	First output
+
+	const SFileVersionInfo &Version = m_Model.GetProgramVersion();
+
+	m_DebugConsole.Output(CONSTLIT("Transcendence Debug Console"));
+	m_DebugConsole.Output(Version.sProductVersion);
+	m_DebugConsole.Output(Version.sCopyright);
+	m_DebugConsole.Output(NULL_STR);
+	}
+
 bool CTranscendenceController::InstallUpgrade (CString *retsError)
 
 //	InstallUpgrade
@@ -576,6 +613,7 @@ void CTranscendenceController::OnCleanUp (void)
 //	Clean up
 
 	{
+	m_DebugConsole.CleanUp();
 	m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramQuit);
 
 	//	Clean up
@@ -692,7 +730,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Launch intro session
 
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isOpeningTitles));
+		m_HI.ShowSession(new CIntroSession(m_SessionCtx, CIntroSession::isOpeningTitles));
 
 		//	Start the intro
 
@@ -801,7 +839,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_UI_BACK_TO_INTRO))
 		{
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isBlank));
+		m_HI.ShowSession(new CIntroSession(m_SessionCtx, CIntroSession::isBlank));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1027,7 +1065,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_pGameSession = NULL;
 		if (m_Model.GetPlayer())
 			m_Model.GetPlayer()->SetGameSession(NULL);
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isShipStats));
+		m_HI.ShowSession(new CIntroSession(m_SessionCtx, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1063,7 +1101,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
         m_pGameSession = NULL;
         if (m_Model.GetPlayer())
             m_Model.GetPlayer()->SetGameSession(NULL);
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isShipStats));
+		m_HI.ShowSession(new CIntroSession(m_SessionCtx, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1073,7 +1111,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	else if (strEquals(sCmd, CMD_GAME_READY))
 		{
-        m_pGameSession = new CGameSession(m_HI, m_Settings, m_Model, m_Soundtrack);
+        m_pGameSession = new CGameSession(m_SessionCtx);
         m_Model.GetPlayer()->SetGameSession(m_pGameSession);
 		m_HI.ShowSession(m_pGameSession);
 		m_iState = stateInGame;
@@ -1097,7 +1135,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_pGameSession = NULL;
 		if (m_Model.GetPlayer())
 			m_Model.GetPlayer()->SetGameSession(NULL);
-		m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isShipStats));
+		m_HI.ShowSession(new CIntroSession(m_SessionCtx, CIntroSession::isShipStats));
 		m_iState = stateIntro;
 		DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 		m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1238,7 +1276,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 		else
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_SessionCtx, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1254,7 +1292,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		if (m_iState == stateEndGameStats)
 			{
-			m_HI.ShowSession(new CIntroSession(m_HI, m_Model, m_Settings, CIntroSession::isEndGame));
+			m_HI.ShowSession(new CIntroSession(m_SessionCtx, CIntroSession::isEndGame));
 			m_iState = stateIntro;
 			DisplayMultiverseStatus(m_Multiverse.GetServiceStatus());
 			m_Soundtrack.SetGameState(CSoundtrackManager::stateProgramIntro);
@@ -1932,6 +1970,10 @@ ALERROR CTranscendenceController::OnInit (CString *retsError)
 		m_Multiverse.SetDisabled();
 	else if (m_Service.HasCapability(ICIService::cachedUser))
 		m_Multiverse.SetUsername(m_Service.GetDefaultUsername());
+
+	//	Initialize debug console
+
+	InitDebugConsole();
 
 	//	Add a timer so that services can do some background processing.
 

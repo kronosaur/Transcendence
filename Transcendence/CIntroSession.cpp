@@ -993,19 +993,24 @@ void CIntroSession::OnChar (char chChar, DWORD dwKeyData)
 
     m_iIdleTicks = 0;
 
-	//	See if the animator will handle it
+	//	Handle debug console
 
-	if (Reanimator.HandleChar(chChar, dwKeyData))
-		NULL;
-
-	//	Handle the button bar
-
-	else if (g_pTrans->m_ButtonBarDisplay.OnChar(chChar))
+	if (m_DebugConsole.OnChar(chChar, dwKeyData))
 		NULL;
 
 	//	If we're in command mode, then handle it
 
 	else if (HandleCommandBoxChar(chChar, dwKeyData))
+		NULL;
+
+	//	See if the animator will handle it
+
+	else if (Reanimator.HandleChar(chChar, dwKeyData))
+		NULL;
+
+	//	Handle the button bar
+
+	else if (g_pTrans->m_ButtonBarDisplay.OnChar(chChar))
 		NULL;
 
 	//	Otherwise, we handle the key code
@@ -1159,6 +1164,8 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 	
 	{
 	CReanimator &Reanimator = GetReanimator();
+	DWORD dwTVirtKey = CVirtualKeyData::TranslateVirtKey(iVirtKey, dwKeyData);
+	CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 
     m_iIdleTicks = 0;
 
@@ -1168,8 +1175,28 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 	else if (GetState() == isEnterCommand)
 		NULL;
 
+	else if (m_DebugConsole.IsEnabled())
+		{
+		if (iVirtKey == VK_ESCAPE || iCommand == CGameKeys::keyShowConsole)
+			{
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			m_DebugConsole.SetEnabled(false);
+			}
+		else
+			m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
+		}
+
 	else if (Reanimator.IsPaused())
 		Reanimator.Resume();
+
+	else if (iCommand == CGameKeys::keyShowConsole)
+		{
+		if (m_Settings.GetBoolean(CGameSettings::debugMode))
+			{
+			g_pUniverse->PlaySound(NULL, g_pUniverse->FindSound(UNID_DEFAULT_SELECT));
+			m_DebugConsole.SetEnabled(true);
+			}
+		}
 
 	else
 		{
@@ -1221,6 +1248,49 @@ void CIntroSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 		}
 	}
 
+void CIntroSession::OnLButtonDblClick (int x, int y, DWORD dwFlags) 
+
+//	OnLButtonDblClick
+//
+//	Handle left double click.
+
+	{
+	if (m_DebugConsole.IsEnabled())
+		;
+	else
+		g_pTrans->WMLButtonDblClick(x, y, dwFlags); 
+	}
+
+void CIntroSession::OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture)
+
+//	OnLButtonDown
+//
+//	Handle left click
+
+	{
+	if (m_DebugConsole.IsEnabled())
+		;
+	else
+		{
+		m_iIdleTicks = 0;
+		SetExpanded(false);
+		g_pTrans->WMLButtonDown(x, y, dwFlags);
+		}
+	}
+
+void CIntroSession::OnLButtonUp (int x, int y, DWORD dwFlags) 
+
+//	OnLButtonUp
+//
+//	Handle left click
+
+	{
+	if (m_DebugConsole.IsEnabled())
+		;
+	else
+		g_pTrans->WMLButtonUp(x, y, dwFlags); 
+	}
+
 void CIntroSession::OnMouseMove (int x, int y, DWORD dwFlags)
 
 //  OnMouseMove
@@ -1228,15 +1298,21 @@ void CIntroSession::OnMouseMove (int x, int y, DWORD dwFlags)
 //  Handle mouse move
     
     {
+	if (m_DebugConsole.IsEnabled())
+		;
+
     //  If the mouse moves, show the controls (exit expanded mode).
 
-    if (m_HI.HasMouseMoved(x, y))
-        {
-        m_iIdleTicks = 0;
-        SetExpanded(false);
-        }
+    else 
+		{
+		if (m_HI.HasMouseMoved(x, y))
+			{
+			m_iIdleTicks = 0;
+			SetExpanded(false);
+			}
     
-    g_pTrans->WMMouseMove(x, y, dwFlags);
+		g_pTrans->WMMouseMove(x, y, dwFlags);
+		}
     }
 
 void CIntroSession::OnPOVSet (CSpaceObject *pObj)
@@ -1359,6 +1435,10 @@ void CIntroSession::Paint (CG32bitImage &Screen, bool bTopMost)
 	g_pTrans->PaintDebugLines();
 #endif
 	g_pTrans->m_pTC->PaintDebugInfo(Screen, m_rcMain);
+
+	//	Debug console
+
+	m_DebugConsole.Paint(Screen);
 
 	//	Update the screen
 

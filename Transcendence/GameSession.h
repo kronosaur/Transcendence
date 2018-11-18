@@ -25,7 +25,7 @@ class CGameSession : public IHISession
 			menuUseItem,					//	Choose item to use
 			};
 
-		CGameSession (CHumanInterface &HI, CGameSettings &Settings, CTranscendenceModel &Model, CSoundtrackManager &Soundtrack);
+		CGameSession (STranscendenceSessionCtx &CreateCtx);
 
 		void ExecuteCommand (CPlayerShipController *pPlayer, CGameKeys::Keys iCommand);
 		void ExecuteCommandEnd (CPlayerShipController *pPlayer, CGameKeys::Keys iCommand);
@@ -92,6 +92,7 @@ class CGameSession : public IHISession
 
 		CGameSettings &m_Settings;
         CTranscendenceModel &m_Model;
+		CCommandLineDisplay &m_DebugConsole;
 		CSoundtrackManager &m_Soundtrack;
 		RECT m_rcScreen;					//	RECT of main screen within window.
 

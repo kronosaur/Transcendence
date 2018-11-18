@@ -6,18 +6,16 @@
 #include "PreComp.h"
 #include "Transcendence.h"
 
-CGameSession::CGameSession (CHumanInterface &HI, 
-							CGameSettings &Settings,
-							CTranscendenceModel &Model,
-							CSoundtrackManager &Soundtrack) : IHISession(HI),
-		m_Settings(Settings),
-        m_Model(Model),
-		m_Soundtrack(Soundtrack),
+CGameSession::CGameSession (STranscendenceSessionCtx &CreateCtx) : IHISession(*CreateCtx.pHI),
+		m_Settings(*CreateCtx.pSettings),
+        m_Model(*CreateCtx.pModel),
+		m_DebugConsole(*CreateCtx.pDebugConsole),
+		m_Soundtrack(*CreateCtx.pSoundtrack),
 		m_iUI(uiNone),
 		m_bMouseAim(true),
-        m_HUD(HI, Model),
+        m_HUD(*CreateCtx.pHI, *CreateCtx.pModel),
         m_bShowingSystemMap(false),
-        m_SystemMap(HI, Model, m_HUD),
+        m_SystemMap(*CreateCtx.pHI, *CreateCtx.pModel, m_HUD),
 		m_CurrentMenu(menuNone),
 		m_pCurrentComms(NULL),
         m_iDamageFlash(0),
@@ -106,7 +104,7 @@ void CGameSession::HideMenu (void)
 			break;
 
 		case menuDebugConsole:
-			g_pTrans->m_bDebugConsole = false;
+			m_DebugConsole.SetEnabled(false);
 			break;
 
 		case menuEnableDevice:
@@ -464,7 +462,7 @@ bool CGameSession::ShowMenu (EMenuTypes iMenu)
 			break;
 
 		case menuDebugConsole:
-			g_pTrans->m_bDebugConsole = true;
+			m_DebugConsole.SetEnabled(true);
 			break;
 
 		case menuEnableDevice:

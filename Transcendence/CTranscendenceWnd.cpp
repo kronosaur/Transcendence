@@ -32,7 +32,6 @@ CTranscendenceWnd::CTranscendenceWnd (HWND hWnd, CTranscendenceController *pTC) 
 		m_pTC(pTC),
 		m_State(gsNone),
 		m_pCurrentScreen(NULL),
-		m_bDebugConsole(false),
 		m_bAutopilot(false),
 		m_dwIntroShipClass(0),
 		m_CurrentMenu(menuNone),
@@ -65,7 +64,6 @@ void CTranscendenceWnd::CleanUpPlayerShip (void)
 	m_MenuDisplay.CleanUp();
 	m_PickerDisplay.CleanUp();
 
-	m_bDebugConsole = false;
 	m_bPaused = false;
 
 	DEBUG_CATCH
@@ -123,7 +121,7 @@ void CTranscendenceWnd::DebugConsoleOutput (const CString &sOutput)
 //	Output to debug console
 
 	{
-	m_DebugConsole.Output(sOutput);
+	m_pTC->GetDebugConsole().Output(sOutput);
 	}
 
 void CTranscendenceWnd::DoCommand (DWORD dwCmd)
@@ -661,7 +659,6 @@ ALERROR CTranscendenceWnd::StartGame (void)
 	m_State = gsInGame;
 	m_bPaused = false;
 	m_bPausedStep = false;
-	m_bDebugConsole = false;
 	m_bAutopilot = false;
 	m_CurrentPicker = pickNone;
 	m_CurrentMenu = menuNone;
@@ -813,22 +810,6 @@ LONG CTranscendenceWnd::WMCreate (CString *retsError)
 		goto Fail;
 		}
 
-	//	Initialize debug console
-	RECT rcRect;
-	int cxDebugWin = int(RectWidth(m_rcScreen) * DEBUG_CONSOLE_WIDTH);
-	int cyDebugWin = int(RectHeight(m_rcScreen) * DEBUG_CONSOLE_HEIGHT);
-	rcRect.left = m_rcScreen.right - (cxDebugWin + 4);
-	rcRect.top = (RectHeight(m_rcScreen) - cyDebugWin) / 2;
-	rcRect.right = rcRect.left + cxDebugWin;
-	rcRect.bottom = rcRect.top + cyDebugWin;
-	m_DebugConsole.SetFontTable(&m_Fonts);
-	m_DebugConsole.Init(this, rcRect);
-
-	m_DebugConsole.Output(CONSTLIT("Transcendence Debug Console"));
-	m_DebugConsole.Output(m_sVersion);
-	m_DebugConsole.Output(m_sCopyright);
-	m_DebugConsole.Output(NULL_STR);
-
 	return 0;
 
 Fail:
@@ -847,10 +828,6 @@ LONG CTranscendenceWnd::WMDestroy (void)
 
 	if (m_State == gsDocked)
 		GetPlayer()->Undock();
-
-	//	Clean up displays
-
-	m_DebugConsole.CleanUp();
 
 	return 0;
 	}

@@ -60,9 +60,10 @@ class CIntroSession : public IHISession
 			isWaitingForHighScores,
 			};
 
-		CIntroSession (CHumanInterface &HI, CTranscendenceModel &Model, CGameSettings &Settings, EStates iInitialState) : IHISession(HI),
-				m_Model(Model),
-				m_Settings(Settings),
+		CIntroSession (STranscendenceSessionCtx &CreateCtx, EStates iInitialState) : IHISession(*CreateCtx.pHI),
+				m_Model(*CreateCtx.pModel),
+				m_DebugConsole(*CreateCtx.pDebugConsole),
+				m_Settings(*CreateCtx.pSettings),
 				m_iInitialState(iInitialState),
 				m_bShowAllShips(false)
 			{ }
@@ -77,9 +78,9 @@ class CIntroSession : public IHISession
 		virtual ALERROR OnCommand (const CString &sCmd, void *pData = NULL) override;
 		virtual ALERROR OnInit (CString *retsError) override;
 		virtual void OnKeyDown (int iVirtKey, DWORD dwKeyData) override;
-		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonDblClick(x, y, dwFlags); }
-		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override { m_iIdleTicks = 0;  SetExpanded(false); g_pTrans->WMLButtonDown(x, y, dwFlags); }
-		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override { g_pTrans->WMLButtonUp(x, y, dwFlags); }
+		virtual void OnLButtonDblClick (int x, int y, DWORD dwFlags) override;
+		virtual void OnLButtonDown (int x, int y, DWORD dwFlags, bool *retbCapture) override;
+		virtual void OnLButtonUp (int x, int y, DWORD dwFlags) override;
         virtual void OnMouseMove (int x, int y, DWORD dwFlags) override;
 		virtual void OnMove (int x, int y) override { g_pTrans->WMMove(x, y); }
 		virtual void OnReportHardCrash (CString *retsMessage) override { *retsMessage = g_pTrans->GetCrashInfo(); }
@@ -108,6 +109,7 @@ class CIntroSession : public IHISession
 		void Update (void);
 
 		CTranscendenceModel &m_Model;
+		CCommandLineDisplay &m_DebugConsole;
 		CGameSettings &m_Settings;
 		EStates m_iInitialState;
 		EStates m_iState;					//	Current state

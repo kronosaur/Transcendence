@@ -38,15 +38,8 @@ void CGameSession::OnChar (char chChar, DWORD dwKeyData)
 
 			//	Handle debug console
 
-			if (g_pTrans->m_bDebugConsole)
-				{
-				if (chChar >= ' ')
-					{
-					CString sKey = CString(&chChar, 1);
-					g_pTrans->m_DebugConsole.Input(sKey);
-					}
+			if (m_DebugConsole.OnChar(chChar, dwKeyData))
 				return;
-				}
 
 			//	If we're paused, then check for unpause key
 
@@ -191,19 +184,12 @@ void CGameSession::OnChar (char chChar, DWORD dwKeyData)
 			{
 			//	Handle debug console
 
-			if (g_pTrans->m_bDebugConsole)
-				{
-				if (chChar >= ' ')
-					{
-					CString sKey = CString(&chChar, 1);
-					g_pTrans->m_DebugConsole.Input(sKey);
-					}
+			if (m_DebugConsole.OnChar(chChar, dwKeyData))
 				return;
-				}
 
 			//	Ignore if this is a repeat of the dock key.
 
-			if (bKeyRepeat && g_pTrans->m_bDockKeyDown)
+			else if (bKeyRepeat && g_pTrans->m_bDockKeyDown)
 				return;
 			else
 				g_pTrans->m_bDockKeyDown = false;
@@ -238,7 +224,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			//	Deal with console
 
-			if (g_pTrans->m_bDebugConsole)
+			else if (m_DebugConsole.IsEnabled())
 				{
 				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 				if (iVirtKey == VK_ESCAPE || iCommand == CGameKeys::keyShowConsole)
@@ -252,7 +238,7 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 					g_pTrans->m_chKeyDown = iVirtKey;
 					}
 				else
-					g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
+					m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
 				}
 
 			//	If we're paused, then check for unpause key
@@ -432,13 +418,13 @@ void CGameSession::OnKeyDown (int iVirtKey, DWORD dwKeyData)
 
 			//	Deal with console
 
-			if (g_pTrans->m_bDebugConsole)
+			if (m_DebugConsole.IsEnabled())
 				{
 				CGameKeys::Keys iCommand = m_Settings.GetKeyMap().GetGameCommand(dwTVirtKey);
 				if (iVirtKey == VK_ESCAPE || iCommand == CGameKeys::keyShowConsole)
 					HideMenu();
 				else
-					g_pTrans->m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
+					m_DebugConsole.OnKeyDown(iVirtKey, dwKeyData);
 				}
 
 			//	Other commands
@@ -508,7 +494,7 @@ void CGameSession::OnKeyUp (int iVirtKey, DWORD dwKeyData)
 					&& iVirtKey >= 'A' && iVirtKey < 'Z')
 				NULL;
 
-			else if (g_pTrans->m_bDebugConsole)
+			else if (m_DebugConsole.IsEnabled())
 				NULL;
 
 			else

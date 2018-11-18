@@ -17,15 +17,6 @@ const int BOTTOM_SPACING =			2;
 
 const int CURSOR_WIDTH =			10;
 
-CCommandLineDisplay::CCommandLineDisplay (void) : m_pTrans(NULL),
-		m_bInvalid(true),
-		m_iCounter(0)
-
-//	CCommandLineDisplay constructor
-
-	{
-	}
-
 CCommandLineDisplay::~CCommandLineDisplay (void)
 
 //	CCommandLineDisplay destructor
@@ -245,14 +236,17 @@ void CCommandLineDisplay::AutoCompleteSearch (void)
 		}
 	}
 
-ALERROR CCommandLineDisplay::Init (CTranscendenceWnd *pTrans, const RECT &rcRect)
+ALERROR CCommandLineDisplay::Init (const RECT &rcRect)
 
 //	Init
 //
 //	Initialize
 
 	{
-	m_pTrans = pTrans;
+	m_pFont = &m_VI.GetFont(fontConsoleMediumHeavy);
+	if (m_pFont == NULL)
+		return ERR_FAIL;
+
 	m_rcRect = rcRect;
 	m_iOutputStart = 0;
 	m_iOutputEnd = 0;
@@ -375,6 +369,28 @@ void CCommandLineDisplay::InputHistoryDown (void)
 		}
 	}
 
+bool CCommandLineDisplay::OnChar (char chChar, DWORD dwKeyData)
+
+//	OnChar
+//
+//	Deals with WM_CHAR if enabled. Returns FALSE if it does not want the 
+//	character.
+
+	{
+	if (!m_bEnabled)
+		return false;
+
+	if (chChar >= ' ')
+		{
+		CString sKey = CString(&chChar, 1);
+		Input(sKey);
+		}
+
+	//	Either way, we take the character
+
+	return true;
+	}
+
 void CCommandLineDisplay::OnKeyDown (int iVirtKey, DWORD dwKeyState)
 
 //	OnKeyDown
@@ -471,7 +487,7 @@ void CCommandLineDisplay::Output (const CString &sOutput, CG32bitPixel rgbColor)
 	{
 	int i;
 
-	if (m_pFonts == NULL || m_pFonts->Console.GetAverageWidth() == 0)
+	if (m_pFont->GetAverageWidth() == 0)
 		return;
 
 	if (rgbColor.IsNull())
@@ -483,13 +499,13 @@ void CCommandLineDisplay::Output (const CString &sOutput, CG32bitPixel rgbColor)
 		return;
 		}
 
-	int cxCol = m_pFonts->Console.GetAverageWidth();
+	int cxCol = m_pFont->GetAverageWidth();
 	int iCols = Max(1, (RectWidth(m_rcRect) - (LEFT_SPACING + RIGHT_SPACING)) / cxCol);
 
 	//	Split into lines
 
 	TArray<CString> Lines;
-	m_pFonts->Console.BreakText(sOutput, 
+	m_pFont->BreakText(sOutput, 
 			(RectWidth(m_rcRect) - (LEFT_SPACING + RIGHT_SPACING)),
 			&Lines);
 
@@ -506,6 +522,9 @@ void CCommandLineDisplay::Paint (CG32bitImage &Dest)
 //	Paint display
 
 	{
+	if (!m_bEnabled)
+		return;
+
 	Update();
 
 	//	Paint the cursor
@@ -520,7 +539,7 @@ void CCommandLineDisplay::Paint (CG32bitImage &Dest)
 	if ((m_iCounter % 30) >= 20 && m_iCursorPos < m_sInput.GetLength())
 		{
 		CString sLine(m_sInput.GetASCIIZPointer() + m_iCursorPos, 1);
-		m_Buffer.DrawText(m_rcCursor.left, m_rcCursor.top, m_pFonts->Console, INPUT_COLOR, sLine);
+		m_Buffer.DrawText(m_rcCursor.left, m_rcCursor.top, *m_pFont, INPUT_COLOR, sLine);
 		}
 
 	//	Blt
@@ -545,9 +564,9 @@ void CCommandLineDisplay::Update (void)
 
 	{
 	if (!m_bInvalid 
-			|| m_pFonts == NULL 
-			|| m_pFonts->Console.GetHeight() == 0 
-			|| m_pFonts->Console.GetAverageWidth() == 0)
+			|| m_pFont == NULL 
+			|| m_pFont->GetHeight() == 0 
+			|| m_pFont->GetAverageWidth() == 0)
 		return;
 
 	//	If we don't yet have a buffer, create one
@@ -576,11 +595,11 @@ void CCommandLineDisplay::Update (void)
 
 	//	Figure out how many lines and columns we can display
 
-	int cyLine = m_pFonts->Console.GetHeight();
+	int cyLine = m_pFont->GetHeight();
 	int iLines = (cyHeight - (TOP_SPACING + BOTTOM_SPACING)) / cyLine;
 	iLines = Max(1, iLines);
 
-	int cxCol = m_pFonts->Console.GetAverageWidth();
+	int cxCol = m_pFont->GetAverageWidth();
 	int iCols = (cxWidth - (LEFT_SPACING + RIGHT_SPACING)) / cxCol;
 	iCols = Max(1, iCols);
 
@@ -592,7 +611,7 @@ void CCommandLineDisplay::Update (void)
 	//	Figure out how many lines we need for the hint
 
 	TArray<CString> HintLines;
-	m_pFonts->Console.BreakText(m_sHint,
+	m_pFont->BreakText(m_sHint,
 			(RectWidth(m_rcRect) - (LEFT_SPACING + RIGHT_SPACING)),
 			&HintLines);
 
@@ -618,7 +637,7 @@ void CCommandLineDisplay::Update (void)
 	while (y >= yMin && iStart >= 0)
 		{
 		CString sLine(m_sInput.GetASCIIZPointer() + iStart, iRemainderText);
-		m_Buffer.DrawText(x, y, m_pFonts->Console, INPUT_COLOR, sLine);
+		m_Buffer.DrawText(x, y, *m_pFont, INPUT_COLOR, sLine);
 
 		// Work out where the cursor should be
 		if (m_iCursorPos >= iStart && (m_iCursorPos - iStart) < iCols)
@@ -644,7 +663,7 @@ void CCommandLineDisplay::Update (void)
 		{
 		if (iScroll <= 0)
 			{
-			m_Buffer.DrawText(x, y, m_pFonts->Console, HINT_COLOR, HintLines[iHintLines - 1]);
+			m_Buffer.DrawText(x, y, *m_pFont, HINT_COLOR, HintLines[iHintLines - 1]);
 			y -= cyLine;
 			}
 		else
@@ -660,7 +679,7 @@ void CCommandLineDisplay::Update (void)
 		{
 		if (iScroll <= 0)
 			{
-			m_Buffer.DrawText(x, y, m_pFonts->Console, GetOutputColor(iLine), GetOutput(iLine));
+			m_Buffer.DrawText(x, y, *m_pFont, GetOutputColor(iLine), GetOutput(iLine));
 			y -= cyLine;
 			}
 		else

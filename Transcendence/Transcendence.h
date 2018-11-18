@@ -568,7 +568,10 @@ class CLRSDisplay
 class CCommandLineDisplay
 	{
 	public:
-		CCommandLineDisplay (void);
+		CCommandLineDisplay (const CVisualPalette &VI) :
+				m_VI(VI)
+			{ }
+
 		~CCommandLineDisplay (void);
 
 		void CleanUp (void);
@@ -577,17 +580,19 @@ class CCommandLineDisplay
 		inline const CString &GetInput (void) { return m_sInput; }
 		inline int GetOutputLineCount (void) { return GetOutputCount(); }
 		inline const RECT &GetRect (void) { return m_rcRect; }
-		ALERROR Init (CTranscendenceWnd *pTrans, const RECT &rcRect);
+		ALERROR Init (const RECT &rcRect);
 		void Input (const CString &sInput);
 		void InputBackspace (void);
 		void InputDelete (void);
 		void InputEnter (void);
 		void InputHistoryUp(void);
 		void InputHistoryDown(void);
+		inline bool IsEnabled (void) const { return m_bEnabled; }
+		bool OnChar (char chChar, DWORD dwKeyData);
 		void OnKeyDown (int iVirtKey, DWORD dwKeyState);
 		void Output (const CString &sOutput, CG32bitPixel rgbColor = CG32bitPixel::Null());
 		void Paint (CG32bitImage &Dest);
-		inline void SetFontTable (const SFontTable *pFonts) { m_pFonts = pFonts; }
+		inline void SetEnabled (bool bEnabled = true) { m_bEnabled = bEnabled; }
 
 	private:
 		enum Constants
@@ -606,26 +611,27 @@ class CCommandLineDisplay
 		const CString GetCurrentCmd (void);
 		void AutoCompleteSearch (void);
 
-		CTranscendenceWnd *m_pTrans;
-		const SFontTable *m_pFonts;
+		const CVisualPalette &m_VI;
+		const CG16bitFont *m_pFont = NULL;
 		RECT m_rcRect;
+		bool m_bEnabled = false;
 
 		CString m_Output[MAX_LINES + 1];
 		CG32bitPixel m_OutputColor[MAX_LINES + 1];
-		int m_iOutputStart;
-		int m_iOutputEnd;
+		int m_iOutputStart = 0;
+		int m_iOutputEnd = 0;
 		CString m_sInput;
 		CString m_History[MAX_LINES + 1];
 		CString m_sHint;
-		int m_iHistoryStart;
-		int m_iHistoryEnd;
-		int m_iHistoryIndex;
-		int m_iCursorPos;
-		int m_iScrollPos;
+		int m_iHistoryStart = 0;
+		int m_iHistoryEnd = 0;
+		int m_iHistoryIndex = 0;
+		int m_iCursorPos = 0;
+		int m_iScrollPos = 0;
 
 		CG32bitImage m_Buffer;
-		bool m_bInvalid;
-		int m_iCounter;
+		bool m_bInvalid = true;
+		int m_iCounter = 0;
 		RECT m_rcCursor;
 	};
 
@@ -841,7 +847,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		bool m_bAutopilot;					//	Autopilot is ON
 		bool m_bPaused;						//	Game paused
 		bool m_bPausedStep;					//	Step one frame
-		bool m_bDebugConsole;				//	Showing debug console
 		char m_chKeyDown;					//	Processed a WM_KEYDOWN (skip WM_CHAR)
 		bool m_bDockKeyDown;				//	Used to de-bounce dock key (so holding down 'D' does not select a dock action).
 		int m_iTick;
@@ -909,7 +914,6 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 		CMessageDisplay m_MessageDisplay;	//	Message display object
 		CMenuDisplay m_MenuDisplay;			//	Menu display
 		CPickerDisplay m_PickerDisplay;		//	Picker display
-		CCommandLineDisplay m_DebugConsole;	//	CodeChain debugging console
 
 		CGameStats m_LastStats;				//	Last game stats
 
@@ -940,6 +944,15 @@ class CTranscendenceWnd : public CUniverse::IHost, public IAniCommand
 #include "GameSettings.h"
 
 //	Transcendence data model class --------------------------------------------
+
+struct STranscendenceSessionCtx
+	{
+	CHumanInterface *pHI = NULL;
+	CTranscendenceModel *pModel = NULL;
+	CGameSettings *pSettings = NULL;
+	CCommandLineDisplay *pDebugConsole = NULL;
+	CSoundtrackManager *pSoundtrack = NULL;
+	};
 
 class CTranscendencePlayer : public IPlayerController
 	{
@@ -1125,13 +1138,17 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 	{
 	public:
 		CTranscendenceController (void) : 
-				m_iState(stateNone),
-				m_iBackgroundState(stateIdle),
 				m_Model(m_HI),
-				m_bUpgradeDownloaded(false),
-                m_pGameSession(NULL)
-			{ }
+				m_DebugConsole(m_HI.GetVisuals())
+			{
+			m_SessionCtx.pHI = &m_HI;
+			m_SessionCtx.pModel = &m_Model;
+			m_SessionCtx.pSettings = &m_Settings;
+			m_SessionCtx.pDebugConsole = &m_DebugConsole;
+			m_SessionCtx.pSoundtrack = &m_Soundtrack;
+			}
 
+		inline CCommandLineDisplay &GetDebugConsole (void) { return m_DebugConsole; }
         inline CGameSession *GetGameSession (void) { return m_pGameSession; }
 		inline const CGameKeys &GetKeyMap (void) const { return m_Settings.GetKeyMap(); }
 		inline CTranscendenceModel &GetModel (void) { return m_Model; }
@@ -1187,24 +1204,28 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		void CleanUpUpgrade (void);
 		bool CheckAndRunUpgrade (void);
 		void DisplayMultiverseStatus (const CString &sStatus, bool bError = false);
+		void InitDebugConsole (void);
 		bool InstallUpgrade (CString *retsError);
 		bool IsUpgradeReady (void);
 		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads);
 		bool RequestResourceDownload (const TArray<CMultiverseFileRef> &Downloads);
 		ALERROR WriteUpgradeFile (IMediaType *pData, CString *retsError);
 
-		States m_iState;
-		BackgroundStates m_iBackgroundState;
+		States m_iState = stateNone;
+		BackgroundStates m_iBackgroundState = stateIdle;
 		CTranscendenceModel m_Model;
+		STranscendenceSessionCtx m_SessionCtx;
 
 		CCloudService m_Service;
 		CMultiverseModel m_Multiverse;
 		CSoundtrackManager m_Soundtrack;
-		bool m_bUpgradeDownloaded;
+		bool m_bUpgradeDownloaded = false;
+
+		CCommandLineDisplay m_DebugConsole;		//	CodeChain debugging console
 
 		CGameSettings m_Settings;
 
-        CGameSession *m_pGameSession;       //  Keep a pointer so we can call it directly.
+        CGameSession *m_pGameSession = NULL;	//  Keep a pointer so we can call it directly.
 	};
 
 //	Utility functions

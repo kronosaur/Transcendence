@@ -69,8 +69,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 					g_pTrans->m_MenuDisplay.Paint(Screen);
 				if (g_pTrans->m_CurrentPicker != CTranscendenceWnd::pickNone)
 					g_pTrans->m_PickerDisplay.Paint(Screen);
-				if (g_pTrans->m_bDebugConsole)
-					g_pTrans->m_DebugConsole.Paint(Screen);
+				m_DebugConsole.Paint(Screen);
 
 				//	If we're in a HUD menu, run quarter speed
 
@@ -248,8 +247,7 @@ void CGameSession::OnAnimate (CG32bitImage &Screen, bool bTopMost)
 
 				//	Debug console
 
-				if (g_pTrans->m_bDebugConsole)
-					g_pTrans->m_DebugConsole.Paint(Screen);
+				m_DebugConsole.Paint(Screen);
 
 				//	Update the screen
 
