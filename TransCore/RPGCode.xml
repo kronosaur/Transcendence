@@ -1652,6 +1652,7 @@
 								)
 							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall removeStatus
 							installText installTextData
+							stationRemoveStatus
 							)
 
 							;	Check if the station can install the device
@@ -1927,6 +1928,20 @@
 										(scrTranslate gScreen 'rpg.cannotInstallDeviceBecauseCannotRemove { item:thisItem targetObj:targetObj itemToReplace:itemToReplace removeStatus:removeStatus })
 										(cat desc ". " (if (isint removeStatus) "Unfortunately, you cannot remove the device." removeStatus))
 										))
+									(setq canInstall Nil)
+									)
+								)
+
+							; See if the station can remove the device
+
+							(if (and canInstall itemToReplace
+									(!= (setq stationRemoveStatus (objGetItemProperty installerObj itemToReplace 'removeItemStatus)) 'upgradeInstallOnly)
+									(!= stationRemoveStatus 'canRemove)
+									)
+								(block ()
+									(setq desc
+										(cat desc ". Unfortunately, we cannot remove your " (itmGetName itemToReplace 'short))
+										)
 									(setq canInstall Nil)
 									)
 								)
