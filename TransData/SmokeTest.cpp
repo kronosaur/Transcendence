@@ -36,7 +36,7 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, DEFAULT_SYSTEM_SAMPLE);
 	int iSystemUpdateTime = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("updates"), 0, -1, DEFAULT_UPDATES);
-	bool bPerfOnly = pCmdLine->GetAttributeBool(CONSTLIT("perfOnly"));
+	bool bNoDiagnostics = pCmdLine->GetAttributeBool(CONSTLIT("noDiagnostics"));
 
 	//	Update context
 
@@ -51,15 +51,20 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	for (i = 0; i < iSystemSample; i++)
 		{
-		bool bRunStartDiag = !bPerfOnly;
+		bool bRunStartDiag = !bNoDiagnostics;
 		int iSample = i + 1;
 		printf("SAMPLE %d\n", iSample);
 
+		//	Create all systems
+
+		TSortMap<CString, CSystem *> AllSystems;
 		for (int iNode = 0; iNode < Universe.GetTopologyNodeCount(); iNode++)
 			{
 			CTopologyNode *pNode = Universe.GetTopologyNode(iNode);
 			if (pNode == NULL || pNode->IsEndGame())
 				continue;
+
+			printf("%s\n", (LPSTR)pNode->GetSystemName());
 
 			//	Create the system
 
@@ -69,6 +74,15 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 				printf("ERROR: Unable to create star system: %s.\n", (LPSTR)sError);
 				return;
 				}
+
+			AllSystems.SetAt(pNode->GetID(), pSystem);
+			}
+
+		//	Now update all system
+
+		for (int iSystem = 0; iSystem < AllSystems.GetCount(); iSystem++)
+			{
+			CSystem *pSystem = AllSystems[iSystem];
 
 			//	Set the POV
 
@@ -80,6 +94,15 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 			Universe.UpdateExtended();
 			Universe.GarbageCollectLibraryBitmaps();
+
+			//	Run diagnostics start
+
+			if (bRunStartDiag)
+				{
+				printf("\nSTART DIAGNOSTICS\n");
+				Universe.GetDesignCollection().FireOnGlobalStartDiagnostics();
+				bRunStartDiag = false;
+				}
 
 			//	Update for a while
 
@@ -93,32 +116,23 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 				dwUpdateTime += ::sysGetTicksElapsed(dwStart);
 				}
 
-			//	Run diagnostics start
-
-			if (bRunStartDiag)
-				{
-				Universe.GetDesignCollection().FireOnGlobalStartDiagnostics();
-				printf("\n");
-				bRunStartDiag = false;
-				}
-
 			//	Run diagnostics code
 
-			printf("%s\n", (LPSTR)pNode->GetSystemName());
-			if (!bPerfOnly)
+			if (!bNoDiagnostics)
 				{
+				printf("DIAGNOSTICS: %s\n", (LPSTR)pSystem->GetName());
 				Universe.GetDesignCollection().FireOnGlobalSystemDiagnostics();
 				}
 
-			//	Done with old system
+			//	Done with system
 
 			Universe.DestroySystem(pSystem);
 			}
 
-		if (!bPerfOnly)
+		if (!bNoDiagnostics)
 			{
+			printf("END DIAGNOSTICS\n");
 			Universe.GetDesignCollection().FireOnGlobalEndDiagnostics();
-			printf("\n");
 			}
 
 		Universe.Reinit();
