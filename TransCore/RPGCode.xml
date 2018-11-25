@@ -1611,7 +1611,7 @@
 				;	price:					Total installation cost
 				;	desc:					Description of installation attempt
 
-				(block (totalCost desc descWarning
+				(block (totalCost desc descWarning itemToReplace
 
 					(thisItem (@ data 'item))
 					(targetObj (if (@ data 'targetObj) (@ data 'targetObj) gPlayerShip))
@@ -1650,7 +1650,7 @@
 									(itmGetInstallPos (@ data 'replaceItem))
 									)
 								)
-							cargoNeeded itemToReplace resultMessage resultCode returnValue stationCannotInstall removeStatus
+							cargoNeeded resultMessage resultCode returnValue stationCannotInstall removeStatus
 							installText installTextData
 							stationRemoveStatus
 							)
@@ -1935,8 +1935,8 @@
 							; See if the station can remove the device
 
 							(if (and canInstall itemToReplace
-									(!= (setq stationRemoveStatus (objGetItemProperty installerObj itemToReplace 'removeItemStatus)) 'upgradeInstallOnly)
-									(!= stationRemoveStatus 'canRemove)
+									(setq stationRemoveStatus (objGetItemProperty installerObj itemToReplace 'removeItemStatus))
+									(not (@ stationRemoveStatus 'canRemove))
 									)
 								(block ()
 									(setq desc
@@ -2036,6 +2036,7 @@
 						price: totalCost
 						desc: desc
 						descWarning: descWarning
+						itemToReplace: itemToReplace
 						}
 					)
 				))
