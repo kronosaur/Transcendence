@@ -10,6 +10,7 @@
 #include "TransData.h"
 
 #define DEFAULT_SYSTEM_SAMPLE				100
+#define DEFAULT_UPDATES						1000
 
 void DoRandomNumberTest (void)
 	{
@@ -31,11 +32,11 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 	CString sError;
 	int i, j;
 
-	int iSystemSample = pCmdLine->GetAttributeInteger(CONSTLIT("count"));
-	if (iSystemSample == 0)
-		iSystemSample = DEFAULT_SYSTEM_SAMPLE;
+	//	Options
 
-	int iSystemUpdateTime = 1000;
+	int iSystemSample = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("count"), 1, -1, DEFAULT_SYSTEM_SAMPLE);
+	int iSystemUpdateTime = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("updates"), 0, -1, DEFAULT_UPDATES);
+	bool bPerfOnly = pCmdLine->GetAttributeBool(CONSTLIT("perfOnly"));
 
 	//	Update context
 
@@ -48,10 +49,11 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Generate systems for multiple games
 
-	CSymbolTable AllSystems(TRUE, TRUE);
 	for (i = 0; i < iSystemSample; i++)
 		{
-		printf("sample %d", i+1);
+		bool bRunStartDiag = !bPerfOnly;
+		int iSample = i + 1;
+		printf("SAMPLE %d\n", iSample);
 
 		for (int iNode = 0; iNode < Universe.GetTopologyNodeCount(); iNode++)
 			{
@@ -91,21 +93,43 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 				dwUpdateTime += ::sysGetTicksElapsed(dwStart);
 				}
 
+			//	Run diagnostics start
+
+			if (bRunStartDiag)
+				{
+				Universe.GetDesignCollection().FireOnGlobalStartDiagnostics();
+				printf("\n");
+				bRunStartDiag = false;
+				}
+
+			//	Run diagnostics code
+
+			printf("%s\n", (LPSTR)pNode->GetSystemName());
+			if (!bPerfOnly)
+				{
+				Universe.GetDesignCollection().FireOnGlobalSystemDiagnostics();
+				}
+
 			//	Done with old system
 
 			Universe.DestroySystem(pSystem);
+			}
 
-			printf(".");
+		if (!bPerfOnly)
+			{
+			Universe.GetDesignCollection().FireOnGlobalEndDiagnostics();
+			printf("\n");
 			}
 
 		Universe.Reinit();
-		printf("\n");
 
 		if (Universe.InitGame(0, &sError) != NOERROR)
 			{
 			printf("ERROR: %s\n", sError.GetASCIIZPointer());
 			return;
 			}
+
+		printf("-------------------------------------------------------------------------------\n");
 		}
 
 	//	Print update performance
