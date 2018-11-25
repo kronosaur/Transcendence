@@ -157,6 +157,6 @@ void DoSmokeTest (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Done
 
-	printf("Test successful.\n");
+	printf("Test complete.\n");
 	}
 

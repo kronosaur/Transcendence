@@ -1,0 +1,158 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE TranscendenceExtension
+	[
+	<!ENTITY unidExtension				"0xA0010000">
+	<!ENTITY unidCoverImage				"0xA0010001">
+	<!ENTITY unidDiagnostics			"0xA0010002">
+
+	<!ENTITY unidStarsOfThePilgrim		"0x00200000">
+	]>
+
+<TranscendenceExtension UNID="&unidExtension;" 
+		name=			"Diagnostics"
+		release=		"1"
+		version=		"1.0.0"
+		apiVersion=		"43"
+		extends=		"&unidStarsOfThePilgrim;"
+		debugOnly=		"true"
+		coverImageID=	"&unidCoverImage;"
+		>
+
+	<Library unid="&unidRPGLibrary;"/>
+	<Library unid="&unidHumanSpaceLibrary;"/>
+
+<!-- DIAGNOSTICS -->
+
+	<Type unid="&unidDiagnostics;">
+		<Events>
+			<OnGlobalStartDiagnostics>
+			</OnGlobalStartDiagnostics>
+
+			<OnGlobalSystemDiagnostics>
+				(block (theItem)
+
+					;	Initialize some vars
+
+					(setq gScreen Nil)
+
+					;	Create a ship that we can use as a player ship
+
+					(diagRun (list
+						(lambda ()
+							(block ()
+								(setq gPlayerShip (sysCreateShip &scSapphirePlayer; Nil &svPlayer;))
+								(if (not gPlayerShip)
+									(error "Unable to create player ship.")
+									)
+								(shpOrder gPlayerShip 'hold)
+
+								;	Add the biggest reactor
+
+								(objAddItem gPlayerShip (itmCreate &it1GWReactor; 1))
+								(shpInstallDevice gPlayerShip (itmCreate &it1GWReactor; 1))
+								(shpRefuelFromItem gPlayerShip (itmCreate &itHadronVacuumFuelCell; 100))
+
+								;	Add money
+
+								(objCredit gPlayerShip 1000000)
+								(objCredit gPlayerShip 'rin 1000000)
+								)
+							)
+						))
+
+					;	Run a series of tests for every friendly station
+
+					(enum (sysFindObject gPlayerShip "TAF") theStation
+						(diagRun (list
+							
+							;	See if the station can install a random device on the 
+							;	player ship.
+							;	(But skip Commonwealth Fortress and Black Market because
+							;	you need rank to get buy stuff.)
+
+							(if (and (objHasTradeService theStation 'InstallDevice)
+									(objMatches theStation gPlayerShip "* -commonwealthArmory; -blackMarket;")
+									(setq theItem (random (objGetItems theStation "d~rUN")))
+									)
+								(lambda ()
+									(block (
+										result
+										)
+										(setq result (rpgInstallDevicePrep {
+											item: theItem
+											installerObj: theStation
+											targetObj: gPlayerShip
+											upgrade: True
+											}))
+
+										(switch
+											;	If we succeed in installing, then OK.
+
+											(@ result 'canInstall)
+												True
+
+											;	If we're trying to install the same item, then we can
+											;	skip this.
+
+											(itmIsEqual theItem (@ result 'itemToReplace) 'ignoreInstalled)
+												True
+
+											;	Otherwise, installation failed for some reason.
+
+											(block ()
+												(print (objGetName theStation) ": " (@ result 'desc))
+												)
+											)
+										)
+									)
+								)
+							))
+						)
+
+					;	Done with player ship
+
+					(objDestroy gPlayerShip)
+					(setq gPlayerShip Nil)
+					)
+			</OnGlobalSystemDiagnostics>
+
+			<OnGlobalEndDiagnostics>
+				(block (
+					(totalTests (or (typGetData &unidDiagnostics; 'totalTests) 0))
+					(totalFailures (or (typGetData &unidDiagnostics; 'totalFailures) 0))
+					)
+					(print "Total Tests: " (fmtNumber totalTests))
+					(print "Failed Tests: " (fmtNumber totalFailures) "\n")
+					)
+			</OnGlobalEndDiagnostics>
+		</Events>
+	</Type>
+
+	<Globals>
+	(block ()
+		(setq diagRun (lambda (testList)
+			(block ()
+				(enum testList theTest
+					(if theTest
+						(errBlock (theError)
+							(typIncData &unidDiagnostics; 'totalTests)
+							(theTest)
+
+							(block ()
+								(print "ERROR: " theError)
+								(typIncData &unidDiagnostics; 'totalFailures)
+								)
+							)
+						)
+					)
+				)
+			))
+		)
+	</Globals>
+
+<!-- RESOURCES -->
+	
+	<Image UNID="&unidCoverImage;"	bitmap="DiagnosticsCover.jpg" loadOnUse="true" />
+	
+</TranscendenceExtension>
