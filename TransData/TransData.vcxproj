@@ -309,6 +309,7 @@
   <ItemGroup>
     <ClCompile Include="Armor.cpp" />
     <ClCompile Include="Attributes.cpp" />
+    <ClCompile Include="CCTransDataLibrary.cpp" />
     <ClCompile Include="CHost.cpp" />
     <ClCompile Include="CImageGrid.cpp" />
     <ClCompile Include="CItemTypeTable.cpp" />

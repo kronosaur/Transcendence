@@ -537,6 +537,11 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 
 	Ctx.bNoCollectionCheck = true;
 
+	//	CC Libraries
+
+	SPrimitiveDefTable *pNewTable = Ctx.CCPrimitives.Insert();
+	GetCCTransDataLibrary(pNewTable);
+
 #ifdef DEBUG_PERFORMANCE
 	DWORD dwStart = ::GetTickCount();
 #endif

@@ -79,6 +79,7 @@ typedef TSortMap<DWORD, SDesignTypeInfo> CDesignTypeStats;
 //	Functions
 
 char *FrequencyChar (int iFreq);
+void GetCCTransDataLibrary (SPrimitiveDefTable *retpTable);
 void ShowHelp (CXMLElement *pCmdLine);
 void MarkItemsKnown (CUniverse &Universe);
 bool OutputImage (CG32bitImage &Image, const CString &sFilespec);
