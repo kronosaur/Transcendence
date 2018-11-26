@@ -1596,7 +1596,7 @@
 		</Invoke>
 
 		<Language>
-			<Text id="core.charges">charges(s)</Text>
+			<Text id="core.charges">charge(s)</Text>
 		</Language>
 	</ItemType>
 
