@@ -79,6 +79,12 @@
     <Filter Include="Human Space Library\Ares Orthodoxy">
       <UniqueIdentifier>{4dcfeca2-2723-4a4f-af5e-501c47fec0ea}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Extensions">
+      <UniqueIdentifier>{91476686-c52f-4c21-b57c-29ac984418a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Extensions\Diagnostics">
+      <UniqueIdentifier>{8b9944e2-a1f1-4e36-9d1c-c54d80472cfb}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Transcendence.xml" />
@@ -770,6 +776,9 @@
     </Xml>
     <Xml Include="CorporateTradingPost.xml">
       <Filter>Human Space Library\Corporate Hierarchy</Filter>
+    </Xml>
+    <Xml Include="..\Extensions\Diagnostics\Diagnostics.xml">
+      <Filter>Extensions\Diagnostics</Filter>
     </Xml>
   </ItemGroup>
 </Project>

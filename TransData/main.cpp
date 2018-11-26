@@ -515,7 +515,12 @@ ALERROR InitUniverse (CUniverse &Universe, CHost &Host, const CString &sFilespec
 
 	CString sExtensionFolder = pCmdLine->GetAttribute(EXTENSION_FOLDER_ATTRIB);
 	if (!sExtensionFolder.IsBlank())
-		Ctx.ExtensionFolders.Insert(sExtensionFolder);
+		{
+		TArray<CString> List;
+		ParseStringList(sExtensionFolder, PSL_FLAG_ALLOW_WHITESPACE, &List);
+
+		Ctx.ExtensionFolders.Insert(List);
+		}
 
 	CString sExtensionList;
 	if (pCmdLine->FindAttribute(EXTENSIONS_ATTRIB, &sExtensionList))
