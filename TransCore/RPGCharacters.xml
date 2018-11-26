@@ -224,54 +224,6 @@
 					)
 				))
 				
-			(setq rpgCharacterAssignRandom (lambda (sourceObj criteria role)
-				
-				;	This function assigns a random character to the given source object.
-				;	It should be called once when the object is created.
-				;
-				;	Use rpgCharacterTranslate to get text for the character.
-
-				(block (
-					(type (objGetType sourceObj))
-					(characterList (typGetData type 'rpgCharacter.list))
-					(next (typGetData type 'rpgCharacter.next))
-
-					(characterRole (or role "npc"))
-					(characterVar (cat "rpgCharacter." characterRole))
-
-					characterID
-					)
-
-					;	If we don't yet have a character list, then generate one.
-
-					(if (not characterList)
-						(block ()
-							(setq characterList (rpgCharacterGenerateList criteria))
-							(setq next 0)
-							(typSetData type 'rpgCharacter.list characterList)
-							(typSetData type 'rpgCharacter.next 0)
-							)
-						)
-
-					;	Pick a random character (the list has been shuffled, so we 
-					;	just pick the next character on the list).
-
-					(setq characterID (@ characterList (mod next (count characterList))))
-
-					;	Store this character with the object.
-
-					(objSetData sourceObj characterVar characterID)
-
-					;	Next character
-
-					(typIncData type 'rpgCharacter.next)
-
-					;	Done
-
-					characterID
-					)
-				))
-
 			(setq rpgCharacterChangeRel (lambda (charType event)
 			
 				; This function changes the character's relationship with the
@@ -505,37 +457,6 @@
 					)
 				))
 
-			(setq rpgCharacterGenerateList (lambda (criteria)
-				
-				;	This function returns a list of character identifiers for use
-				;	by minor characters, such as station masters. The result consists
-				;	of a list of character identifiers. Each identifier is a list
-				;	with two values: an UNID and an ID within that type.
-				;
-				;	The order in the list is randomized.
-
-				(shuffle
-					(apply append
-						(map (typFind criteria) 'excludeNil theType
-							(block (
-								(characterTable (typGetStaticData theType 'CharacterTable))
-								)
-								(if characterTable
-									(map characterTable theCharacter
-										(list theType (@ theCharacter 0))
-										)
-
-									;	If no character table, then the whole type is one
-									;	character.
-
-									(list (list theType Nil))
-									)
-								)
-							)
-						)
-					)
-				))
-
 			(setq rpgCharacterGetQuickRel (lambda (charType)
 
 				; This function returns the given character's relationship with 
@@ -718,6 +639,163 @@
 							nextScreen: 'forceUndock
 							})
 						)
+					)
+				))
+
+			;	STATION CHARACTER PERSONAS -------------------------------------
+			;
+			;	This set of functions are used to manage random NPC on various
+			;	stations. For example, these can be used to randomize a quest
+			;	giver on a station.
+			;
+			;	USAGE
+			;
+			;	1.	Generate a CharacterTable in a StaticData block in one or 
+			;		more types. A CharacterTable is a struct with one field per
+			;		character ID. Each field is a struct containing information
+			;		about the character.
+			;
+			;		For example:
+			;
+			;		{
+			;			lukeSkywalker: {
+			;				id: 'lukeSkywalker
+			;				fullName: "Luke Skywalker"
+			;				friendlyName: "Luke"
+			;				formalName: "Skywalker"
+			;				genome: 'human
+			;				gender: 'genderMale
+			;				notes: "Luke is a farmboy who dreams of being a pilot."
+			;				}
+			;			princessLeia: {
+			;				id: 'princesLeia
+			;				fullName: "Leia Organa"
+			;				friendlyName: "Leia"
+			;				formalName: "the Princess"
+			;				genome: 'human
+			;				gender: 'genderFemale
+			;				notes: "Leia Organa is one of the leaders of the Rebellion."
+			;				}
+			;			}
+			;
+			;	2.	Call rpgCharacterAssignRandom in the OnCreate for a given
+			;		station. You must call this once for each role used by the
+			;		station. For example, if you have a station master and a
+			;		bartender who both give out missions, you need two calls.
+			;
+			;	3.	Use rpgCharacterTranslate to get specific text for the 
+			;		randomly chosen character.
+			;
+			;	4.	Use rpgCharacterGetInfo to get the full block of data for 
+			;		the randomly chosen character.
+
+			(setq rpgCharacterAssign (lambda (sourceObj role sourceType charID)
+				(block (
+					(characterRole (or role "npc"))
+					(characterVar (cat "rpgCharacter." characterRole))
+					)
+					(objSetData sourceObj characterVar (list sourceType charID))
+					(if (not (rpgCharacterGetInfo sourceObj role))
+						(error "No character found: " sourceType "/" charID)
+						)
+					)
+				))
+
+			(setq rpgCharacterAssignRandom (lambda (sourceObj criteria role)
+				
+				;	This function assigns a random character to the given source object.
+				;	It should be called once when the object is created.
+				;
+				;	Use rpgCharacterTranslate to get text for the character.
+
+				(block (
+					(type (objGetType sourceObj))
+					(characterRole (or role "npc"))
+
+					(characterListVar (cat "rpgCharacterList." characterRole))
+					(characterList (typGetData type characterListVar))
+
+					(nextVar (cat "rpgCharacterNext." characterRole))
+					(next (typGetData type nextVar))
+
+					(characterVar (cat "rpgCharacter." characterRole))
+
+					characterID
+					)
+
+					;	If we don't yet have a character list, then generate one.
+
+					(if (not characterList)
+						(block ()
+							(setq characterList (rpgCharacterGenerateList criteria))
+							(setq next 0)
+							(typSetData type characterListVar characterList)
+							(typSetData type nextVar 0)
+							)
+						)
+
+					;	Pick a random character (the list has been shuffled, so we 
+					;	just pick the next character on the list).
+
+					(setq characterID (@ characterList (mod next (count characterList))))
+
+					;	Store this character with the object.
+
+					(objSetData sourceObj characterVar characterID)
+
+					;	Next character
+
+					(typIncData type nextVar)
+
+					;	Done
+
+					characterID
+					)
+				))
+
+			(setq rpgCharacterGenerateList (lambda (criteria)
+				
+				;	This function returns a list of character identifiers for use
+				;	by minor characters, such as station masters. The result consists
+				;	of a list of character identifiers. Each identifier is a list
+				;	with two values: an UNID and an ID within that type.
+				;
+				;	The order in the list is randomized.
+
+				(shuffle
+					(apply append
+						(map (typFind criteria) 'excludeNil theType
+							(block (
+								(characterTable (typGetStaticData theType 'CharacterTable))
+								)
+								(if characterTable
+									(map characterTable theCharacter
+										(list theType (@ theCharacter 0))
+										)
+
+									;	If no character table, then the whole type is one
+									;	character.
+
+									(list (list theType Nil))
+									)
+								)
+							)
+						)
+					)
+				))
+
+			(setq rpgCharacterGetInfo (lambda (sourceObj role)
+				(block (
+					(characterRole (or role "npc"))
+					(characterVar (cat "rpgCharacter." characterRole))
+					(characterID (objGetData sourceObj characterVar))
+
+					(theType (@ characterID 0))
+					(theID (@ characterID 1))
+
+					(characterTable (typGetStaticData theType 'CharacterTable))
+					)
+					(@ characterTable theID)
 					)
 				))
 

@@ -1057,6 +1057,11 @@
 		</Ships>
 
 		<Events>
+			<OnCreate>
+				;	Initialize our characters
+				(rpgCharacterAssignRandom gSource "x +commonwealth; +stationMasterCommon;" 'stationMaster)
+			</OnCreate>
+
 			<GetGlobalAchievements>
 				(rpgMissionAchievements &stCommonwealthSlums; "* +commonwealthHabitat;")
 			</GetGlobalAchievements>
@@ -1151,53 +1156,75 @@
 			<Text id="rpg.missionTypeDesc">Commonwealth habitat missions</Text>
 
 			<Text id="rumor.intro">
+
 				The station master is working at his console. He stops to chat:\n\n
+
 			</Text>
 			<String id="rumor.commonwealthHabitat.1">
+
 				"You got a pretty nice ship there. Did your mom and dad buy it for you?"
+
 			</String>
 			<Text id="rumor.commonwealthHabitat.2">
+
 				"Truth is, you gotta approach life philosophically, you know what I mean?
 				You gotta believe that it's all going to work out in the end, or else
 				what's the point?"
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.3">
+
 				"Nobody cares. Station needs a carbon scrubber? Get on the waiting list!
 				After the corporate suits get their grilled Icelandic salmon, then they
 				might pay attention to you. Nobody cares."
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.4">
+
 				"A station is not like a starship. If you get into trouble you can always
 				run away. All we can do is sit tight and repair the damage. Takes a
 				special kind of man to live like that."
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.pilgrim">
+
 				"I don't know what you're doing in this backwater system. You wanna get
 				to the Core? Go! What's stopping you? Kids today: they dream big, but
 				they'd rather watch the 3DVs."
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.freelancer">
+
 				"I don't know what you're doing in this backwater system. You wanna see
 				the galaxy? Go! What's stopping you? Kids today: they dream big, but
 				they'd rather watch the 3DVs."
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.sapphire">
+
 				"How do you like your %shipName%? My daughter's friend had one once.
 				It was beautiful, but not very practical for long voyages."
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.ei100x">
+
 				"How do you like your %shipName%? My son pilots an older 200-series	in the
 				Cairn system. He's got it up-armored with polyceramic to protect against
 				pirate attacks."
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.wolfen">
+
 				"How do you like your %shipName%? I knew this guy John Tremaine who flew
 				one in the Militia. They're fast as hell on a whip, but a little flimsy.
 				Hope you've got some good shields on her."
+
 			</Text>
 			<Text id="rumor.commonwealthHabitat.other">
+
 				"How do you like your %shipName%? I haven't seen a lot of ships like that.
 				Is it hard to get parts for it?"
+
 			</Text>
         </Language>
 	</StationType>

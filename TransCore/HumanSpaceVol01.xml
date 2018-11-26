@@ -1971,6 +1971,7 @@
 	<!ENTITY rsRoninCHero				"0x001003A0">
 	<!ENTITY rsIAVHeavyHero				"0x001003A1">
 	<!ENTITY smCommonwealthSpace		"0x001003A2">
+	<!ENTITY chCommonwealthStationMastersCommon		"0x001003A3">
 
 	<!-- 03B0-03CF SAPIENS -->
 
@@ -2213,6 +2214,7 @@
 	<Module filename="Commonwealth.xml"/>
 	<Module filename="CommonwealthAgricultural.xml"/>
 	<Module filename="CommonwealthCenturions.xml"/>
+	<Module filename="CommonwealthCharacters.xml"/>
 	<Module filename="CommonwealthFleet.xml"/>
 	<Module filename="CommonwealthFleetMission01.xml"/>
 	<Module filename="CommonwealthFleetMission02.xml"/>

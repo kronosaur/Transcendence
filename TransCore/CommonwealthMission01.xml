@@ -100,6 +100,9 @@
 
 							; Compute reward
 							(msnSetData gSource 'reward (add 200 (multiply (objGetLevel targetObj) 100)))
+
+							; Remember the station master
+							(msnSetData gSource 'stationMasterInfo (rpgCharacterGetInfo aOwnerObj 'stationMaster))
 							)
 						)
 					)
@@ -388,6 +391,12 @@
 					)
 			</Text>
 
+			<Text id="Intro">
+				(msnTranslate gSource 'textIntro {
+					gender: (@ (msnGetData gSource 'stationMasterInfo) 'gender)
+					})
+			</Text>
+
 			<Text id="Briefing">
 				(msnTranslate gSource (cat "Briefing:" (msnGetData gSource 'targetType)) {
 					targetName: (objGetName (objGetObjByID (msnGetData gSource 'targetID)) '(capitalize article))
@@ -409,11 +418,11 @@
 			<Text id="descSummary">
 				Your mission is to destroy %targetName% in the %systemName% system.
 			</Text>
-			<Text id="Intro">
+			<Text id="textIntro">
 
-				The station master stands at his console. Managers and 
-				supervisors swarm around him dealing with various crises. He 
-				turns his attention towards you:
+				The station master stands at %his:gender% console. Managers and 
+				supervisors swarm around %him:gender% dealing with various crises.
+				%He:gender%	turns %his:gender% attention towards you:
 
 				"We could use your help, %brother%. You've got a ship with a 
 				good punch and we got something that needs punching. We'll pay 

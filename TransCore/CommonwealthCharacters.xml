@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Station Masters (Common)
+	
+		These are common station masters, usually for smaller stations, such as
+		habitats, residentials, etc.
+
+	-->
+
+	<Type unid="&chCommonwealthStationMastersCommon;"
+			attributes="commonwealth, stationMasterCommon"
+			>
+		<StaticData>
+			<Data id="characterTable">
+				{
+					jeanAble: {
+						id: 'jeanAble
+						fullName: "Jean Able"
+						friendlyName: "Jean"
+						formalName: "Able"
+						genome: 'human
+						gender: 'genderFemale
+						notes: "Jean dropped out of medical school but finally found her calling as a station master."
+						}
+
+					martinTreadwell: {
+						id: 'martinTreadwell
+						fullName: "Martin Treadwell"
+						friendlyName: "Marty"
+						formalName: "Treadwell"
+						genome: 'human
+						gender: 'genderMale
+						notes: "Martin loves meeting all the people who come to visit his station."
+						}
+					}
+			</Data>
+		</StaticData>
+	</Type>
+
+</TranscendenceModule>

@@ -780,5 +780,8 @@
     <Xml Include="..\Extensions\Diagnostics\Diagnostics.xml">
       <Filter>Extensions\Diagnostics</Filter>
     </Xml>
+    <Xml Include="CommonwealthCharacters.xml">
+      <Filter>Human Space Library\Commonwealth</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
