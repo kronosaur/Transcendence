@@ -605,7 +605,7 @@ ALERROR CGameKeys::WriteAsXML (IWriteStream *pOutput)
 			{
 			CString sKey = CVirtualKeyData::GetKeyID(i);
 			if (sKey.IsBlank())
-				sKey = strPatternSubst(CONSTLIT("%x"), i);
+				sKey = strPatternSubst(CONSTLIT("0x%02x"), i);
 
 			sData = strPatternSubst(CONSTLIT("\t\t<Map key=\"%s\" command=\"%s\"/>\r\n"),
 					sKey,
