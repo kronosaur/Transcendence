@@ -5,6 +5,8 @@
 	<!ENTITY unidExtension				"0xA0010000">
 	<!ENTITY unidCoverImage				"0xA0010001">
 	<!ENTITY unidDiagnostics			"0xA0010002">
+	<!ENTITY unidItemUnitTests			"0xA0010003">
+	<!ENTITY unidRPGUnitTests			"0xA0010004">
 
 	<!ENTITY unidStarsOfThePilgrim		"0x00200000">
 	]>
@@ -21,6 +23,9 @@
 
 	<Library unid="&unidRPGLibrary;"/>
 	<Library unid="&unidHumanSpaceLibrary;"/>
+
+	<Module filename="ItemUnitTests.xml"/>
+	<Module filename="RPGUnitTests.xml"/>
 
 <!-- DIAGNOSTICS -->
 
@@ -141,6 +146,35 @@
 
 							(block ()
 								(print "ERROR: " theError)
+								(typIncData &unidDiagnostics; 'totalFailures)
+								)
+							)
+						)
+					)
+				)
+			))
+
+		(setq diagEval (lambda (testList)
+			(enum testList theTest
+				(if theTest
+					(block ()
+						(typIncData &unidDiagnostics; 'totalTests)
+
+						(switch
+							;	If we don't care about the test result, then we just execute
+
+							(= (@ theTest 'result) 'ignore)
+								(eval (@ theTest 'test))
+
+							;	If the test succeeds, then we're good
+
+							(= (eval (@ theTest 'test)) (@ theTest 'result))
+								True
+
+							;	Failed
+
+							(block ()
+								(print "ERROR: " (@ theTest 'test) " - " (eval (@ theTest 'test)) " [expected " (@ theTest 'result) "]")
 								(typIncData &unidDiagnostics; 'totalFailures)
 								)
 							)

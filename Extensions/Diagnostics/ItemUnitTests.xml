@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Type unid="&unidItemUnitTests;">
+		<Events>
+			<OnGlobalStartDiagnostics>
+				(block (
+					(testItem (itmCreate &itLaserCannon; 1))
+					)
+					;	Unit Tests for Functions
+
+					(diagEval (list
+						{	test:'(setq testItem1 (itmCreate &itLaserCannon; 1))			result:'ignore	}
+						{	test:'(itmGetType testItem1)									result:&itLaserCannon;	}
+						{	test:'(setq testItem2 (itmCreate &itLaserCannon; 1))			result:'ignore	}
+
+						;	itmIsEqual -----------------------------------------
+
+						{	test:'(itmIsEqual testItem1 testItem2)							result:True	}
+						{	test:'(itmIsEqual testItem1
+									(itmCreate &itLaserCannon; 10)
+									)														result:True	}
+						{	test:'(itmIsEqual testItem1
+									(itmCreate &itBallistaCannon; 1)
+									)														result:Nil	}
+						{	test:'(itmIsEqual 
+									(itmSetProperty testItem1 'damaged True)
+									testItem2
+									)														result:Nil	}
+						{	test:'(itmIsEqual 
+									(itmSetProperty testItem1 'charges 10)
+									testItem2
+									)														result:Nil	}
+						{	test:'(itmIsEqual 
+									(itmSetEnhanced testItem1 0x102)
+									testItem2
+									)														result:Nil	}
+						{	test:'(itmIsEqual 
+									(itmSetData testItem1 'test 10)
+									testItem2
+									)														result:Nil	}
+
+						{	test:'(itmIsEqual 
+									(itmSetProperty testItem1 'charges 10)
+									testItem2
+									'ignoreCharges
+									)														result:True	}
+						{	test:'(itmIsEqual 
+									(itmSetProperty testItem1 'charges 10)
+									testItem2
+									'ignoreEnhancements
+									)														result:Nil	}
+						{	test:'(itmIsEqual 
+									(itmSetEnhanced testItem1 0x102)
+									testItem2
+									'ignoreEnhancements
+									)														result:True	}
+						{	test:'(itmIsEqual 
+									(itmSetEnhanced testItem1 0x102)
+									testItem2
+									'ignoreCharges
+									)														result:Nil	}
+						{	test:'(itmIsEqual 
+									(itmSetEnhanced testItem1 0x102)
+									testItem2
+									'(ignoreCharges ignoreData ignoreEnhancements)
+									)														result:True	}
+						{	test:'(itmIsEqual 
+									(itmSetData testItem1 'test 10)
+									testItem2
+									'ignoreData
+									)														result:True	}
+						{	test:'(itmIsEqual 
+									(itmSetData testItem1 'test 10)
+									testItem2
+									'ignoreCharges
+									)														result:Nil	}
+						))
+					)
+			</OnGlobalStartDiagnostics>
+		</Events>
+	</Type>
+
+</TranscendenceModule>

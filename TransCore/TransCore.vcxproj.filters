@@ -783,5 +783,11 @@
     <Xml Include="CommonwealthCharacters.xml">
       <Filter>Human Space Library\Commonwealth</Filter>
     </Xml>
+    <Xml Include="..\Extensions\Diagnostics\ItemUnitTests.xml">
+      <Filter>Extensions\Diagnostics</Filter>
+    </Xml>
+    <Xml Include="..\Extensions\Diagnostics\RPGUnitTests.xml">
+      <Filter>Extensions\Diagnostics</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

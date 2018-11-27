@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Type unid="&unidRPGUnitTests;">
+		<Events>
+			<OnGlobalStartDiagnostics>
+				(block (
+					)
+
+					;	RPG Components Unit Tests
+
+					(diagRun (list
+
+						;	Set up
+
+						(lambda ()
+							(block ()
+								(setq gPlayerShip (sysCreateShip &scSapphirePlayer; Nil &svPlayer;))
+								(if (not gPlayerShip)
+									(error "Unable to create player ship.")
+									)
+								(shpOrder gPlayerShip 'hold)
+
+								;	Add some components
+
+								(objAddItem gPlayerShip (itmCreate &itTurbolaserCannon; 4))
+								(objAddItem gPlayerShip (itmSetProperty (itmCreate &itTurbolaserCannon; 4) 'damaged True))
+								(objAddItem gPlayerShip (itmSetEnhanced (itmCreate &itTurbolaserCannon; 2) "+hpBonus:20"))
+								)
+							)
+
+						;	Some tests
+
+						(lambda ()
+							(block (
+								(available (rpgCalcComponentsAvailable gPlayerShip (itmCreate &itTurbolaserCannon; 4)))
+								)
+								(if (!= (@ available 'availCount) 10)
+									(error "rpgCalcComponentsAvailable failed: availCount should be 10")
+									)
+
+								(if (!= (itmGetCount (@ (@ available 'damagedItems) 0)) 4)
+									(error "rpgCalcComponentsAvailable failed: damagedItems count should be 4")
+									)
+
+								(if (@ available 'items)
+									(error "rpgCalcComponentsAvailable failed: items should be nil")
+									)
+								)
+							)
+
+						;	Clean up
+
+						(lambda ()
+							(block ()
+								(objDestroy gPlayerShip)
+								(setq gPlayerShip Nil)
+								)
+							)
+						))
+					)
+			</OnGlobalStartDiagnostics>
+		</Events>
+	</Type>
+
+</TranscendenceModule>

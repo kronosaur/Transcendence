@@ -177,6 +177,8 @@
       <SubType>Designer</SubType>
     </None>
     <Xml Include="..\Extensions\Diagnostics\Diagnostics.xml" />
+    <Xml Include="..\Extensions\Diagnostics\ItemUnitTests.xml" />
+    <Xml Include="..\Extensions\Diagnostics\RPGUnitTests.xml" />
     <Xml Include="Abbasid.xml" />
     <Xml Include="Anarchists.xml" />
     <Xml Include="Antarctica01.xml" />
