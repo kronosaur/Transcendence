@@ -6,6 +6,92 @@
 	
 	<Globals>
 		(block Nil
+			(setq rpgCalcComponentsAvailable (lambda (theSource theComponent)
+			
+			;	Returns a structure containing the following fields:
+			;
+			;	damagedItems: A list of itemStructs in theSource that match theComponent
+			;		and are damaged.
+			;
+			;	items: A list of itemStructs in theSource that match theComponent.
+			;
+			;	availCount: The total number of items that match theComponent. We can
+			;		use this to compute how many items we can craft.
+			;
+			;	The sum of damagedItems and items is always less than or equal to
+			;	the number of components needed (so that we can remove them from the
+			;	source when we create an item).
+
+				(block (
+					(leftToAdd (itmGetCount theComponent))
+					(availCount 0)
+					(damagedComponent (itmSetProperty theComponent 'damaged True))
+
+					;	When looking for components, we ignore attributes of the item that 
+					;	we don't care about.
+
+					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted ignoreEnhancements))
+
+					;	Compute damaged items first
+
+					(damagedItems
+						(map (objGetItems theSource "*U") 'excludeNil theItem
+							(switch
+								(not (itmIsEqual theItem damagedComponent compareFlags))
+									Nil
+
+								(= leftToAdd 0)
+									(block ()
+										(setq availCount (+ availCount (itmGetCount theItem)))
+										Nil
+										)
+
+								(block (
+									(theCount (min leftToAdd (itmGetCount theItem)))
+									)
+									(setq availCount (+ availCount (itmGetCount theItem)))
+									(setq leftToAdd (- leftToAdd theCount))
+
+									(itmSetCount theItem theCount)
+									)
+								)
+							)
+						)
+
+					;	Next, non-damaged items
+
+					(undamagedItems
+						(map (objGetItems theSource "*U") 'excludeNil theItem
+							(switch
+								(not (itmIsEqual theItem theComponent compareFlags))
+									Nil
+
+								(= leftToAdd 0)
+									(block ()
+										(setq availCount (+ availCount (itmGetCount theItem)))
+										Nil
+										)
+
+								(block (
+									(theCount (min leftToAdd (itmGetCount theItem)))
+									)
+									(setq availCount (+ availCount (itmGetCount theItem)))
+									(setq leftToAdd (- leftToAdd theCount))
+
+									(itmSetCount theItem theCount)
+									)
+								)
+							)
+						)
+					)
+					{
+						damagedItems: damagedItems
+						items: undamagedItems
+						availCount: availCount
+						}
+					)
+				))
+
 			(setq rpgCalcCreateFromComponents (lambda (theItem theSource theFoundry)
 				(block (
 					(currencyUsed (objGetProperty theFoundry 'currency))
@@ -41,32 +127,17 @@
 					(fullPrice (int (round (* componentPrice markUp))))
 					(workPrice (- fullPrice componentPrice))
 					
-					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
-
 					;	For each required component, add up the number of items the player
 					;	actually has. Note that we accept damaged items.
 						
 					(availableComponents
 						(map componentsNeeded theComponent
-							(block (countAvailable)
-								(setq countAvailable 0)
-									
-								;	Add the number of non-damaged items we have
-								
-								(setq countAvailable (add countAvailable
-									(objHasItem theSource theComponent 1 compareFlags)
-									))
-										
-								;	Now add damaged items
-									
-								(setq countAvailable (add countAvailable
-									(objHasItem theSource (itmSetProperty theComponent 'damaged True) 1 compareFlags)
-									))
-										
-								;	Compose entry
-									
-								{	item: theComponent
-									available: countAvailable
+							(block (
+								(componentsAvail (rpgCalcComponentsAvailable theSource theComponent))
+								)
+								{
+									item: theComponent
+									available: (@ componentsAvail 'availCount)
 									}
 								)
 							)
@@ -160,11 +231,6 @@
 					(totalCost (* (@ createCtx 'workCost) theCount))
 					(currencyUsed (@ createCtx 'currencyUsed))
 
-					;	When looking for components, we ignore attributes of the item that 
-					;	we don't care about.
-
-					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
-
 					itemsConsumed
 					)
 				
@@ -174,31 +240,25 @@
 					(enum (@ createCtx 'componentsNeeded) theComponent
 						(block (
 							(leftToConsume (* theCount (itmGetCount theComponent)))
-							(goodItem (itmSetCount theComponent 1))
-							(damagedItem (itmSetProperty goodItem 'damaged True))
-							
-							available
+							(available (rpgCalcComponentsAvailable theSource (itmSetCount theComponent leftToConsume)))
 							)
 							
-							;	Consume damaged items first
-							
-							(setq available (min leftToConsume (objHasItem theSource damagedItem 1 compareFlags)))
-							(if (gr available 0)
-								(block Nil
-									(objRemoveItem theSource damagedItem available compareFlags)
-									(setq leftToConsume (- leftToConsume available))
-									(setq itemsConsumed (append itemsConsumed (list (itmSetCount damagedItem available))))
+							;	Consume items
+							;
+							;	NOTE: rpgCalcComponentsAvailable has done all the work to figure
+							;	out exactly how many items to consume.
+
+							(enum (@ available 'damagedItems) itemToConsume
+								(block ()
+									(objRemoveItem theSource itemToConsume)
+									(setq itemsConsumed (append itemsConsumed (list itemToConsume)))
 									)
 								)
-								
-							;	Consume good items
-							
-							(setq available (min leftToConsume (objHasItem theSource goodItem 1 compareFlags)))
-							(if (gr available 0)
-								(block Nil
-									(objRemoveItem theSource goodItem available compareFlags)
-									(setq leftToConsume (- leftToConsume available))
-									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
+
+							(enum (@ available 'items) itemToConsume
+								(block ()
+									(objRemoveItem theSource itemToConsume)
+									(setq itemsConsumed (append itemsConsumed (list itemToConsume)))
 									)
 								)
 							)

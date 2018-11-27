@@ -944,40 +944,22 @@
 							)
 						)
 
-					;	When looking for components, we ignore attributes of the item that 
-					;	we don't care about.
-
-					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
-						
 					;	For each required component, add up the number of items the player
 					;	actually has. Note that we accept damaged items.
 						
 					(availableComponents
 						(map theComponents theComponent
-							(block (countAvailable)
-								(setq countAvailable 0)
-									
-								;	Add the number of non-damaged items we have
-								
-								(setq countAvailable (add countAvailable
-									(objHasItem (or theSource gPlayerShip) theComponent 1 compareFlags)
-									))
-										
-								;	Now add damaged items
-									
-								(setq countAvailable (add countAvailable
-									(objHasItem (or theSource gPlayerShip) (itmSetProperty theComponent 'damaged True) 1 compareFlags)
-									))
-										
-								;	Compose entry
-									
-								{	item: theComponent
-									available: countAvailable
+							(block (
+								(componentsAvail (rpgCalcComponentsAvailable (or theSource gPlayerShip) theComponent))
+								)
+								{
+									item: theComponent
+									available: (@ componentsAvail 'availCount)
 									}
 								)
 							)
 						)
-
+					
 					;	Figure out how much cargo space we need for each item
 					(spaceNeeded
 						(-
@@ -1092,40 +1074,39 @@
 				(block (
 					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
 
-					itemToCreate 
+					(itemToCreate (tinkerCreateItem theRecipe theCount))
 					itemsConsumed
 					)
 				
-					(setq itemToCreate (tinkerCreateItem theRecipe theCount))
 				
 					;	Consume items. NOTE: We expect our callers to have already checked
 					;	to make sure there are enough items.
-					
+
 					(enum (@ theRecipe 'components) theEntry
-						(block (available leftToConsume damageItem goodItem)
-							(setq leftToConsume (multiply theCount (@ theEntry 'count)))
-							
-							;	Consume damaged items first
-							
-							(setq damagedItem (itmSetProperty (itmCreate (@ theEntry 'item) 1) 'damaged True))
-							(setq available (min leftToConsume (objHasItem gPlayerShip damagedItem 1 compareFlags)))
-							(if (gr available 0)
-								(block Nil
-									(objRemoveItem gPlayerShip damagedItem available compareFlags)
-									(setq leftToConsume (subtract leftToConsume available))
-									(setq itemsConsumed (list (itmSetCount damagedItem available)))
+						(block (
+							(available 
+								(rpgCalcComponentsAvailable gPlayerShip 
+									(itmCreate (@ theEntry 'item) (* theCount (@ theEntry 'count)))
 									)
 								)
-								
-							;	Consume good items
+							)
 							
-							(setq goodItem (itmCreate (@ theEntry 'item) 1))
-							(setq available (min leftToConsume (objHasItem gPlayerShip goodItem 1 compareFlags)))
-							(if (gr available 0)
-								(block Nil
-									(objRemoveItem gPlayerShip goodItem available compareFlags)
-									(setq leftToConsume (subtract leftToConsume available))
-									(setq itemsConsumed (append itemsConsumed (list (itmSetCount goodItem available))))
+							;	Consume items
+							;
+							;	NOTE: rpgCalcComponentsAvailable has done all the work to figure
+							;	out exactly how many items to consume.
+
+							(enum (@ available 'damagedItems) itemToConsume
+								(block ()
+									(objRemoveItem gPlayerShip itemToConsume)
+									(setq itemsConsumed (append itemsConsumed (list itemToConsume)))
+									)
+								)
+
+							(enum (@ available 'items) itemToConsume
+								(block ()
+									(objRemoveItem gPlayerShip itemToConsume)
+									(setq itemsConsumed (append itemsConsumed (list itemToConsume)))
 									)
 								)
 							)
