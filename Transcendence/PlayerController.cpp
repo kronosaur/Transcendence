@@ -2703,10 +2703,43 @@ ALERROR CPlayerShipController::SwitchShips (CShip *pNewShip, SPlayerChangedShips
 	if (pStation)
 		pStation->RemoveSubordinate(pNewShip);
 
+	//	If we want to take over the docking port, then do it now.
+
+	if (m_pStation 
+			&& Options.bTakeDockingPort)
+		{
+		CDockingPorts *pDockingPorts = m_pStation->GetDockingPorts();
+
+		//	Figure out the port where we're currently docked.
+
+		int iOldPort;
+		if (!pDockingPorts->IsObjDocked(pOldShip, &iOldPort))
+			iOldPort = -1;
+
+		//	Make sure both ships are undocked.
+
+		pOldShip->Undock();
+		pNewShip->Undock();
+
+		//	Dock the new ship. If we fail, then we need to exit any screen
+		//	session.
+
+		if (iOldPort == -1
+				|| !pDockingPorts->DockAtPort(m_pStation, pNewShip, iOldPort))
+			{
+			g_pTrans->GetModel().ExitScreenSession(true);
+			pNewShip->Undock();
+			}
+
+		//	Success!
+
+		}
+
 	//	If we're docked and the new ship is also docked with the same
 	//	object, then we stay docked; otherwise, we undock
 
-	if (m_pStation && m_pStation != pNewShip->GetDockedObj())
+	else if (m_pStation 
+			&& m_pStation != pNewShip->GetDockedObj())
 		{
 		g_pTrans->GetModel().ExitScreenSession(true);
 		pNewShip->Undock();

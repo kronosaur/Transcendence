@@ -1171,6 +1171,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 				{
 				Options.bNoOrderTransfer = pOptions->GetBooleanAt(CONSTLIT("noOrderTransfer"));
 				Options.bOldShipWaits = pOptions->GetBooleanAt(CONSTLIT("oldShipWaits"));
+				Options.bTakeDockingPort = pOptions->GetBooleanAt(CONSTLIT("takeDockingPort"));
 				Options.bTransferEquipment = pOptions->GetBooleanAt(CONSTLIT("transferEquipment"));
 				}
 
