@@ -36,6 +36,8 @@
 #define FIELD_OBJ					CONSTLIT("obj")
 #define FIELD_TYPE					CONSTLIT("type")
 
+#define PROPERTY_LIST_SOURCE		CONSTLIT("listSource")
+
 #define TYPE_HERO					CONSTLIT("hero")
 #define TYPE_IMAGE					CONSTLIT("image")
 #define TYPE_NONE					CONSTLIT("none")
@@ -190,6 +192,27 @@ bool IDockScreenDisplay::GetDisplayOptions (SInitCtx &Ctx, SDisplayOptions *retO
 	DEBUG_CATCH
 	}
 
+ICCItemPtr IDockScreenDisplay::GetProperty (const CString &sProperty) const
+
+//	GetProperty
+//
+//	Returns a property
+
+	{
+	CCodeChain &CC = g_pUniverse->GetCC();
+
+	if (strEquals(sProperty, PROPERTY_LIST_SOURCE))
+		{
+		CSpaceObject *pObj = GetSource();
+		if (pObj == NULL)
+			return ICCItemPtr(CC.CreateNil());
+
+		return ICCItemPtr(CC.CreateInteger((int)pObj));
+		}
+	else
+		return OnGetProperty(sProperty);
+	}
+
 bool IDockScreenDisplay::EvalBool (const CString &sCode, bool *retbResult, CString *retsError)
 
 //	EvalBool
@@ -330,6 +353,83 @@ ICCItemPtr IDockScreenDisplay::OnGetProperty (const CString &sProperty) const
 	return ICCItemPtr(g_pUniverse->GetCC().CreateNil());
 	}
 
+void IDockScreenDisplay::OnModifyItemBegin (IDockScreenUI::SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Item)
+
+//	OnModifyItemBeing
+//
+//	An item on pSource is about to be modified.
+
+	{
+	//	If we're not displaying items from this source, then we don't need to
+	//	do anything.
+
+	if (GetSource() != pSource)
+		return;
+
+	//	If no item, then it means that we want to keep the current selection.
+
+	if (Item.IsEmpty())
+		{
+		Ctx.iSelChange = IDockScreenUI::selOriginal;
+		Ctx.OriginalItem = GetCurrentItem();
+		}
+
+	//	If the item that we're going to modify is the currently selected item, 
+	//	then we select the modified out.
+
+	else if (GetCurrentItem().IsEqual(Item))
+		{
+		Ctx.iSelChange = IDockScreenUI::selModified;
+		Ctx.iOriginalCursor = GetListCursor();
+		}
+
+	//	Otherwise, we remember the current selection
+
+	else
+		{
+		Ctx.iSelChange = IDockScreenUI::selOriginal;
+		Ctx.OriginalItem = GetCurrentItem();
+		}
+	}
+
+IDockScreenDisplay::EResults IDockScreenDisplay::OnModifyItemComplete (IDockScreenUI::SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Result)
+
+//	OnModifyItemComplete
+//
+//	An item on pSource was modified.
+
+	{
+	switch (Ctx.iSelChange)
+		{
+		case IDockScreenUI::selOriginal:
+			ResetList(GetSource());
+			if (!Ctx.OriginalItem.IsEmpty())
+				SelectItem(Ctx.OriginalItem);
+			return resultShowPane;
+
+		case IDockScreenUI::selModified:
+			ResetList(GetSource());
+
+			//	If the result is empty, then it means that the item was deleted,
+			//	so we use the last cursor position.
+
+			if (Result.IsEmpty())
+				{
+				if (Ctx.iOriginalCursor != -1)
+					SetListCursor(Ctx.iOriginalCursor);
+				}
+			else
+				SelectItem(Result);
+
+			return resultShowPane;
+
+		default:
+			//	Nothing to do
+
+			return resultNone;
+		}
+	}
+
 void IDockScreenDisplay::OnShowPane (bool bNoListNavigation) 
 
 //	OnShowPane
@@ -428,3 +528,23 @@ void IDockScreenDisplay::SelectArmor (int iSelection)
     {
     m_DockScreen.GetGameSession().OnArmorSelected(iSelection);
     }
+
+bool IDockScreenDisplay::SelectItem (const CItem &Item)
+
+//	SelectItem
+//
+//	Selects the given item and returns TRUE if the item was selected. Otherwise,
+//	we do nothing (and return FALSE).
+
+	{
+	IListData *pList = GetListData();
+	if (pList == NULL)
+		return false;
+
+	int iCursor;
+	if (!pList->FindItem(Item, &iCursor))
+		return false;
+
+	SetListCursor(iCursor);
+	return true;
+	}

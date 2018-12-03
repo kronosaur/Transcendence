@@ -1509,20 +1509,6 @@ void CTranscendenceModel::MarkGateFollowers (CSystem *pSystem)
 		}
 	}
 
-void CTranscendenceModel::OnDockedObjChanged (CSpaceObject *pObj)
-
-//	OnDockedObjChanged
-//
-//	An object that was marked with SetPlayerDocked has changed
-
-	{
-	CGameSession *pSession = GetPlayer()->GetGameSession();
-	if (pSession == NULL)
-		return;
-			
-	pSession->GetDockScreen().ResetList(pObj);
-	}
-
 void CTranscendenceModel::OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceObject *pNewShip, SPlayerChangedShipsCtx &Options)
 
 //	OnPlayerChangedShips
@@ -1628,13 +1614,17 @@ void CTranscendenceModel::OnPlayerDocked (CSpaceObject *pObj)
 //	Player has docked with the given object.
 
 	{
+	CGameSession *pSession  = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		return;
+			
 	g_pTrans->ClearMessage();
 
 	//	See if the object wants to redirect us. In that case, m_pStation
 	//	will remain the original object, but gSource and m_pLocation in the
 	//	dock screen will be set to the new object
 
-	CSpaceObject *pDock = GetDockSession().OnPlayerDocked(pObj);
+	CSpaceObject *pDock = GetDockSession().OnPlayerDocked(pSession->GetDockScreen(), pObj);
 
 	//	Show screen
 
@@ -2440,6 +2430,13 @@ bool CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 //	if necessary.
 
 	{
+	CGameSession *pSession  = GetPlayer()->GetGameSession();
+	if (pSession == NULL)
+		{
+		*retsError = CONSTLIT("Not in a game session.");
+		return false;
+		}
+			
 	//	If we're not in the middle of a game, then we fail (this can happen if
 	//	we try to bring up a dock screen while in the middle of gating).
 
@@ -2456,13 +2453,9 @@ bool CTranscendenceModel::ShowShipScreen (CDesignType *pDefaultScreensRoot, CDes
 		return false;
 		}
 
-	//	If the default root is passed in, use that. Otherwise, we pull local
-	//	screens from the ship class.
+	//	Tell the universe that we're showing the player ship screen
 
-	if (pDefaultScreensRoot)
-		GetDockSession().SetDefaultScreenRoot(pDefaultScreensRoot);
-	else
-		GetDockSession().SetDefaultScreenRoot(pShip->GetType());
+	GetDockSession().OnPlayerShowShipScreen(pSession->GetDockScreen(), pDefaultScreensRoot);
 
 	//	Show screen
 

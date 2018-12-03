@@ -988,7 +988,6 @@ class CTranscendenceModel
 
 		ALERROR GetGameStats (CGameStats *retStats);
 
-		void OnDockedObjChanged (CSpaceObject *pObj);
 		void OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceObject *pNewShip, SPlayerChangedShipsCtx &Options);
 		void OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpitaph = NULL);
 		void OnPlayerDocked (CSpaceObject *pObj);
@@ -1016,7 +1015,7 @@ class CTranscendenceModel
 		void GetScreenSession (SDockFrame *retFrame);
         inline CSystemMapThumbnails &GetSystemMapThumbnails (void) { return m_SystemMapThumbnails; }
 		inline void IncScreenData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL) { GetScreenStack().IncData(sAttrib, pData, retpResult); }
-		inline bool InScreenSession (void) const { return !GetScreenStack().IsEmpty(); }
+		inline bool InScreenSession (void) const { return GetDockSession().InSession(); }
 		bool IsGalacticMapAvailable (CString *retsError = NULL);
 		void RecordFinalScore (const CString &sEpitaph, const CString &sEndGameReason, bool bEscaped);
 		void RefreshScreenSession (void);

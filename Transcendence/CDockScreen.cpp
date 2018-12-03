@@ -1543,15 +1543,26 @@ ALERROR CDockScreen::ReportError (const CString &sError)
 	return ERR_FAIL;
 	}
 
-void CDockScreen::ResetList (CSpaceObject *pLocation)
+void CDockScreen::OnModifyItemBegin (SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Item)
 
-//	ResetList
+//	OnModifyItemBegin
 //
-//	Resets the display list
+//	An item on the source is about to be modified.
+
+	{
+	if (m_pDisplay)
+		m_pDisplay->OnModifyItemBegin(Ctx, pSource, Item);
+	}
+
+void CDockScreen::OnModifyItemComplete (SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Result)
+
+//	OnModifyItemComplete
+//
+//	And item on the source has been modified.
 
 	{
 	if (m_pDisplay
-			&& m_pDisplay->ResetList(pLocation) == IDockScreenDisplay::resultShowPane)
+			&& m_pDisplay->OnModifyItemComplete(Ctx, pSource, Result) == IDockScreenDisplay::resultShowPane)
 		{
 		//	NOTE: We defer the actual recalc of the pane until after any action
 		//	is done. We need to do this because we don't want to execute

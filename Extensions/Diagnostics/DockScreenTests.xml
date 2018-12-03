@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<Globals>
+	(block ()
+		(setq diagTestItemModifications (lambda ()
+			(block (
+				(totalTests 0)
+				(listSource (scrGetProperty gScreen 'listSource))
+				curSel
+				)
+				;	Must be in a dock screen with an item list
+
+				(if (or (not (scrGetScreen gScreen))
+						(not listSource)
+						)
+					(error "Must be in a list item dock screen.")
+					)
+
+				;	Must have at least one item.
+
+				(if (not (scrGetItem gScreen))
+					(error "Must have at least one item in list.")
+					)
+
+				;	Add an item of the same type as the selection
+
+				(setq curSel (scrGetItem gScreen))
+				(objAddItem listSource curSel 1)
+				(if (not (itmIsEqual curSel (scrGetItem gScreen)))
+					(error "Selection changed after adding an item.")
+					)
+
+				(setq totalTests (+ totalTests 1))
+
+				;	Set data on a single item
+
+				(setq curSel (scrGetItem gScreen))
+				(objSetItemData listSource curSel 'test 1)
+				(if (not (itmGetData (scrGetItem gScreen) 'test))
+					(error "Setting data did not preserve selection.")
+					)
+
+				(setq totalTests (+ totalTests 1))
+
+				;	Remove data on the item (this will cause it to coalesc.
+
+				(objSetItemData listSource (scrGetItem gScreen) 'test nil)
+				(if (not (itmIsEqual curSel (scrGetItem gScreen)))
+					(error "Selection changed after coalescing item.")
+					)
+
+				(setq totalTests (+ totalTests 1))
+
+				;	Done
+
+				(print "Total Tests: " (fmtNumber totalTests))
+				)
+			))
+		)
+	</Globals>
+
+</TranscendenceModule>

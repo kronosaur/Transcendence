@@ -19,7 +19,7 @@ class CDockScreenCarousel : public IDockScreenDisplay
 		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override { retDesc->iType = backgroundNone; return true; }
 		virtual int OnGetListCursor (void) override { return m_pControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) override { return m_pControl->GetList(); }
-		virtual CSpaceObject *OnGetSource (void) override { return m_pControl->GetSource(); }
+		virtual CSpaceObject *OnGetSource (void) const override { return m_pControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) override;
 		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
@@ -98,7 +98,7 @@ class CDockScreenList : public IDockScreenDisplay
 		virtual CItemListManipulator &OnGetItemListManipulator (void) override { return m_pItemListControl->GetItemListManipulator(); }
 		virtual int OnGetListCursor (void) override { return m_pItemListControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) override { return m_pItemListControl->GetList(); }
-		virtual CSpaceObject *OnGetSource (void) override { return m_pItemListControl->GetSource(); }
+		virtual CSpaceObject *OnGetSource (void) const override { return m_pItemListControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) override;
 		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
@@ -206,7 +206,7 @@ class CDockScreenSelector : public IDockScreenDisplay
 		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override;
 		virtual int OnGetListCursor (void) override { return m_pControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) override { return m_pControl->GetList(); }
-		virtual CSpaceObject *OnGetSource (void) override { return m_pControl->GetSource(); }
+		virtual CSpaceObject *OnGetSource (void) const override { return m_pControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) override;
 		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
