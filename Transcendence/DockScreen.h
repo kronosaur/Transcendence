@@ -538,48 +538,5 @@ class CDockScreen : public IScreenController
 		TSortMap<CString, CString> m_DeferredDisplayText;
 	};
 
-struct SDockFrame
-	{
-	CSpaceObject *pLocation = NULL;			//	Current location
-	CDesignType *pRoot = NULL;				//	Either a screen or a type with screens
-	CString sScreen;						//	Screen name (UNID or name)
-	CString sPane;							//	Current pane
-	ICCItemPtr pInitialData;				//	Data for the screen
-	ICCItemPtr pStoredData;					//	Read-write data
-	ICCItemPtr pReturnData;					//	Data returns from a previous screen
-
-	CDesignType *pResolvedRoot = NULL;
-	CString sResolvedScreen;
-
-	TSortMap<CString, CString> DisplayData;	//	Opaque data used by displays
-	};
-
-class CDockScreenStack
-	{
-	public:
-		void DeleteAll (void);
-		ICCItem *GetData (const CString &sAttrib);
-		const CString &GetDisplayData (const CString &sID);
-		inline int GetCount (void) const { return m_Stack.GetCount(); }
-		const SDockFrame &GetCurrent (void) const;
-		ICCItem *GetReturnData (const CString &sAttrib);
-		void IncData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL);
-		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
-		void Push (const SDockFrame &Frame);
-		void Pop (void);
-		void ResolveCurrent (const SDockFrame &ResolvedFrame);
-		void SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPrevFrame = NULL);
-		void SetCurrentPane (const CString &sPane);
-		void SetData (const CString &sAttrib, ICCItem *pData);
-		void SetDisplayData (const CString &sID, const CString &sData);
-		void SetLocation (CSpaceObject *pLocation);
-		void SetReturnData (const CString &sAttrib, ICCItem *pData);
-
-	private:
-		TArray<SDockFrame> m_Stack;
-
-		static const SDockFrame m_NullFrame;
-	};
-
 #include "DockScreenDisplayImpl.h"
 #include "DockScreenSubjugate.h"
