@@ -1940,6 +1940,9 @@
 	<!ENTITY rsT55Transport				"0x00100332">
 	<!ENTITY rsT55TransportHero			"0x00100333">
 	<!ENTITY smOutlawSpace				"0x00100334">
+	<!ENTITY rsOutlawCamp				"0x00100335">
+	<!ENTITY rsOutlawBase				"0x00100336">
+	<!ENTITY rsOutlawHaven				"0x00100337">
 
 	<!-- 0370-038F AUTONS -->
 
