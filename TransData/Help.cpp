@@ -239,6 +239,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/angles]	            Show angles for each frame.\n");
 		printf("      [/driveimages]		Show all rotations with exhaust images.\n");
 		printf("      [/grid]               Show a grid centered on ship.\n");
+		printf("      [/interior]           Show interior compartment bounds.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/portPos]            Show docking port positions.\n");
 		printf("      [/weaponpos]          Show all rotations with weapon positions.\n");
