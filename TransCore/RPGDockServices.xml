@@ -407,7 +407,7 @@
 
 				You have a foreign object attached to your armor.
 				We could remove it completely for %cost%,
-				but unfortunately you cannot afford the cost."
+				but unfortunately you cannot afford the cost.
 
 			</Text>
 			<Text id="descCannotAffordOverlayRemoveMultiple">
