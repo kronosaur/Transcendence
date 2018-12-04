@@ -449,6 +449,45 @@ IDockScreenDisplay::EResults CDockScreenList::OnResetList (CSpaceObject *pLocati
 		return resultNone;
 	}
 
+bool CDockScreenList::OnSelectItem (const CItem &Item)
+
+//	OnSelectItem
+//
+//	Selects the given item.
+
+	{
+	IListData *pList = GetListData();
+	if (pList == NULL)
+		return false;
+
+	int iCursor;
+	if (!pList->FindItem(Item, &iCursor))
+		return false;
+
+	SetListCursor(iCursor);
+	return true;
+	}
+
+bool CDockScreenList::OnSelectNextItem (void)
+
+//	OnSelectNextItem
+//
+//	Selects the next item
+
+	{
+	return m_pItemListControl->MoveCursorForward();
+	}
+
+bool CDockScreenList::OnSelectPrevItem (void)
+
+//	OnSelectPrevItem
+//
+//	Selects the previous item
+
+	{
+	return m_pItemListControl->MoveCursorBack();
+	}
+
 IDockScreenDisplay::EResults CDockScreenList::OnSetListCursor (int iCursor)
 
 //	OnSetListCursor
@@ -482,26 +521,6 @@ IDockScreenDisplay::EResults CDockScreenList::OnSetLocation (CSpaceObject *pLoca
 	{
 	//	LATER: Deal with changing location
 	return resultShowPane;
-	}
-
-bool CDockScreenList::OnSelectNextItem (void)
-
-//	OnSelectNextItem
-//
-//	Selects the next item
-
-	{
-	return m_pItemListControl->MoveCursorForward();
-	}
-
-bool CDockScreenList::OnSelectPrevItem (void)
-
-//	OnSelectPrevItem
-//
-//	Selects the previous item
-
-	{
-	return m_pItemListControl->MoveCursorBack();
 	}
 
 void CDockScreenList::OnShowItem (void)

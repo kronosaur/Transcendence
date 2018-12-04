@@ -366,6 +366,8 @@ void IDockScreenDisplay::OnModifyItemBegin (IDockScreenUI::SModifyItemCtx &Ctx, 
 	if (GetSource() != pSource)
 		return;
 
+	//	
+
 	//	If no item, then it means that we want to keep the current selection.
 
 	if (Item.IsEmpty())
@@ -528,23 +530,3 @@ void IDockScreenDisplay::SelectArmor (int iSelection)
     {
     m_DockScreen.GetGameSession().OnArmorSelected(iSelection);
     }
-
-bool IDockScreenDisplay::SelectItem (const CItem &Item)
-
-//	SelectItem
-//
-//	Selects the given item and returns TRUE if the item was selected. Otherwise,
-//	we do nothing (and return FALSE).
-
-	{
-	IListData *pList = GetListData();
-	if (pList == NULL)
-		return false;
-
-	int iCursor;
-	if (!pList->FindItem(Item, &iCursor))
-		return false;
-
-	SetListCursor(iCursor);
-	return true;
-	}

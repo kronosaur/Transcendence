@@ -262,6 +262,35 @@ IDockScreenDisplay::EResults CDockScreenSelector::OnResetList (CSpaceObject *pLo
 		return resultNone;
 	}
 
+bool CDockScreenSelector::OnSelectItem (const CItem &Item)
+
+//	OnSelectItem
+//
+//	Select the given item.
+
+	{
+	}
+
+bool CDockScreenSelector::OnSelectNextItem (void)
+
+//	OnSelectNextItem
+//
+//	Select the next item
+
+	{
+	return m_pControl->MoveCursor(CGSelectorArea::moveNext);
+	}
+
+bool CDockScreenSelector::OnSelectPrevItem (void)
+
+//	OnSelectPrevItem
+//
+//	Select the previous item
+
+	{
+	return m_pControl->MoveCursor(CGSelectorArea::movePrev);
+	}
+
 IDockScreenDisplay::EResults CDockScreenSelector::OnSetListCursor (int iCursor)
 
 //	OnSetListCursor
@@ -293,26 +322,6 @@ IDockScreenDisplay::EResults CDockScreenSelector::OnSetLocation (CSpaceObject *p
 	{
 	//	LATER: Deal with changing location
 	return resultShowPane;
-	}
-
-bool CDockScreenSelector::OnSelectNextItem (void)
-
-//	OnSelectNextItem
-//
-//	Select the next item
-
-	{
-	return m_pControl->MoveCursor(CGSelectorArea::moveNext);
-	}
-
-bool CDockScreenSelector::OnSelectPrevItem (void)
-
-//	OnSelectPrevItem
-//
-//	Select the previous item
-
-	{
-	return m_pControl->MoveCursor(CGSelectorArea::movePrev);
 	}
 
 void CDockScreenSelector::OnShowItem (void)

@@ -105,6 +105,11 @@ class IDockScreenDisplay
 		inline IListData *GetListData (void) { return OnGetListData(); }
 		ICCItemPtr GetProperty (const CString &sProperty) const;
 		inline CSpaceObject *GetSource (void) const { return OnGetSource(); }
+
+		static constexpr DWORD FLAG_UI_ITEM_LIST =			0x00000001;	//	Shows an item list
+		static constexpr DWORD FLAG_UI_ITEM_SELECTOR =		0x00000002;	//	Shows an item selector
+		DWORD GetUIFlags (void) const { return OnGetUIFlags(); }
+
 		inline EResults HandleAction (DWORD dwTag, DWORD dwData) { return OnHandleAction(dwTag, dwData); }
 		inline EResults HandleKeyDown (int iVirtKey) { return OnHandleKeyDown(iVirtKey); }
 		ALERROR Init (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
@@ -115,7 +120,7 @@ class IDockScreenDisplay
 		inline EResults SetListCursor (int iCursor) { return OnSetListCursor(iCursor); }
 		inline EResults SetListFilter (const CItemCriteria &Filter) { return OnSetListFilter(Filter); }
 		inline EResults SetLocation (CSpaceObject *pLocation) { m_pLocation = pLocation; return OnSetLocation(pLocation); }
-		bool SelectItem (const CItem &Item);
+		inline bool SelectItem (const CItem &Item) { return OnSelectItem(Item); }
 		inline bool SelectNextItem (void) { return OnSelectNextItem(); }
 		inline bool SelectPrevItem (void) { return OnSelectPrevItem(); }
 		inline void ShowItem (void) { OnShowItem(); }
@@ -135,16 +140,18 @@ class IDockScreenDisplay
 		virtual IListData *OnGetListData (void) { return NULL; }
 		virtual ICCItemPtr OnGetProperty (const CString &sProperty) const;
 		virtual CSpaceObject *OnGetSource (void) const { return NULL; }
+		virtual DWORD OnGetUIFlags (void) const { return 0; }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) { return resultNone; }
 		virtual EResults OnHandleKeyDown (int iVirtKey) { return resultNone; }
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) { return NOERROR; }
 		virtual bool OnIsCurrentItemValid (void) const { return false; }
 		virtual EResults OnResetList (CSpaceObject *pLocation) { return resultNone; }
+		virtual bool OnSelectItem (const CItem &Item) { return false; }
+		virtual bool OnSelectNextItem (void) { return false; }
+		virtual bool OnSelectPrevItem (void) { return false; }
 		virtual EResults OnSetListCursor (int iCursor) { return resultNone; }
 		virtual EResults OnSetListFilter (const CItemCriteria &Filter) { return resultNone; }
 		virtual EResults OnSetLocation (CSpaceObject *pLocation) { return resultNone; }
-		virtual bool OnSelectNextItem (void) { return false; }
-		virtual bool OnSelectPrevItem (void) { return false; }
 		virtual void OnShowItem (void) { }
 		virtual void OnShowPane (bool bNoListNavigation);
 
