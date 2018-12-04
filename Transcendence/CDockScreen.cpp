@@ -1564,12 +1564,17 @@ void CDockScreen::OnModifyItemComplete (SModifyItemCtx &Ctx, CSpaceObject *pSour
 	if (m_pDisplay
 			&& m_pDisplay->OnModifyItemComplete(Ctx, pSource, Result) == IDockScreenDisplay::resultShowPane)
 		{
+		const SDockFrame &CurFrame = g_pUniverse->GetDockSession().GetCurrentFrame();
+
 		//	NOTE: We defer the actual recalc of the pane until after any action
 		//	is done. We need to do this because we don't want to execute
 		//	<OnPaneInit> in the middle of processing an action (since that might
 		//	change state which the action is relying on.
 
-		m_CurrentPane.ExecuteShowPane(EvalInitialPane(), true);
+		if (CurFrame.sPane.IsBlank())
+			m_CurrentPane.ExecuteShowPane(EvalInitialPane(), true);
+		else
+			m_CurrentPane.ExecuteShowPane(CurFrame.sPane, true);
 		}
 	}
 
