@@ -364,13 +364,21 @@ void IDockScreenDisplay::OnModifyItemBegin (IDockScreenUI::SModifyItemCtx &Ctx, 
 	//	do anything.
 
 	if (GetSource() != pSource)
-		return;
+		{ }
 
-	//	
+	//	If this is a selector area, then just reset the list
+
+	else if (GetUIFlags() & FLAG_UI_ITEM_SELECTOR)
+		Ctx.iSelChange = IDockScreenUI::selReset;
+
+	//	If this is NOT an item list, then we don't do anything
+
+	else if (!(GetUIFlags() & FLAG_UI_ITEM_LIST))
+		{ }
 
 	//	If no item, then it means that we want to keep the current selection.
 
-	if (Item.IsEmpty())
+	else if (Item.IsEmpty())
 		{
 		Ctx.iSelChange = IDockScreenUI::selOriginal;
 		Ctx.OriginalItem = GetCurrentItem();
@@ -423,6 +431,10 @@ IDockScreenDisplay::EResults IDockScreenDisplay::OnModifyItemComplete (IDockScre
 			else
 				SelectItem(Result);
 
+			return resultShowPane;
+
+		case IDockScreenUI::selReset:
+			ResetList(GetSource());
 			return resultShowPane;
 
 		default:

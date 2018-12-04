@@ -253,22 +253,12 @@ IDockScreenDisplay::EResults CDockScreenSelector::OnResetList (CSpaceObject *pLo
 	{
 	if (m_pControl->GetSource() == pLocation)
 		{
-		m_pControl->ResetCursor();
-		m_pControl->MoveCursor(CGSelectorArea::moveNext);
+		m_pControl->Refresh();
 		ShowItem();
 		return resultShowPane;
 		}
 	else
 		return resultNone;
-	}
-
-bool CDockScreenSelector::OnSelectItem (const CItem &Item)
-
-//	OnSelectItem
-//
-//	Select the given item.
-
-	{
 	}
 
 bool CDockScreenSelector::OnSelectNextItem (void)

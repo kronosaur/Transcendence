@@ -216,7 +216,6 @@ class CDockScreenSelector : public IDockScreenDisplay
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 		virtual bool OnIsCurrentItemValid (void) const override;
 		virtual EResults OnResetList (CSpaceObject *pLocation) override;
-		virtual bool OnSelectItem (const CItem &Item) override;
 		virtual bool OnSelectNextItem (void) override;
 		virtual bool OnSelectPrevItem (void) override;
 		virtual EResults OnSetListCursor (int iCursor) override;

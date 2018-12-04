@@ -430,6 +430,8 @@ class CGSelectorArea : public AGArea
 	public:
 		enum EConfigurations
 			{
+			configNone,
+
 			configArmor,
             configDevices,
 			configMiscDevices,
@@ -473,6 +475,7 @@ class CGSelectorArea : public AGArea
 		inline CSpaceObject *GetSource (void) { return m_pSource; }
 		inline bool IsCursorValid (void) const { return (m_iCursor != -1); }
 		bool MoveCursor (EDirections iDir);
+		void Refresh (void);
 		inline void ResetCursor (void) { m_iCursor = -1; Invalidate(); }
         inline void SetBackColor (CG32bitPixel rgbColor) { m_rgbBackColor = rgbColor; }
         inline void SetColor (CG32bitPixel rgbColor) { m_rgbTextColor = rgbColor; }
@@ -536,15 +539,16 @@ class CGSelectorArea : public AGArea
 		void SetRegionsFromWeapons (CSpaceObject *pSource);
 
 		const CVisualPalette &m_VI;
-        CG32bitPixel m_rgbTextColor;
+        CG32bitPixel m_rgbTextColor = CG32bitPixel(255, 255, 255);
         CG32bitPixel m_rgbBackColor;
 
-		CSpaceObject *m_pSource;
+		CSpaceObject *m_pSource = NULL;
         CItemCriteria m_Criteria;
-        bool m_bNoEmptySlots;               //  Do not show empty slots
-        bool m_bAlwaysShowShields;          //  Always show shields in armor selected, even
+		EConfigurations m_iConfig = configNone;
+        bool m_bNoEmptySlots = false;		//  Do not show empty slots
+        bool m_bAlwaysShowShields = false;	//  Always show shields in armor selected, even
                                             //      if not part of criteria
 
 		TArray<SEntry> m_Regions;
-		int m_iCursor;
+		int m_iCursor = -1;
 	};
