@@ -447,7 +447,7 @@
 								(gr maxCount 1)
 									(scrShowPane gScreen "Quantity")
 
-								(= gMaxCount 1)
+								(= maxCount 1)
 									(block Nil
 										(objAddItem gSource (scrRemoveItem gScreen 1))
 										(scrShowPane gScreen "Donate")
