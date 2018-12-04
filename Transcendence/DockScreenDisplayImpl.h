@@ -19,7 +19,7 @@ class CDockScreenCarousel : public IDockScreenDisplay
 		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override { retDesc->iType = backgroundNone; return true; }
 		virtual int OnGetListCursor (void) override { return m_pControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) override { return m_pControl->GetList(); }
-		virtual CSpaceObject *OnGetSource (void) override { return m_pControl->GetSource(); }
+		virtual CSpaceObject *OnGetSource (void) const override { return m_pControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) override;
 		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
@@ -98,17 +98,18 @@ class CDockScreenList : public IDockScreenDisplay
 		virtual CItemListManipulator &OnGetItemListManipulator (void) override { return m_pItemListControl->GetItemListManipulator(); }
 		virtual int OnGetListCursor (void) override { return m_pItemListControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) override { return m_pItemListControl->GetList(); }
-		virtual CSpaceObject *OnGetSource (void) override { return m_pItemListControl->GetSource(); }
+		virtual CSpaceObject *OnGetSource (void) const override { return m_pItemListControl->GetSource(); }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) override;
 		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 		virtual bool OnIsCurrentItemValid (void) const override;
 		virtual EResults OnResetList (CSpaceObject *pLocation) override;
+		virtual bool OnSelectItem (const CItem &Item) override;
+		virtual bool OnSelectNextItem (void) override;
+		virtual bool OnSelectPrevItem (void) override;
 		virtual EResults OnSetListCursor (int iCursor) override;
 		virtual EResults OnSetListFilter (const CItemCriteria &Filter) override;
 		virtual EResults OnSetLocation (CSpaceObject *pLocation) override;
-		virtual bool OnSelectNextItem (void) override;
-		virtual bool OnSelectPrevItem (void) override;
 		virtual void OnShowItem (void) override;
 		virtual void OnShowPane (bool bNoListNavigation) override;
 
@@ -142,6 +143,7 @@ class CDockScreenCustomItemList : public CDockScreenList
 
 		//	CDockScreenList
 
+		virtual DWORD OnGetUIFlags (void) const override { return FLAG_UI_ITEM_LIST; }
 		virtual ALERROR OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 
 	private:
@@ -171,6 +173,7 @@ class CDockScreenItemList : public CDockScreenList
 
 		//	CDockScreenList
 
+		virtual DWORD OnGetUIFlags (void) const override { return FLAG_UI_ITEM_LIST; }
 		virtual ALERROR OnInitList (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 
 	private:
@@ -206,17 +209,18 @@ class CDockScreenSelector : public IDockScreenDisplay
 		virtual bool OnGetDefaultBackground (SBackgroundDesc *retDesc) override;
 		virtual int OnGetListCursor (void) override { return m_pControl->GetCursor(); }
 		virtual IListData *OnGetListData (void) override { return m_pControl->GetList(); }
-		virtual CSpaceObject *OnGetSource (void) override { return m_pControl->GetSource(); }
+		virtual CSpaceObject *OnGetSource (void) const override { return m_pControl->GetSource(); }
+		virtual DWORD OnGetUIFlags (void) const { return FLAG_UI_ITEM_SELECTOR; }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) override;
 		virtual EResults OnHandleKeyDown (int iVirtKey) override;
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) override;
 		virtual bool OnIsCurrentItemValid (void) const override;
 		virtual EResults OnResetList (CSpaceObject *pLocation) override;
+		virtual bool OnSelectNextItem (void) override;
+		virtual bool OnSelectPrevItem (void) override;
 		virtual EResults OnSetListCursor (int iCursor) override;
 		virtual EResults OnSetListFilter (const CItemCriteria &Filter) override;
 		virtual EResults OnSetLocation (CSpaceObject *pLocation) override;
-		virtual bool OnSelectNextItem (void) override;
-		virtual bool OnSelectPrevItem (void) override;
 		virtual void OnShowItem (void) override;
 		virtual void OnShowPane (bool bNoListNavigation) override;
 

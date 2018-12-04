@@ -1919,11 +1919,6 @@ void CPlayerShipController::OnDocked (CSpaceObject *pObj)
 	m_bSignalDock = true;
 	}
 
-void CPlayerShipController::OnDockedObjChanged (CSpaceObject *pLocation)
-	{
-	g_pTrans->GetModel().OnDockedObjChanged(pLocation);
-	}
-
 void CPlayerShipController::OnMissionCompleted (CMission *pMission, bool bSuccess)
 
 //	OnMissionCompleted

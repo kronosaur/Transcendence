@@ -988,15 +988,17 @@ class CTranscendenceModel
 
 		ALERROR GetGameStats (CGameStats *retStats);
 
-		void OnDockedObjChanged (CSpaceObject *pObj);
 		void OnPlayerChangedShips (CSpaceObject *pOldShip, CSpaceObject *pNewShip, SPlayerChangedShipsCtx &Options);
 		void OnPlayerDestroyed (SDestroyCtx &Ctx, CString *retsEpitaph = NULL);
 		void OnPlayerDocked (CSpaceObject *pObj);
 		void OnPlayerEnteredGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate);
 		void OnPlayerExitedGate (void);
 		void OnPlayerTraveledThroughGate (void);
-		inline ICCItem *GetScreenData (const CString &sAttrib) { return m_DockFrames.GetData(sAttrib); }
-        inline CDockScreenStack &GetScreenStack (void) { return m_DockFrames; }
+		inline CDockSession &GetDockSession (void) { return m_Universe.GetDockSession(); }
+		inline const CDockSession &GetDockSession (void) const { return m_Universe.GetDockSession(); }
+		inline ICCItem *GetScreenData (const CString &sAttrib) { return GetScreenStack().GetData(sAttrib); }
+        inline CDockScreenStack &GetScreenStack (void) { return m_Universe.GetDockSession().GetFrameStack(); }
+        inline const CDockScreenStack &GetScreenStack (void) const { return m_Universe.GetDockSession().GetFrameStack(); }
 		ALERROR EndGame (void);
 		ALERROR EndGame (const CString &sReason, const CString &sEpitaph, int iScoreChange = 0);
 		ALERROR EndGameClose (CString *retsError = NULL);
@@ -1012,13 +1014,13 @@ class CTranscendenceModel
 		const SFileVersionInfo &GetProgramVersion (void) const { return m_Version; }
 		void GetScreenSession (SDockFrame *retFrame);
         inline CSystemMapThumbnails &GetSystemMapThumbnails (void) { return m_SystemMapThumbnails; }
-		inline void IncScreenData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL) { m_DockFrames.IncData(sAttrib, pData, retpResult); }
-		inline bool InScreenSession (void) const { return !m_DockFrames.IsEmpty(); }
+		inline void IncScreenData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL) { GetScreenStack().IncData(sAttrib, pData, retpResult); }
+		inline bool InScreenSession (void) const { return GetDockSession().InSession(); }
 		bool IsGalacticMapAvailable (CString *retsError = NULL);
 		void RecordFinalScore (const CString &sEpitaph, const CString &sEndGameReason, bool bEscaped);
 		void RefreshScreenSession (void);
 		bool ScreenTranslate (const CString &sID, ICCItem *pData, ICCItemPtr &pResult, CString *retsError = NULL) const;
-		inline void SetScreenData (const CString &sAttrib, ICCItem *pData) { m_DockFrames.SetData(sAttrib, pData); }
+		inline void SetScreenData (const CString &sAttrib, ICCItem *pData) { GetScreenStack().SetData(sAttrib, pData); }
 		ALERROR ShowPane (const CString &sPane);
 		ALERROR ShowScreen (CDesignType *pRoot, const CString &sScreen, const CString &sPane, ICCItem *pData, CString *retsError, bool bReturn = false, bool bFirstFrame = false);
 		void ShowShipScreen (void);
@@ -1102,11 +1104,6 @@ class CTranscendenceModel
 		CGameStats m_GameStats;						//	Most recent game stats
 		CHighScoreList m_HighScoreList;
 		int m_iLastHighScore;						//	Index to last high-score
-
-		//	Docking state
-		CDesignType *m_pDefaultScreensRoot;			//	Default root to look for local screens
-		CDockScreenStack m_DockFrames;				//	Stack of dock screens
-		TArray<CXMLElement *> m_ScreensInited;		//	List of screens that have called OnInit this session
 
         //  Caches
         CSystemMapThumbnails m_SystemMapThumbnails;

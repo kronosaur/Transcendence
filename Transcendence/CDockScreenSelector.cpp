@@ -253,13 +253,32 @@ IDockScreenDisplay::EResults CDockScreenSelector::OnResetList (CSpaceObject *pLo
 	{
 	if (m_pControl->GetSource() == pLocation)
 		{
-		m_pControl->ResetCursor();
-		m_pControl->MoveCursor(CGSelectorArea::moveNext);
+		m_pControl->Refresh();
 		ShowItem();
 		return resultShowPane;
 		}
 	else
 		return resultNone;
+	}
+
+bool CDockScreenSelector::OnSelectNextItem (void)
+
+//	OnSelectNextItem
+//
+//	Select the next item
+
+	{
+	return m_pControl->MoveCursor(CGSelectorArea::moveNext);
+	}
+
+bool CDockScreenSelector::OnSelectPrevItem (void)
+
+//	OnSelectPrevItem
+//
+//	Select the previous item
+
+	{
+	return m_pControl->MoveCursor(CGSelectorArea::movePrev);
 	}
 
 IDockScreenDisplay::EResults CDockScreenSelector::OnSetListCursor (int iCursor)
@@ -293,26 +312,6 @@ IDockScreenDisplay::EResults CDockScreenSelector::OnSetLocation (CSpaceObject *p
 	{
 	//	LATER: Deal with changing location
 	return resultShowPane;
-	}
-
-bool CDockScreenSelector::OnSelectNextItem (void)
-
-//	OnSelectNextItem
-//
-//	Select the next item
-
-	{
-	return m_pControl->MoveCursor(CGSelectorArea::moveNext);
-	}
-
-bool CDockScreenSelector::OnSelectPrevItem (void)
-
-//	OnSelectPrevItem
-//
-//	Select the previous item
-
-	{
-	return m_pControl->MoveCursor(CGSelectorArea::movePrev);
 	}
 
 void CDockScreenSelector::OnShowItem (void)

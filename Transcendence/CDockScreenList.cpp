@@ -440,6 +440,17 @@ IDockScreenDisplay::EResults CDockScreenList::OnResetList (CSpaceObject *pLocati
 	{
 	if (m_pItemListControl->GetSource() == pLocation)
 		{
+		//	HACK: We need to define these variables because any filters will
+		//	expect them. Sometimes we get called here in response to some other
+		//	event. E.g., someone might add an item in <OnUpdate> and we end up
+		//	getting called here. So we need to always set up the same environment
+		//	that the filter code expects.
+
+		CCodeChainCtx Ctx;
+		Ctx.SetScreen(&m_DockScreen);
+		Ctx.SaveAndDefineSourceVar(m_pLocation);
+		Ctx.SaveAndDefineDataVar(m_pData);
+
 		m_pItemListControl->ResetCursor();
 		m_pItemListControl->MoveCursorForward();
 		ShowItem();
@@ -447,6 +458,45 @@ IDockScreenDisplay::EResults CDockScreenList::OnResetList (CSpaceObject *pLocati
 		}
 	else
 		return resultNone;
+	}
+
+bool CDockScreenList::OnSelectItem (const CItem &Item)
+
+//	OnSelectItem
+//
+//	Selects the given item.
+
+	{
+	IListData *pList = GetListData();
+	if (pList == NULL)
+		return false;
+
+	int iCursor;
+	if (!pList->FindItem(Item, &iCursor))
+		return false;
+
+	SetListCursor(iCursor);
+	return true;
+	}
+
+bool CDockScreenList::OnSelectNextItem (void)
+
+//	OnSelectNextItem
+//
+//	Selects the next item
+
+	{
+	return m_pItemListControl->MoveCursorForward();
+	}
+
+bool CDockScreenList::OnSelectPrevItem (void)
+
+//	OnSelectPrevItem
+//
+//	Selects the previous item
+
+	{
+	return m_pItemListControl->MoveCursorBack();
 	}
 
 IDockScreenDisplay::EResults CDockScreenList::OnSetListCursor (int iCursor)
@@ -482,26 +532,6 @@ IDockScreenDisplay::EResults CDockScreenList::OnSetLocation (CSpaceObject *pLoca
 	{
 	//	LATER: Deal with changing location
 	return resultShowPane;
-	}
-
-bool CDockScreenList::OnSelectNextItem (void)
-
-//	OnSelectNextItem
-//
-//	Selects the next item
-
-	{
-	return m_pItemListControl->MoveCursorForward();
-	}
-
-bool CDockScreenList::OnSelectPrevItem (void)
-
-//	OnSelectPrevItem
-//
-//	Selects the previous item
-
-	{
-	return m_pItemListControl->MoveCursorBack();
 	}
 
 void CDockScreenList::OnShowItem (void)

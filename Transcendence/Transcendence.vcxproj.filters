@@ -173,9 +173,6 @@
     <ClCompile Include="PlayerController.cpp">
       <Filter>Source Files\Player</Filter>
     </ClCompile>
-    <ClCompile Include="CDockScreenStack.cpp">
-      <Filter>Source Files\Dock Screens</Filter>
-    </ClCompile>
     <ClCompile Include="CChooseAdventureSession.cpp">
       <Filter>Source Files\Sessions</Filter>
     </ClCompile>

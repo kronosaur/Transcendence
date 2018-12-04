@@ -141,9 +141,9 @@ void GenerateWeaponEffectChart (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		CItemListManipulator ItemList(pPlatform->GetItemList());
 		ItemList.AddItem(ReactorItem);
+
 		pPlatform->OnComponentChanged(comCargo);
-		pPlatform->ItemsModified();
-		pPlatform->InvalidateItemListAddRemove();
+		pPlatform->InvalidateItemListState();
 
 		pPlatform->InstallItemAsDevice(ItemList);
 		}
@@ -236,8 +236,7 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 		ItemList.AddItem(MissileItem);
 
 		pPlatform->OnComponentChanged(comCargo);
-		pPlatform->ItemsModified();
-		pPlatform->InvalidateItemListAddRemove();
+		pPlatform->InvalidateItemListState();
 		}
 
 	//	Install the appropriate weapon on the platform
@@ -246,8 +245,7 @@ void PaintWeaponFrames (CG32bitImage &Image, CItemType *pType, CShip *pPlatform,
 	ItemList.AddItem(WeaponItem);
 
 	pPlatform->OnComponentChanged(comCargo);
-	pPlatform->ItemsModified();
-	pPlatform->InvalidateItemListAddRemove();
+	pPlatform->InvalidateItemListState();
 
 	pPlatform->InstallItemAsDevice(ItemList);
 

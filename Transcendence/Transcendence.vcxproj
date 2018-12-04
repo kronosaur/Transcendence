@@ -390,7 +390,6 @@
     <ClCompile Include="CDockScreenItemList.cpp" />
     <ClCompile Include="CDockScreenList.cpp" />
     <ClCompile Include="CDockScreenSelector.cpp" />
-    <ClCompile Include="CDockScreenStack.cpp" />
     <ClCompile Include="CDockScreenSubjugate.cpp" />
     <ClCompile Include="CGameSession.cpp" />
     <ClCompile Include="CGCarouselArea.cpp" />

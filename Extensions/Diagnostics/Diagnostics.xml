@@ -24,6 +24,7 @@
 	<Library unid="&unidRPGLibrary;"/>
 	<Library unid="&unidHumanSpaceLibrary;"/>
 
+	<Module filename="DockScreenTests.xml"/>
 	<Module filename="ItemUnitTests.xml"/>
 	<Module filename="RPGUnitTests.xml"/>
 

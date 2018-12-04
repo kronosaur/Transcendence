@@ -129,7 +129,6 @@
 			name=				"outlaw camp"
 			sovereign=			"&svOutlaw;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -151,10 +150,14 @@
 				locationCriteria=		"--innerSystem, +planetary"
 				/>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
+		<Image imageID="&rsOutlawCamp;"			imageWidth="96" imageHeight="96"	viewportRatio="0.009375"/>
+
+		<DockingPorts
+				portAngle=		"-15"
+				portCount=		"8"
+				portRadius=		"60"
+				>
+		</DockingPorts>
 
 		<Ships>
 			<Table>
@@ -206,7 +209,6 @@
 			name=				"outlaw base"
 			sovereign=			"&svOutlaw;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -230,10 +232,14 @@
 				locationCriteria=		"--innerSystem, +planetary"
 				/>
 
-		<ImageVariants>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="384" imageWidth="64" imageHeight="64"/>
-			<Image			imageID="&rsStations1;" imageX="64" imageY="448" imageWidth="64" imageHeight="64"/>
-		</ImageVariants>
+		<Image imageID="&rsOutlawBase;"			imageWidth="186" imageHeight="186"	viewportRatio="0.025"/>
+
+		<DockingPorts
+				portAngle=		"-15"
+				portCount=		"8"
+				portRadius=		"110"
+				>
+		</DockingPorts>
 
 		<Devices>
 			<Device deviceID="&itLaserCannon;"	omnidirectional="true"/>
@@ -276,7 +282,6 @@
 			name=				"outlaw haven"
 			sovereign=			"&svOutlaw;"
 			abandonedScreen=	"&dsAbandonedStation;"
-			dockingPorts=		"8"
 			canAttack=			"true"
 
 			multiHull=			"true"
@@ -301,7 +306,14 @@
 				enemyExclusionRadius=	"100"
 				/>
 
-		<Image			imageID="&rsStations3;" imageX="128" imageY="0" imageWidth="128" imageHeight="128"/>
+		<Image imageID="&rsOutlawHaven;"			imageWidth="200" imageHeight="200"	viewportRatio="0.0275"/>
+
+		<DockingPorts
+				portAngle=		"-15"
+				portCount=		"8"
+				portRadius=		"115"
+				>
+		</DockingPorts>
 
 		<Devices>
 			<Device deviceID="&itLaserCannon;"	omnidirectional="true" posAngle="45"  posRadius="60"/>
@@ -860,4 +872,8 @@
 	<Image UNID="&rsZuluHD;"			bitmap="Resources\ZuluHD.jpg"			bitmask="Resources\ZuluHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsZulu2HD;"			bitmap="Resources\Zulu2HD.jpg"			bitmask="Resources\Zulu2HDMask.bmp"  loadOnUse="true"/>
 	
+	<Image UNID="&rsOutlawCamp;"		bitmap="Resources\OutlawCamp.jpg"		bitmask="Resources\OutlawCampMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsOutlawBase;"		bitmap="Resources\OutlawBase.jpg"		bitmask="Resources\OutlawBaseMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsOutlawHaven;"		bitmap="Resources\OutlawHaven.jpg"		bitmask="Resources\OutlawHavenMask.bmp"  loadOnUse="true"/>
+
 </TranscendenceModule>

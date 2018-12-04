@@ -140,12 +140,7 @@ const int CARGO_SLOT_INDEX =				2;
 const int FIRST_UNNAMED_SLOT_INDEX =		3;
 
 CGSelectorArea::CGSelectorArea (const CVisualPalette &VI) :
-		m_VI(VI),
-        m_rgbTextColor(255, 255, 255),
-		m_pSource(NULL),
-        m_bNoEmptySlots(false),
-        m_bAlwaysShowShields(false),
-		m_iCursor(-1)
+		m_VI(VI)
 
 //	CGSelectorArea constructor
 
@@ -992,6 +987,48 @@ void CGSelectorArea::PaintModifier (CG32bitImage &Dest, int x, int y, const CStr
 		*rety = y + m_VI.GetFont(fontSmall).GetHeight() + 1;
 	}
 
+void CGSelectorArea::Refresh (void)
+
+//	Refresh
+//
+//	Refresh from source.
+
+	{
+	if (m_pSource == NULL)
+		return;
+
+	//	Set up regions
+
+	m_Regions.DeleteAll();
+	switch (m_iConfig)
+		{
+		case configArmor:
+			SetRegionsFromArmor(m_pSource);
+			break;
+
+		case configDevices:
+			SetRegionsFromDevices(m_pSource);
+			break;
+
+		case configMiscDevices:
+			SetRegionsFromMiscDevices(m_pSource);
+			break;
+
+		case configWeapons:
+			SetRegionsFromWeapons(m_pSource);
+			break;
+		}
+
+	//	Make sure the cursor is in bounds
+
+	if (m_iCursor != -1 && m_iCursor >= m_Regions.GetCount())
+		m_iCursor = m_Regions.GetCount() - 1;
+
+	//	Done
+	
+	Invalidate();
+	}
+
 void CGSelectorArea::SetRegions (CSpaceObject *pSource, const SOptions &Options)
 
 //	SetRegions
@@ -1003,29 +1040,11 @@ void CGSelectorArea::SetRegions (CSpaceObject *pSource, const SOptions &Options)
 
 	m_pSource = pSource;
     m_Criteria = Options.ItemCriteria;
+	m_iConfig = Options.iConfig;
     m_bNoEmptySlots = Options.bNoEmptySlots;
     m_bAlwaysShowShields = Options.bAlwaysShowShields;
 
-	switch (Options.iConfig)
-		{
-		case configArmor:
-			SetRegionsFromArmor(pSource);
-			break;
-
-		case configDevices:
-			SetRegionsFromDevices(pSource);
-			break;
-
-		case configMiscDevices:
-			SetRegionsFromMiscDevices(pSource);
-			break;
-
-		case configWeapons:
-			SetRegionsFromWeapons(pSource);
-			break;
-		}
-
-	Invalidate();
+	Refresh();
 	}
 
 void CGSelectorArea::SetRegionsFromArmor (CSpaceObject *pSource)

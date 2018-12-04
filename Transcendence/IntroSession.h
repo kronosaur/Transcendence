@@ -193,7 +193,6 @@ class CIntroShipController : public IShipController
 		virtual bool OnDestroyCheck (DestructionTypes iCause, const CDamageSource &Attacker) override { return m_pDelegate->OnDestroyCheck(iCause, Attacker); }
 		virtual void OnDestroyed (SDestroyCtx &Ctx) override;
 		virtual void OnDocked (CSpaceObject *pObj) override { m_pDelegate->OnDocked(pObj); }
-		virtual void OnDockedObjChanged (CSpaceObject *pLocation) override { m_pDelegate->OnDockedObjChanged(pLocation); }
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) override { m_pDelegate->OnEnterGate(pDestNode, sDestEntryPoint, pStargate, bAscend); }
         virtual void OnFuelConsumed (Metric rFuel, CReactorDesc::EFuelUseTypes iUse) override { m_pDelegate->OnFuelConsumed(rFuel, iUse); }
 		virtual void OnHitBarrier (CSpaceObject *pBarrierObj, const CVector &vPos) override { m_pDelegate->OnHitBarrier(pBarrierObj, vPos); }

@@ -219,7 +219,6 @@ class CPlayerShipController : public IShipController
 		virtual void OnDeviceEnabledDisabled (int iDev, bool bEnable, bool bSilent = false) override;
 		virtual void OnDeviceStatus (CInstalledDevice *pDev, CDeviceClass::DeviceNotificationTypes iEvent) override;
 		virtual void OnDocked (CSpaceObject *pObj) override;
-		virtual void OnDockedObjChanged (CSpaceObject *pLocation) override;
 		virtual void OnEnterGate (CTopologyNode *pDestNode, const CString &sDestEntryPoint, CSpaceObject *pStargate, bool bAscend) override;
         virtual void OnFuelConsumed (Metric rFuel, CReactorDesc::EFuelUseTypes iUse) override;
 		virtual void OnItemBought (const CItem &Item, CurrencyValue iTotalPrice) override { m_Stats.OnItemBought(Item, iTotalPrice); }

@@ -103,16 +103,24 @@ class IDockScreenDisplay
 		inline CItemListManipulator &GetItemListManipulator (void) { return OnGetItemListManipulator(); }
 		inline int GetListCursor (void) { return OnGetListCursor(); }
 		inline IListData *GetListData (void) { return OnGetListData(); }
-		inline ICCItemPtr GetProperty (const CString &sProperty) const { return OnGetProperty(sProperty); }
-		inline CSpaceObject *GetSource (void) { return OnGetSource(); }
+		ICCItemPtr GetProperty (const CString &sProperty) const;
+		inline CSpaceObject *GetSource (void) const { return OnGetSource(); }
+
+		static constexpr DWORD FLAG_UI_ITEM_LIST =			0x00000001;	//	Shows an item list
+		static constexpr DWORD FLAG_UI_ITEM_SELECTOR =		0x00000002;	//	Shows an item selector
+		DWORD GetUIFlags (void) const { return OnGetUIFlags(); }
+
 		inline EResults HandleAction (DWORD dwTag, DWORD dwData) { return OnHandleAction(dwTag, dwData); }
 		inline EResults HandleKeyDown (int iVirtKey) { return OnHandleKeyDown(iVirtKey); }
 		ALERROR Init (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError);
 		inline bool IsCurrentItemValid (void) const { return OnIsCurrentItemValid(); }
+		void OnModifyItemBegin (IDockScreenUI::SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Item);
+		EResults OnModifyItemComplete (IDockScreenUI::SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Result);
 		inline EResults ResetList (CSpaceObject *pLocation) { return OnResetList(pLocation); }
 		inline EResults SetListCursor (int iCursor) { return OnSetListCursor(iCursor); }
 		inline EResults SetListFilter (const CItemCriteria &Filter) { return OnSetListFilter(Filter); }
 		inline EResults SetLocation (CSpaceObject *pLocation) { m_pLocation = pLocation; return OnSetLocation(pLocation); }
+		inline bool SelectItem (const CItem &Item) { return OnSelectItem(Item); }
 		inline bool SelectNextItem (void) { return OnSelectNextItem(); }
 		inline bool SelectPrevItem (void) { return OnSelectPrevItem(); }
 		inline void ShowItem (void) { OnShowItem(); }
@@ -131,17 +139,19 @@ class IDockScreenDisplay
 		virtual int OnGetListCursor (void) { return -1; }
 		virtual IListData *OnGetListData (void) { return NULL; }
 		virtual ICCItemPtr OnGetProperty (const CString &sProperty) const;
-		virtual CSpaceObject *OnGetSource (void) { return NULL; }
+		virtual CSpaceObject *OnGetSource (void) const { return NULL; }
+		virtual DWORD OnGetUIFlags (void) const { return 0; }
 		virtual EResults OnHandleAction (DWORD dwTag, DWORD dwData) { return resultNone; }
 		virtual EResults OnHandleKeyDown (int iVirtKey) { return resultNone; }
 		virtual ALERROR OnInit (SInitCtx &Ctx, const SDisplayOptions &Options, CString *retsError) { return NOERROR; }
 		virtual bool OnIsCurrentItemValid (void) const { return false; }
 		virtual EResults OnResetList (CSpaceObject *pLocation) { return resultNone; }
+		virtual bool OnSelectItem (const CItem &Item) { return false; }
+		virtual bool OnSelectNextItem (void) { return false; }
+		virtual bool OnSelectPrevItem (void) { return false; }
 		virtual EResults OnSetListCursor (int iCursor) { return resultNone; }
 		virtual EResults OnSetListFilter (const CItemCriteria &Filter) { return resultNone; }
 		virtual EResults OnSetLocation (CSpaceObject *pLocation) { return resultNone; }
-		virtual bool OnSelectNextItem (void) { return false; }
-		virtual bool OnSelectPrevItem (void) { return false; }
 		virtual void OnShowItem (void) { }
 		virtual void OnShowPane (bool bNoListNavigation);
 
@@ -372,7 +382,8 @@ class CDockPane
 		CString m_sDeferredShowPane;
 	};
 
-class CDockScreen : public IScreenController
+class CDockScreen : public IScreenController,
+		public IDockScreenUI
 	{
 	public:
 		CDockScreen (CGameSession &Session);
@@ -404,7 +415,6 @@ class CDockScreen : public IScreenController
 		inline bool IsValid (void) const { return (m_pScreen != NULL); }
 		ALERROR ReportError (const CString &sError);
 		inline void ResetFirstOnInit (void) { m_bFirstOnInit = true; }
-		void ResetList (CSpaceObject *pLocation);
 		void SelectListFilter (const CString &sID);
 		void SetListFilter (const CItemCriteria &Filter);
 		void SetLocation (CSpaceObject *pLocation);
@@ -438,7 +448,11 @@ class CDockScreen : public IScreenController
 		bool Translate (const CString &sTextID, ICCItem *pData, ICCItemPtr &pResult);
 
 		//	IScreenController virtuals
-		virtual void Action (DWORD dwTag, DWORD dwData = 0);
+		virtual void Action (DWORD dwTag, DWORD dwData = 0) override;
+
+		//	IDockScreenUI
+		virtual void OnModifyItemBegin (SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Item) override;
+		virtual void OnModifyItemComplete (SModifyItemCtx &Ctx, CSpaceObject *pSource, const CItem &Result) override;
 
 	private:
 		enum EControlTypes
@@ -536,49 +550,6 @@ class CDockScreen : public IScreenController
 		//	Runtime
 		IDockScreenDisplay::SBackgroundDesc m_DeferredBackground;
 		TSortMap<CString, CString> m_DeferredDisplayText;
-	};
-
-struct SDockFrame
-	{
-	CSpaceObject *pLocation = NULL;			//	Current location
-	CDesignType *pRoot = NULL;				//	Either a screen or a type with screens
-	CString sScreen;						//	Screen name (UNID or name)
-	CString sPane;							//	Current pane
-	ICCItemPtr pInitialData;				//	Data for the screen
-	ICCItemPtr pStoredData;					//	Read-write data
-	ICCItemPtr pReturnData;					//	Data returns from a previous screen
-
-	CDesignType *pResolvedRoot = NULL;
-	CString sResolvedScreen;
-
-	TSortMap<CString, CString> DisplayData;	//	Opaque data used by displays
-	};
-
-class CDockScreenStack
-	{
-	public:
-		void DeleteAll (void);
-		ICCItem *GetData (const CString &sAttrib);
-		const CString &GetDisplayData (const CString &sID);
-		inline int GetCount (void) const { return m_Stack.GetCount(); }
-		const SDockFrame &GetCurrent (void) const;
-		ICCItem *GetReturnData (const CString &sAttrib);
-		void IncData (const CString &sAttrib, ICCItem *pData, ICCItem **retpResult = NULL);
-		inline bool IsEmpty (void) const { return (m_Stack.GetCount() == 0); }
-		void Push (const SDockFrame &Frame);
-		void Pop (void);
-		void ResolveCurrent (const SDockFrame &ResolvedFrame);
-		void SetCurrent (const SDockFrame &NewFrame, SDockFrame *retPrevFrame = NULL);
-		void SetCurrentPane (const CString &sPane);
-		void SetData (const CString &sAttrib, ICCItem *pData);
-		void SetDisplayData (const CString &sID, const CString &sData);
-		void SetLocation (CSpaceObject *pLocation);
-		void SetReturnData (const CString &sAttrib, ICCItem *pData);
-
-	private:
-		TArray<SDockFrame> m_Stack;
-
-		static const SDockFrame m_NullFrame;
 	};
 
 #include "DockScreenDisplayImpl.h"
