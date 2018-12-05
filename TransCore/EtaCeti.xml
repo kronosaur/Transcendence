@@ -27,11 +27,15 @@
 				<RandomStation stationCriteria="*friendly; *primary"/>
 			</RandomLocation>
 
-			<!-- Random Stations -->
+			<!-- Random Stations
+			
+				NOTE: No chance of a second Penitent Monastery
+			
+			-->
 
 			<FillLocations
 					percentFull=		"80"
-					stationCriteria=	"!primary; !debris;" 
+					stationCriteria=	"!primary; !debris; !unid:&stPenitentMonastery;;" 
 					percentEnemies=		"75"
 					separateEnemies=	"true"
 					/>
@@ -54,7 +58,7 @@
 			<Orbitals count="1d12" distance="3d200+240" angle="random" exclusionRadius="100">
 				<Table>
 					<RandomStation chance="80" stationCriteria="*debris"/>
-					<RandomStation chance="18" stationCriteria="*enemy" locationAttribs="void"/>
+					<RandomStation chance="18" stationCriteria="*enemy; !unid:&stPenitentMonastery;;" locationAttribs="void"/>
 					<RandomStation chance="2"  stationCriteria="*friendly; !debris; !primary" locationAttribs="void"/>
 				</Table>
 			</Orbitals>

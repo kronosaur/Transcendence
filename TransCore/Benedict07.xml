@@ -601,73 +601,27 @@
 			
 			<Text id="dlgRescueBenedict">
 				(list
-					{
-						desc: (cat
-							"You enter the smoking wreckage of the Penitent ship. "
-							"Fiona carries a datapad controlling a squad of autons.\n\n"
-							
-							"You make your way slowly, dispatching all resistance. Finally, "
-							"the autons detect a figure running towards you.\n\n"
-							
-							"\"Hold\" says Fiona."
-							)
-						}
-					{
-						desc: (cat
-							"Benedict appears. A bloody arm hangs uselessly at his side, "
-							"but he walks proudly. He rushes to embrace Fiona.\n\n"
-							
-							"\"I'm OK,\" he says to her, \"But we need to get out of here.\""
-							)
-						label: "\"[A]nd go where?\""
-						}
-					{
-						desc: (cat
-							"Fiona agrees, \"Stormhound was right. We can't trust the Sisters! "
-							"We can't go back there!\"\n\n"
-							
-							"But Benedict insists, \"I know where they took the children! "
-							"They're in Eta Ceti, probably part of some experiment! We've got "
-							"to save them.\""
-							)
-						}
-					{
-						desc: (cat
-							"Fiona breaks away, shaking her head. \"We've got no support! "
-							"You know we'll never make it.\"\n\n"
-							
-							"But Benedict takes her hands, \"Fiona, I don't know who I was "
-							"before the mindwipe. But I know who I am now! I'm someone who would "
-							"risk everything to save those children. That's who I want to be!\""
-							)
-						}
-					{
-						desc: (cat
-							"Fiona beams a smile at Benedict, \"I won't let you go alone again. "
-							"Together to the end, OK?\"\n\n"
-							
-							"Benedict hugs her. Then he turns to you. \"I can't ask you to come "
-							"with us. Who knows what Domina plans for you. But if you find "
-							"yourself in Eta Ceti, we could use your help.\""
-							)
+					{	descID: 'textRescueBenedict1										translateType: &msRescueBenedict; }
+					{	descID: 'textRescueBenedict2	labelID: 'actionRescueBenedict2		translateType: &msRescueBenedict; }
+					{	descID: 'textRescueBenedict3										translateType: &msRescueBenedict; }
+					{	descID: 'textRescueBenedict4										translateType: &msRescueBenedict; }
+					{	descID: 'textRescueBenedict5										translateType: &msRescueBenedict;
 						actions: (list
 							{
 								;	BRANCH A
-								label: "\"[I]'ll be there!\""
+								labelID: 'actionRescueBenedict5A 
 								nextPage: 'accept
 								}
 							{
 								;	BRANCH B
-								label: "\"[D]omina has the final say.\""
+								labelID: 'actionRescueBenedict5B
 								nextPage: 'decline
 								}
 							)
 						}
 					{
 						id: 'accept
-						desc: (cat
-							"Fiona smiles at you. \"Thank you. We'll see you there!\""
-							)
+						descID: 'textRescueBenedict6										translateType: &msRescueBenedict;
 						nextPage: 'forceUndock
 						code: (lambda ()
 							(block (
@@ -679,9 +633,7 @@
 						}
 					{
 						id: 'decline
-						desc: (cat
-							"Benedict nods. \"I know. I don't envy you. Goodbye, %name%.\""
-							)
+						descID: 'textRescueBenedict7										translateType: &msRescueBenedict;
 						nextPage: 'forceUndock
 						code: (lambda ()
 							(block (
@@ -693,6 +645,25 @@
 						}
 					)
 			</Text>
+
+			<Text id="dlgRescueBenedictDeadEnd">
+				(list
+					{	descID: 'textRescueBenedict1										translateType: &msRescueBenedict; }
+					{	descID: 'textRescueBenedict2	labelID: 'actionRescueBenedict2		translateType: &msRescueBenedict; }
+					{	descID: 'textRescueBenedict8										translateType: &msRescueBenedict; }
+					{	descID: 'textRescueBenedict9	labelID: 'actionRescueBenedict9		translateType: &msRescueBenedict; 
+						nextPage: 'forceUndock
+						code: (lambda ()
+							(block (
+								(missionObj (@ (msnFind "a +unid:&msRescueBenedict;;") 0))
+								)
+								(msnFireEvent missionObj 'OnRescueDone)
+								)
+							)
+						}
+					)
+			</Text>
+
 			<Text id="dlgWaitForFiona">
 				(list
 					{
@@ -746,7 +717,104 @@
 						}
 					)
 			</Text>
+
+			<!-- RESCUE BENEDICT -->
+
+			<Text id="textRescueBenedict1">
+
+				You enter the smoking wreckage of the Penitent ship.
+				Fiona carries a datapad controlling a squad of autons.
+							
+				You make your way slowly, dispatching all resistance. Finally,
+				the autons detect a figure running towards you.
+							
+				"Hold," says Fiona.
+
+			</Text>
+			<Text id="textRescueBenedict2">
+
+				Benedict appears. A bloody arm hangs uselessly at his side, 
+				but he walks proudly. He rushes to embrace Fiona.
+							
+				"I'm OK," he says to her, "But we need to get out of here."
+
+			</Text>
+			<String id="actionRescueBenedict2">"[A]nd go where?"</String>
+			<Text id ="textRescueBenedict3">
 			
+				Fiona agrees, "Stormhound was right. We can't trust the Sisters!
+				We can't go back there!"
+							
+				But Benedict insists, "I know where they took the children!
+				They're in Eta Ceti, probably part of some experiment! We've got 
+				to save them."
+
+			</Text>
+			<Text id="textRescueBenedict4">
+			
+				Fiona breaks away, shaking her head. "We've got no support! 
+				You know we'll never make it."
+							
+				But Benedict takes her hands, "Fiona, I don't know who I was 
+				before the mindwipe. But I know who I am now! I'm someone who would 
+				risk everything to save those children. That's who I want to be!"
+
+			</Text>
+			<Text id="textRescueBenedict5">
+			
+				Fiona beams a smile at Benedict, "I won't let you go alone again. 
+				Together to the end, OK?"
+							
+				Benedict hugs her. Then he turns to you. "I can't ask you to come 
+				with us. Who knows what Domina plans for you. But if you find 
+				yourself in Eta Ceti, we could use your help."
+
+			</Text>
+			<String id="actionRescueBenedict5A">"[I]'ll be there!"</String>
+			<String id="actionRescueBenedict5B">"[D]omina has the final say."</String>
+			<Text id="textRescueBenedict6">
+			
+				Fiona smiles at you. "Thank you. We'll see you there!"
+
+			</Text>
+			<Text id="textRescueBenedict7">
+			
+				Benedict nods. "I know. I don't envy you. Goodbye, %name%."
+
+			</Text>
+
+			<!-- RESCUE BENEDICT - MONASTERY DESTROYED -->
+
+			<Text id="textRescueBenedict8">
+
+				Fiona agrees, "Stormhound was right. We can't trust the Sisters!
+				We can't go back there!"
+							
+				Benedict takes Fiona's hand, "I don't know who I was before the
+				mindwipe, but I know who I am now. And I know who I want to be
+				with.
+
+				"I don't care where we go, as long as it's together."
+			
+			</Text>
+			<Text id="textRescueBenedict9">
+			
+				Fiona beams a smile at Benedict, "I won't let you go alone again. 
+				Together to the end, OK?"
+							
+				Benedict hugs her. Then he turns to you. "Whatever the Sisters and
+				the Penitents are up to, it all leads back to you and your mission.
+
+				"I don't know what you'll find when you reach Domina, but I have a
+				feeling we're not going to like it.
+				
+				"Goodbye, %name%."
+
+			</Text>
+			<String id="actionRescueBenedict9">"[G]oodbye."</String>
+
+			<!-- MESSAGES -->
+
 			<Text id="msgBenedictDead1">"\"Nooooo!\""</Text>
 			<Text id="msgBenedictDead2">"\"Let's get the hell out of here.\""</Text>
 			<Text id="msgBenedictDead3">"\"Sorry, kid, you're on your own.\""</Text>
@@ -786,6 +854,12 @@
 								(not (msnGetData missionObj 'fionaStatus))
 								)
 							(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgWaitForFiona) 10)
+
+						;	If the Penitent station in Eta Ceti is already destroyed, then we get
+						;	an alternate script.
+
+						(not (unvFindObject 'EC "tA +unid:&stPenitentMonastery;;"))
+							(list &dsRPGDialog; (typTranslate &msRescueBenedict; 'dlgRescueBenedictDeadEnd) 10)
 
 						;	Rescue script
 						

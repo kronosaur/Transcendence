@@ -32,38 +32,51 @@
 		</StaticData>
 
 		<Events>
-			<OnCreate>
+			<CanCreate>
 				(block (targetObj)
 					(switch
+						;	Only valid in Eta Ceti
+					
+						(!= (sysGetNode) 'EC)
+							Nil
+						
 						;	See if the mission is still available
 
-						(not (benedict_isMissionAvailable (objGetType gSource)))
-							(msnDestroy gSource)
+						(not (benedict_isMissionAvailable gType))
+							Nil
 							
 						;	Must have completed the previous mission.
 						
 						(not (msnFind "r +unid:&msRescueBenedict;; +property:isSuccess;"))
-							(msnDestroy gSource)
+							Nil
 
 						;	No mission if the Penitent station is already destroyed
 						
 						(not (setq targetObj (@ (sysFindObject Nil "TA +unid:&stPenitentMonastery;;") 0)))
-							(msnDestroy gSource)
+							Nil
 							
 						;	If the Penitent station doesn't have the correct event handler,
 						;	then it means that someone else changed it. This should never
 						;	happen.
 						
 						(!= (objGetEventHandler targetObj) &evBenedict08PenitentBase;)
-							(msnDestroy gSource)
+							Nil
 
-						;	Remember the target
-						
-						(block ()
-							(msnSetData gSource 'targetID (objGetID targetObj))
-							(msnRegisterForEvents gSource targetObj)
-							)
+						;	OK
+
+						True
 						)
+					)
+			</CanCreate>
+
+			<OnCreate>
+				(block (
+					(targetObj (@ (sysFindObject Nil "TA +unid:&stPenitentMonastery;;") 0))
+					)
+					;	Remember the target
+
+					(msnSetData gSource 'targetID (objGetID targetObj))
+					(msnRegisterForEvents gSource targetObj)
 					)
 			</OnCreate>
 
@@ -141,40 +154,22 @@
 			
 			<OnGlobalSystemStarted>
 				(block (
-					penitentObj
+					(penitentObj (@ (sysFindObject Nil "T +unid:&stPenitentMonastery;;") 0))
 					)
-					(switch
-						;	If not in EC, then nothing to do
-					
-						(!= (sysGetNode) 'EC)
-							Nil
-						
-						;	If this mission is not available, then nothing to do.
-						
-						(not (benedict_isMissionAvailable &msRescueChildrenFromPenitents;))
-							Nil
-						
-						;	Must have completed the previous mission.
-						
-						(not (msnFind "r +unid:&msRescueBenedict;; +property:isSuccess;"))
-							Nil
 
-						;	No mission if the Penitent station is already destroyed
-						
-						(not (setq penitentObj (@ (sysFindObject Nil "TA +unid:&stPenitentMonastery;;") 0)))
-							Nil
+					;	Make sure the Penitent monastery has an event handler,
+					;	even if we can't create the mission.
+							
+					(if (not (objGetEventHandler penitentObj))
+						(objSetEventHandler penitentObj &evBenedict08PenitentBase;)
+						)
 
-						;	Set up mission
-					
+					;	Set up the mission, if necessary
+
+					(if (msnCanCreate &msRescueChildrenFromPenitents;)
 						(block (
 							stormhoundObj
 							)
-							;	Make sure the Penitent monastery has an event handler
-							
-							(if (not (objGetEventHandler penitentObj))
-								(objSetEventHandler penitentObj &evBenedict08PenitentBase;)
-								)
-
 							;	Create Stormhound near gate to SK
 
 							(setq stormhoundObj
