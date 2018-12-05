@@ -805,10 +805,6 @@ int CDockScreenActions::Justify (CDesignType *pRoot, int cxJustify)
 			m_cyMax = pAction->cyHeight;
 		}
 
-	//	Bottom margin
-
-	m_cyTotalHeight += BOTTOM_MARGIN_Y;
-
 	//	Done
 
 	m_cxJustify = cxJustify;

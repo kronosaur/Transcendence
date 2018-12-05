@@ -42,6 +42,8 @@ const int LAST_ACTION_ID =			199;
 const int CONTROL_BORDER_RADIUS =	4;
 const int CONTROL_INNER_PADDING =	8;
 const int CONTROL_PADDING_BOTTOM =	24;
+const int CONTROL_PADDING_MIN =		4;
+const int ACTION_MARGIN_Y =			46;
 
 const int COUNTER_ID =				204;
 const int COUNTER_WIDTH =			128;
@@ -49,7 +51,7 @@ const int COUNTER_HEIGHT =			40;
 const int COUNTER_PADDING_BOTTOM =	24;
 
 const int DESC_PADDING_BOTTOM =		24;
-const int DESC_HEIGHT_GRANULARITY =	60;
+const int DESC_HEIGHT_GRANULARITY =	48;
 
 const int TEXT_INPUT_ID =			207;
 const int TEXT_INPUT_WIDTH =		380;
@@ -972,9 +974,6 @@ void CDockPane::JustifyControls (int *retcyTotalHeight)
 		{
 		SControl &Control = m_Controls[i];
 
-		if (i != 0)
-			cyControls += CONTROL_PADDING_BOTTOM;
-
 		//	Compute the desired height of all variable-height controls
 
 		switch (Control.iType)
@@ -988,7 +987,13 @@ void CDockPane::JustifyControls (int *retcyTotalHeight)
 
 		//	Add up the total
 
-		cyControls += Control.cyHeight;
+		if (Control.cyHeight > 0)
+			{
+			if (i != 0)
+				cyControls += CONTROL_PADDING_BOTTOM;
+
+			cyControls += Control.cyHeight;
+			}
 		}
 
 	//	Done
@@ -1079,7 +1084,7 @@ void CDockPane::RenderControlsColumn (void)
 	//	for controls.
 
 	int cyActions = m_Actions.CalcAreaHeight(m_pDockScreen->GetResolvedRoot(), CDockScreenActions::arrangeVertical, m_rcActions);
-	int cyAvailable = RectHeight(m_rcControls) - PANE_PADDING_TOP - cyActions;
+	int cyAvailable = RectHeight(m_rcControls) - cyActions;
 
 	//	Compute the desired height of all variable-height controls
 
@@ -1090,9 +1095,17 @@ void CDockPane::RenderControlsColumn (void)
 
 	cyControls += PANE_PADDING_TOP + CONTROL_PADDING_BOTTOM;
 
-	//	Compute the buffer between the controls and the actions
+	//	Actions take priority, in case that we don't have enough room for both.
 
-	int cyControlsFull = Min(Max(cyControls, cyAvailable), AlignUp(cyControls, DESC_HEIGHT_GRANULARITY));
+	int cyControlsFull;
+	if (cyControls > cyAvailable)
+		cyControlsFull = cyControls - CONTROL_PADDING_BOTTOM + CONTROL_PADDING_MIN;
+	else if (cyControls > cyAvailable - ACTION_MARGIN_Y)
+		cyControlsFull = cyControls;
+	else
+		cyControlsFull = Min(cyAvailable, AlignUp(cyControls, DESC_HEIGHT_GRANULARITY));
+
+	//int cyControlsAdj = Min(cyControls, cyAvailable);
 
 	//	Figure out where to start.
 
