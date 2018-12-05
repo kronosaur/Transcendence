@@ -49,6 +49,7 @@ ICCItem *fnScrItem (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
 #define FN_PLY_USE_ITEM				21
 #define FN_PLY_IS_MESSAGE_ENABLED	22
 #define FN_PLY_INC_SCORE			23
+#define FN_PLY_INC_ITEM_STAT		24
 
 ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData);
 ICCItem *fnPlyGetOld (CEvalContext *pEvalCtx, ICCItem *pArguments, DWORD dwData);
@@ -506,6 +507,20 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"   'systemsVisited",
 
 			"is",	0,	},
+
+		{	"plyIncItemStat",					fnPlySet,			FN_PLY_INC_ITEM_STAT,
+			"(plyIncItemStat player stat item|type [inc]) -> value\n\n"
+			
+			"stat:\n\n"
+			
+			"   'itemsBoughtCount\n"
+			"   'itemsBoughtValue\n"
+			"   'itemsDamagedHP\n"
+			"   'itemsFiredCount\n"
+			"   'itemsSoldCount\n"
+			"   'itemsSoldValue",
+
+			"isv*",	PPFLAG_SIDEEFFECTS,	},
 
 		{	"plyIncScore",					fnPlySet,			FN_PLY_INC_SCORE,
 			"(plyIncScore player scoreInc) -> score",
@@ -1220,6 +1235,28 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			pPlayer->SetUIMessageEnabled(iMsg, (pArgs->GetElement(2)->IsNil() ? false : true));
 			pResult = pCC->CreateTrue();
+			break;
+			}
+
+		case FN_PLY_INC_ITEM_STAT:
+			{
+			CString sStat = pArgs->GetElement(1)->GetStringValue();
+			CItemType *pType = GetItemTypeFromArg(*pCC, pArgs->GetElement(2));
+			if (pType == NULL)
+				return pCC->CreateError(CONSTLIT("Unknown item type"), pArgs->GetElement(2));
+
+			int iInc = (pArgs->GetCount() >= 4 ? Max(0, pArgs->GetElement(3)->GetIntegerValue()) : 1);
+
+			//	Increment
+
+			int iResult = pPlayer->GetGameStats().IncItemStat(sStat, pType->GetUNID(), iInc);
+
+			//	Return
+
+			if (iResult > 0)
+				return pCC->CreateInteger(iResult);
+			else
+				return pCC->CreateNil();
 			break;
 			}
 
