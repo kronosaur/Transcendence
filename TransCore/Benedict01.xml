@@ -232,38 +232,7 @@
 								;	cargo hold worth selling, then sell it.
 							
 								(and (not (typGetData &svPlayer; 'tutorialSold))
-										(setq foundItem
-											(map
-												(map (objGetItems gPlayerShip "*~fuU") 'excludeNil theItem 
-													(block (buyerObj)
-														(switch
-															(not (itmIsKnown theItem))
-																Nil
-																
-															(and (itmMatches theItem "ad L:2-25;")
-																	(@ (objCanInstallItem gPlayerShip theItem) 0)
-																	)
-																Nil
-																
-															(not (setq buyerObj 
-																	(map (sysFindObject gPlayerShip "TAF +populated; S:d") (list 'excludeNil 'reduceMax 'original) theObj
-																		(objGetBuyPrice theObj theItem 'noDonations)
-																		)
-																	))
-																Nil
-
-															{
-															item: theItem
-															buyerObj: buyerObj
-															buyerPrice: (objGetBuyPrice buyerObj theItem 'noDonations)
-															})
-														)
-													)
-												(list 'excludeNil 'reduceMax 'original)
-												theResult
-												(if (gr (@ theResult 'buyerPrice) 0) (@ theResult 'buyerPrice))
-												)
-											)
+										(setq foundItem (msnFireEvent gSource 'CalcItemsToSell))
 										)
 									(block Nil
 										(setq targetObj (@ foundItem 'buyerObj))
@@ -530,8 +499,16 @@
 						;	Check to see if we've sold something
 						
 						(eq state 'sellLoot)
-							(if	(typGetData &svPlayer; 'tutorialSold)
-								(setq taskDone True)
+							(switch
+								;	If we sold something, then we're done
+
+								(typGetData &svPlayer; 'tutorialSold)
+									(setq taskDone True)
+
+								;	If we no longer have the item, then cancel the mission
+
+								(not (objHasItem gPlayerShip (msnGetData gSource 'foundItem) 1))
+									(setq taskDone True)
 								)
 								
 						;	Check if we've looted the item
@@ -588,6 +565,41 @@
 
 			<OnReward>
 			</OnReward>
+
+			<!-- HELPERS -->
+
+			<CalcItemsToSell>
+				(map
+					(map (objGetItems gPlayerShip "*~fuU") 'excludeNil theItem 
+						(block (buyerObj)
+							(switch
+								(not (itmIsKnown theItem))
+									Nil
+																
+								(and (itmMatches theItem "ad L:2-25;")
+										(@ (objCanInstallItem gPlayerShip theItem) 0)
+										)
+									Nil
+																
+								(not (setq buyerObj 
+										(map (sysFindObject gPlayerShip "TAF +populated; S:d") (list 'excludeNil 'reduceMax 'original) theObj
+											(objGetBuyPrice theObj theItem 'noDonations)
+											)
+										))
+									Nil
+
+								{
+								item: theItem
+								buyerObj: buyerObj
+								buyerPrice: (objGetBuyPrice buyerObj theItem 'noDonations)
+								})
+							)
+						)
+					(list 'excludeNil 'reduceMax 'original)
+					theResult
+					(if (gr (@ theResult 'buyerPrice) 0) (@ theResult 'buyerPrice))
+					)
+			</CalcItemsToSell>
 		</Events>
 		
 		<Language>
