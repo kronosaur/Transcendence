@@ -100,6 +100,7 @@
 						
 							(canBuy Nil)
 							(canUpgradeResult Nil)
+							(militaryCheck Nil)
 							)
 						
 							;	Set the description
@@ -144,13 +145,14 @@
 
 								;	If a military ID is required, check
 
-								(and (@ gData 'checkMilitaryID)
-										(objHasAttribute selObj 'military)
-										(not (objGetItems gPlayerShip "* +militaryID;"))
+								(and (objHasAttribute selObj 'military)
+										(!= (setq militaryCheck (rpgCheckMilitaryID (@ gData 'checkMilitaryID))) True)
 										)
 									(block ()
 										(scrEnableAction gScreen 'actionBuyShip Nil)
-										(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descNeedMilitaryID))
+										(scrSetActionDesc gScreen 'actionBuyShip (scrTranslate gScreen 'descNeedMilitaryID {
+											militaryID: (@ militaryCheck 'idName)
+											}))
 										)
 
 								;	If the player cannot afford the ship, then say so
@@ -189,13 +191,14 @@
 
 								;	If a military ID is required, check
 
-								(and (@ gData 'checkMilitaryID)
-										(objHasAttribute selObj 'military)
-										(not (objGetItems gPlayerShip "* +militaryID;"))
+								(and (objHasAttribute selObj 'military)
+										(!= (setq militaryCheck (rpgCheckMilitaryID (@ gData 'checkMilitaryID))) True)
 										)
 									(block ()
 										(scrEnableAction gScreen 'actionBuyForWingman Nil)
-										(scrSetActionDesc gScreen 'actionBuyForWingman (scrTranslate gScreen 'descNeedMilitaryID))
+										(scrSetActionDesc gScreen 'actionBuyForWingman (scrTranslate gScreen 'descNeedMilitaryID {
+											militaryID: (@ militaryCheck 'idName)
+											}))
 										)
 
 								;	If none of the wingmen want this ship
@@ -335,7 +338,7 @@
 				You cannot afford to buy this ship.
 			</Text>
 			<Text id="descNeedMilitaryID">
-				Requires a military ID
+				Requires %militaryID%
 			</Text>
 		</Language>
 	</DockScreen>

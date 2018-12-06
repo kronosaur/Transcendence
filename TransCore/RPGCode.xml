@@ -1338,6 +1338,59 @@
 					(divide (* attack attack) (+ attack defense))
 					)
 				))
+
+			;	rpgCheckMilitaryID
+			;
+			;	We check to see if the player has the appropriate military ID. If
+			;	so, we return True. Otherwise, we return a struct containing 
+			;	error information.
+			;
+			;	checkID can be one of the following:
+			;
+			;	Nil: Do not check for ID (always returns True)
+			;	True: Check for any ID with militaryID attribute.
+			;	String: Treat as an item criteria and check for any item that
+			;		matches the criteria.
+			;	Type: Check to see if the player has an item of this type.
+
+			(setq rpgCheckMilitaryID (lambda (checkID)
+				(switch
+					(not checkID)
+						True
+
+					(= checkID True)
+						(if (objGetItems gPlayerShip "* +militaryID;")
+							True
+							{
+								allowed: Nil
+								idNoun: (typTranslate &unidCommonText; 'nounMilitaryID)
+								idName: (fmtNoun (typTranslate &unidCommonText; 'nounMilitaryID) 1 'article)
+								}
+							)
+
+					(= (typeof checkID) 'string)
+						(if (objGetItems gPlayerShip checkID)
+							True
+							{
+								allowed: Nil
+								idNoun: (typTranslate &unidCommonText; 'nounMilitaryID)
+								idName: (fmtNoun (typTranslate &unidCommonText; 'nounMilitaryID) 1 'article)
+								}
+							)
+
+					(typHasAttribute checkID 'militaryID)
+						(if (objHasItem gPlayerShip (itmCreate checkID 1))
+							True
+							{
+								allowed: Nil
+								idNoun: (typGetProperty checkID 'namePattern)
+								idName: (fmtNoun (typGetProperty checkID 'namePattern) 1 'article)
+								}
+							)
+
+					True
+					)
+				))
 				
 			;	rpgDestroyItems
 			;
@@ -1653,6 +1706,7 @@
 							cargoNeeded resultMessage resultCode returnValue stationCannotInstall removeStatus
 							installText installTextData
 							stationRemoveStatus
+							militaryCheck
 							)
 
 							;	Check if the station can install the device
@@ -1771,14 +1825,16 @@
 
 								;	Check military ID
 
-								(and (@ data 'checkMilitaryID)
-										(itmHasAttribute thisItem "Military")
-										(not (objGetItems targetObj "*+MilitaryID"))
+								(and (itmHasAttribute thisItem "Military")
+										(!= (setq militaryCheck (rpgCheckMilitaryID (@ data 'checkMilitaryID))) True)
 										)
 									(setq desc (or
-										(objTranslate installerObj 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj })
-										(scrTranslate gScreen 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj })
-										(cat "You must have a military ID to use " itemName ".")
+										(objTranslate installerObj 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj militaryID:(@ militaryCheck 'idName) })
+										(scrTranslate gScreen 'rpg.cannotInstallDeviceWithoutMilitaryID { item:thisItem targetObj:targetObj militaryID:(@ militaryCheck 'idName) })
+										(typTranslate &unidCommonText; 'rpg.mustHaveAMilitaryIDToUseItem {
+											itemName: (itmGetName thisItem 'article)
+											militaryID: (@ militaryCheck 'idName) 
+											})
 										))
 
 								(and (@ data 'checkMilitaryID)

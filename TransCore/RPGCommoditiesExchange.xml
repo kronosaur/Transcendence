@@ -177,10 +177,10 @@
 
 						;	Military?
 
+						(militaryCheck (rpgCheckMilitaryID (@ gData 'checkMilitaryID)))
 						(militaryCount 
-							(if (and (@ gData 'checkMilitaryID)
-									(itmHasAttribute thisItem 'military)
-									(not (objGetItems gPlayerShip "* +militaryID;"))
+							(if (and (itmHasAttribute thisItem 'military)
+									(!= militaryCheck True)
 									)
 								0
 								(itmGetCount thisItem)
@@ -244,7 +244,10 @@
 										(scrTranslate gScreen 'descNotForSale)
 
 									(eq militaryCount 0)
-										(scrTranslate gScreen 'descNoMilitaryID { theItem:thisItem })
+										(scrTranslate gScreen 'descNoMilitaryID {
+											theItem:thisItem 
+											militaryID:(@ militaryCheck 'idName)
+											})
 										
 									(eq affordCount 0)
 										(scrTranslate gScreen 'descNotEnoughMoney { currency: (fmtCurrency currencyUsed True) })
@@ -493,7 +496,7 @@
 				\n\nThis item is not for sale.
 			</Text>
 			<Text id="descNoMilitaryID">
-				\n\nYou need a military ID to buy this item.
+				\n\nYou need %militaryID% to buy this item.
 			</Text>
 			<Text id="descNotEnoughMoney">
 				(cat

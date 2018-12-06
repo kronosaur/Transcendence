@@ -49,6 +49,13 @@
 			<!-- Common Noun Phrases -->
 			
 			<Text id="nounHitPoints">hit point(s)</Text>
+			<Text id="nounMilitaryID">military ID(s)</Text>
+
+			<!-- Common Errors -->
+
+			<Text id="rpg.mustHaveAMilitaryIDToUseItem">
+				You must have a %militaryID% to use %itemName%.
+			</Text>
 		</Language>
 	</Type>
 

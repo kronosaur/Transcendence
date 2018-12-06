@@ -113,6 +113,7 @@
 						(desc Nil)
 						(descID Nil)
 						(canInstall Nil)
+						(militaryCheck Nil)
 						)
 
 						;	Show the current armor
@@ -136,9 +137,8 @@
 							(= resultCode 'cannotInstall)
 								(setq desc (@ result 2))
 
-							(and (@ gData 'checkMilitaryID) 
-									(itmHasAttribute thisItem "Military")
-									(not (objGetItems gPlayerShip "*+MilitaryID"))
+							(and (itmHasAttribute thisItem "Military")
+									(!= (setq militaryCheck (rpgCheckMilitaryID (@ gData 'checkMilitaryID))) True)
 									)
 								(setq descID 'descNeedMilitaryID)
 
@@ -195,6 +195,7 @@
 								armorArticle:(itmGetName thisItem 'article)
 								armorShort:(itmGetName thisItem 'short)
 								cost:(fmtCurrency currencyUsed totalCost)
+								militaryID:(@ militaryCheck 'idName)
 								})
 							(scrSetDesc gScreen desc)
 							)
@@ -252,7 +253,7 @@
 
 			<Text id="descNoArmorHere">The station doesn't have any armor segments to install.</Text>
 			<Text id="descArmorTooHeavy">%ArmorPlural% are too heavy for your ship's hull.</Text>
-			<Text id="descNeedMilitaryID">You must have a military ID to install %armorShort%.</Text>
+			<Text id="descNeedMilitaryID">You must have %militaryID% to install %armorShort%.</Text>
 			<Text id="descArmorIllegal">We do not install illegal armor.</Text>
 			<Text id="descCannotInstall">This armor segment cannot be installed.</Text>
 			<Text id="descNoTech">We do not have the technology to install %armorShort%.</Text>
