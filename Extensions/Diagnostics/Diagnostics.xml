@@ -8,6 +8,12 @@
 	<!ENTITY unidItemUnitTests			"0xA0010003">
 	<!ENTITY unidRPGUnitTests			"0xA0010004">
 
+	<!-- 0040-007F TEST ITEMS -->
+
+	<!ENTITY itTestDriveDualSlot		"0xA0010040">
+
+	<!-- OTHER -->
+
 	<!ENTITY unidStarsOfThePilgrim		"0x00200000">
 	]>
 
@@ -27,99 +33,21 @@
 	<Module filename="DockScreenTests.xml"/>
 	<Module filename="ItemUnitTests.xml"/>
 	<Module filename="RPGUnitTests.xml"/>
+	<Module filename="TestItems.xml"/>
 
 <!-- DIAGNOSTICS -->
 
 	<Type unid="&unidDiagnostics;">
 		<Events>
 			<OnGlobalStartDiagnostics>
+				(block ()
+					(diagTestDeviceSlots)
+					)
 			</OnGlobalStartDiagnostics>
 
 			<OnGlobalSystemDiagnostics>
-				(block (theItem)
-
-					;	Initialize some vars
-
-					(setq gScreen Nil)
-
-					;	Create a ship that we can use as a player ship
-
-					(diagRun (list
-						(lambda ()
-							(block ()
-								(setq gPlayerShip (sysCreateShip &scSapphirePlayer; Nil &svPlayer;))
-								(if (not gPlayerShip)
-									(error "Unable to create player ship.")
-									)
-								(shpOrder gPlayerShip 'hold)
-
-								;	Add the biggest reactor
-
-								(objAddItem gPlayerShip (itmCreate &it1GWReactor; 1))
-								(shpInstallDevice gPlayerShip (itmCreate &it1GWReactor; 1))
-								(shpRefuelFromItem gPlayerShip (itmCreate &itHadronVacuumFuelCell; 100))
-
-								;	Add money
-
-								(objCredit gPlayerShip 1000000)
-								(objCredit gPlayerShip 'rin 1000000)
-								)
-							)
-						))
-
-					;	Run a series of tests for every friendly station
-
-					(enum (sysFindObject gPlayerShip "TAF") theStation
-						(diagRun (list
-							
-							;	See if the station can install a random device on the 
-							;	player ship.
-							;	(But skip Commonwealth Fortress and Black Market because
-							;	you need rank to get buy stuff.)
-
-							(if (and (objHasTradeService theStation 'InstallDevice)
-									(objMatches theStation gPlayerShip "* -commonwealthArmory; -blackMarket;")
-									(setq theItem (random (objGetItems theStation "d~rUN")))
-									)
-								(lambda ()
-									(block (
-										result
-										)
-										(setq result (rpgInstallDevicePrep {
-											item: theItem
-											installerObj: theStation
-											targetObj: gPlayerShip
-											upgrade: True
-											}))
-
-										(switch
-											;	If we succeed in installing, then OK.
-
-											(@ result 'canInstall)
-												True
-
-											;	If we're trying to install the same item, then we can
-											;	skip this.
-
-											(itmIsEqual theItem (@ result 'itemToReplace) 'ignoreInstalled)
-												True
-
-											;	Otherwise, installation failed for some reason.
-
-											(block ()
-												(print (objGetName theStation) ": " (@ result 'desc))
-												)
-											)
-										)
-									)
-								)
-							))
-						)
-
-					;	Done with player ship
-
-					(objDestroy gPlayerShip)
-					(setq gPlayerShip Nil)
+				(block ()
+					(diagTestStationItemInstall)
 					)
 			</OnGlobalSystemDiagnostics>
 
@@ -137,6 +65,181 @@
 
 	<Globals>
 	(block ()
+		;	TESTS --------------------------------------------------------------
+
+		(setq diagTestDeviceSlots (lambda ()
+			(block ()
+				(diagRun (list
+
+					;	Create ship
+
+					(lambda () (diagCreatePlayerShip))
+
+					;	Install weapons to fill all slots
+
+					(lambda () 
+						(for i 1 4
+							(diagInstallItem gPlayerShip (itmCreate &itLaserCannon; 1))
+							)
+						)
+
+					;	Install a drive
+
+					(lambda () 
+						(diagInstallItem gPlayerShip (itmCreate &itTritiumPropulsionUpgrade; 1))
+						)
+
+					;	Swap in a 2-slot drive. This should fail because
+					;	we do not have enough slots.
+
+					(lambda () 
+						(diagInstallItem gPlayerShip (itmCreate &itTestDriveDualSlot; 1) { result:'noDeviceSlotsLeft })
+						)
+
+					;	Remove one of the laser cannons
+
+					(lambda ()
+						(shpRemoveDevice gPlayerShip (@ (objGetItems gPlayerShip "wI") 0))
+						)
+
+					;	Now swap the 2-slot drive (this should work)
+
+					(lambda () 
+						(diagInstallItem gPlayerShip (itmCreate &itTestDriveDualSlot; 1))
+						)
+
+					;	Done with the player ship
+
+					(lambda () 
+						(block ()
+							(objDestroy gPlayerShip)
+							(setq gPlayerShip Nil)
+							)
+						)
+					))
+				)
+			))
+
+		(setq diagTestStationItemInstall (lambda ()
+			(block (theItem)
+
+				;	Initialize some vars
+
+				(setq gScreen Nil)
+
+				;	Create a ship that we can use as a player ship
+
+				(diagRun (list
+					(lambda () (diagCreatePlayerShip))
+					))
+
+				;	Run a series of tests for every friendly station
+
+				(enum (sysFindObject gPlayerShip "TAF") theStation
+					(diagRun (list
+							
+						;	See if the station can install a random device on the 
+						;	player ship.
+						;	(But skip Commonwealth Fortress and Black Market because
+						;	you need rank to get buy stuff.)
+
+						(if (and (objHasTradeService theStation 'InstallDevice)
+								(objMatches theStation gPlayerShip "* -commonwealthArmory; -blackMarket;")
+								(setq theItem (random (objGetItems theStation "d~rUN")))
+								)
+							(lambda ()
+								(block (
+									result
+									)
+									(setq result (rpgInstallDevicePrep {
+										item: theItem
+										installerObj: theStation
+										targetObj: gPlayerShip
+										upgrade: True
+										}))
+
+									(switch
+										;	If we succeed in installing, then OK.
+
+										(@ result 'canInstall)
+											True
+
+										;	If we're trying to install the same item, then we can
+										;	skip this.
+
+										(itmIsEqual theItem (@ result 'itemToReplace) 'ignoreInstalled)
+											True
+
+										;	Otherwise, installation failed for some reason.
+
+										(block ()
+											(print (objGetName theStation) ": " (@ result 'desc))
+											)
+										)
+									)
+								)
+							)
+						))
+					)
+
+				;	Done with player ship
+
+				(objDestroy gPlayerShip)
+				(setq gPlayerShip Nil)
+				)
+			))
+
+		;	HELPERS ------------------------------------------------------------
+
+		(setq diagCreatePlayerShip (lambda (options)
+			(block ()
+				(setq gPlayerShip (sysCreateShip &scSapphirePlayer; Nil &svPlayer;))
+				(if (not gPlayerShip)
+					(error "Unable to create player ship.")
+					)
+				(shpOrder gPlayerShip 'hold)
+
+				;	Add the biggest reactor
+
+				(objAddItem gPlayerShip (itmCreate &it1GWReactor; 1))
+				(shpInstallDevice gPlayerShip (itmCreate &it1GWReactor; 1))
+				(shpRefuelFromItem gPlayerShip (itmCreate &itHadronVacuumFuelCell; 100))
+
+				;	Add money
+
+				(objCredit gPlayerShip 1000000)
+				(objCredit gPlayerShip 'rin 1000000)
+
+				;	Return the ship
+
+				gPlayerShip
+				)
+			))
+
+		(setq diagInstallItem (lambda (theShip theItem options)
+			(block (
+				(expectedResult (@ options 'result))
+				(result (objCanInstallItem theShip theItem))
+				)
+				(switch
+					(and expectedResult (not (= expectedResult (@ result 1))))
+						(error (cat "Result: " (@ result 1) " [expected " expectedResult "]"))
+
+					(and (not expectedResult) (not (@ result 0)))
+						(error (cat "Cannot install: " (@ result 1)))
+
+					(@ result 0)
+						(block (installedItem)
+							(objAddItem theShip theItem)
+							(setq installedItem (shpInstallDevice theShip theItem))
+							(if (not (itmGetProperty installedItem 'installed))
+								(error "Installation failed.")
+								)
+							)
+					)
+				)
+			))
+
 		(setq diagRun (lambda (testList)
 			(block ()
 				(enum testList theTest

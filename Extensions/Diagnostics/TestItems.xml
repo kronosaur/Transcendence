@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<ItemType UNID="&itTestDriveDualSlot;"
+			name=				"test drive (dual slot)"
+			attributes=			"testItem"
+			  
+			level=				"9"
+			frequency=			"uncommon"
+
+			value=				"35000"
+			mass=				"10000"
+			  
+			description=		"Test item."
+			>
+
+		<Image imageID="&rsItems1;" imageX="96" imageY="384" imageWidth="96" imageHeight="96"/>
+
+		<DriveDevice
+				deviceSlots=	"2"
+
+				maxSpeedInc=	"8"
+				maxSpeed=		"30"
+				thrust=			"1500"
+				powerUse=		"2000"
+				/>
+
+	</ItemType>
+
+</TranscendenceModule>

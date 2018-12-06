@@ -792,5 +792,8 @@
     <Xml Include="..\Extensions\Diagnostics\DockScreenTests.xml">
       <Filter>Extensions\Diagnostics</Filter>
     </Xml>
+    <Xml Include="..\Extensions\Diagnostics\TestItems.xml">
+      <Filter>Extensions\Diagnostics</Filter>
+    </Xml>
   </ItemGroup>
 </Project>

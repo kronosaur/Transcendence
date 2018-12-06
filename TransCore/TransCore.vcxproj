@@ -180,6 +180,7 @@
     <Xml Include="..\Extensions\Diagnostics\DockScreenTests.xml" />
     <Xml Include="..\Extensions\Diagnostics\ItemUnitTests.xml" />
     <Xml Include="..\Extensions\Diagnostics\RPGUnitTests.xml" />
+    <Xml Include="..\Extensions\Diagnostics\TestItems.xml" />
     <Xml Include="Abbasid.xml" />
     <Xml Include="Anarchists.xml" />
     <Xml Include="Antarctica01.xml" />
