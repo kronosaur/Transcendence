@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+	<!-- Portable Analyzer -->
+
+	<ItemType UNID="&itPortableAnalyzer;"
+			name=				"portable analyzer"
+			attributes=			"analyzer; MinorItem"
+			inherit=			"&baAnalyzer;"
+
+			level=				"2"
+			frequency=			"common"
+			numberAppearing=	"1"
+
+			charges=			"4-8"
+			value=				"450"
+			valueBonusPerCharge="150"
+			mass=				"5"
+			  
+			description=		"Analyzers are automated scanners able to identify and diagnose starship devices and other items. This portable analyzer works on items of level 1, 2 and 3."
+
+			useScreen=			"&dsRPGAnalyzeItem;"
+			showChargesInUseMenu="true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96"  imageY="672" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<Data id="analyzer.criteria">"* L:1-3;"</Data>
+		</StaticData>
+	</ItemType>
+
+	<!-- Engineering Analyzer -->
+
+	<ItemType UNID="&itEngineeringAnalyzer;"
+			name=				"engineering analyzer"
+			attributes=			"analyzer; MinorItem"
+			inherit=			"&baAnalyzer;"
+			  
+			level=				"5"
+			frequency=			"common"
+			numberAppearing=	"1"
+
+			charges=			"4-8"
+			value=				"3000"
+			valueBonusPerCharge="1000"
+			mass=				"20"
+			  
+			description=		"An engineering analyzer is a more complex and capable version of the portable analyzer. This analyzer works on items up to level 6."
+
+			useScreen=			"&dsRPGAnalyzeItem;"
+			showChargesInUseMenu="true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96"  imageY="672" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<Data id="analyzer.criteria">"* L:1-6;"</Data>
+		</StaticData>
+	</ItemType>
+
+	<!-- Advanced Analyzer -->
+
+	<ItemType UNID="&itAdvancedAnalyzer;"
+			name=				"advanced analyzer"
+			attributes=			"analyzer; MinorItem"
+			inherit=			"&baAnalyzer;"
+			  
+			level=				"8"
+			frequency=			"common"
+			numberAppearing=	"1"
+
+			charges=			"4-8"
+			value=				"28000"
+			valueBonusPerCharge="10000"
+			mass=				"100"
+			  
+			description=		"The advanced analyzer is often used for researching unknown and alien technology. This analyzer works on items up to level 10."
+
+			useScreen=			"&dsRPGAnalyzeItem;"
+			showChargesInUseMenu="true"
+			>
+
+		<Image imageID="&rsItems1;" imageX="96"  imageY="672" imageWidth="96" imageHeight="96"/>
+
+		<StaticData>
+			<Data id="analyzer.criteria">"* L:1-10;"</Data>
+		</StaticData>
+	</ItemType>
+
+<!-- BASE CLASS -->
+
+	<Type unid="&baAnalyzer;">
+		<Events>
+			<CanAnalyzeItem>
+				(switch
+					;	We can only handle certain items
+					
+					(not (itmMatches (@ gData 'itemToAnalyze) (typGetStaticData gType 'analyzer.criteria)))
+						{	canAnalyzeItem: Nil
+							message: (typTranslate gType 'textCantAnalyze {
+								itemName: (itmGetName (@ gData 'itemToAnalyze) '(article installedState escapeQuotes))
+								})
+							}
+
+					{	canAnalyzeItem: True }
+					)
+			</CanAnalyzeItem>
+		</Events>
+
+		<Language>
+			<Text id="core.charges">charge(s)</Text>
+
+			<Text id="textCantAnalyze">
+
+				Unfortunately, the analyzer is not sophisticated enough to scan %itemName%.
+			
+			</Text>
+		</Language>
+	</Type>
+
+</TranscendenceModule>

@@ -2137,6 +2137,7 @@
 	<!ENTITY itNeuralProcessor			"0x001005E0">
 	<!ENTITY rsCargoContainer			"0x001005E1">
 	<!ENTITY baCashCard					"0x001005E2">
+	<!ENTITY baAnalyzer					"0x001005E3">
 
 	<!-- 0600-061F ABBASID -->
 
@@ -2301,6 +2302,7 @@
 	<!-- These modules implement items. They should be clean, for the most
 		part. -->
 
+	<Module filename="Analyzers.xml"/>
 	<Module filename="Barricades.xml"/>
 	<Module filename="MiscItems.xml"/>
 	<Module filename="MRAD.xml"/>

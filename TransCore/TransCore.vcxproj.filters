@@ -795,5 +795,8 @@
     <Xml Include="..\Extensions\Diagnostics\TestItems.xml">
       <Filter>Extensions\Diagnostics</Filter>
     </Xml>
+    <Xml Include="Analyzers.xml">
+      <Filter>Human Space Library\Items</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
