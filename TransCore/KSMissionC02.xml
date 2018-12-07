@@ -78,8 +78,11 @@
 			</OnCompleted>
 
 			<OnReward>
-				(block Nil
-					(objAddItem gPlayerShip (msnGetData gSource 'rewardItem))
+				(block (
+					(rewardItem (msnGetData gSource 'rewardItem))
+					)
+					(objAddItem gPlayerShip rewardItem)
+					(itmSetKnown rewardItem)
 					(korGiveReward gSource)
 					)
 			</OnReward>
@@ -109,7 +112,7 @@
 						}
 					{
 						descID: 'textSuccessDebrief2
-						data: { reward: (itmGetName (msnGetData gSource 'rewardItem) 'count) }
+						data: { reward: (itmGetName (msnGetData gSource 'rewardItem) '(count actual)) }
 						}
 					)
 			</Text>
