@@ -1070,10 +1070,10 @@
 					)
 				))
 				
-			(setq tinkerFabricate (lambda (theRecipe theCost theCount)
+			(setq tinkerFabricate (lambda (theRecipe theCost theCount options)
 				(block (
 					(compareFlags '(ignoreCharges ignoreData ignoreDisrupted))
-
+					(reminderType (or (@ options 'reminderMission) &msTinkerReminder;))
 					(itemToCreate (tinkerCreateItem theRecipe theCount))
 					itemsConsumed
 					)
@@ -1123,7 +1123,7 @@
 					
 					;	Loop over player missions and see if we've accomplished any of them
 					
-					(enum (msnFind gSource "aS +unid:&msTinkerReminder;;") theMission
+					(enum (msnFind gSource (cat "aS +unid:" reminderType ";")) theMission
 						(if (itmIsEqual itemToCreate (tinkerCreateItem (msnGetData theMission 'recipe) 1))
 							(msnSuccess theMission)
 							)
