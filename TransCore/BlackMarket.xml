@@ -1025,12 +1025,15 @@ PLAYER DATA
 
 	<!-- Black Market Pay Debt -->
 
-	<DockScreen UNID="&dsBlackMarketPayDebt;"	nestedScreen="true">
+	<DockScreen UNID="&dsBlackMarketPayDebt;"
+				inherit="&dsDockScreenBase;"
+				nestedScreen="true"
+				>
 
 		<Panes>
 			<Default descID="descTakeThemToBoss">
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						(if (geq (plyGetCredits gPlayer) (objGetData gPlayerShip "blackMarketCrimeCost"))
 
 							; If the player has enough money, then let her pay off the boss
@@ -1045,13 +1048,14 @@ PLAYER DATA
 
 			<PaymentInFull>
 				<OnPaneInit>
-					(scrSetDesc gScreen 
-						(cat "Lord Mikho is dining alone at a large table. \"Well, well! You've certainly caused us a bit of trouble! You owe us " (objGetData gPlayerShip "blackMarketCrimeCost") " credits for " (objGetData gPlayerShip "blackMarketCrime") "! You were wise to come here to repay your debt.\"")
-						)
+					(scrSetDescTranslate gScreen 'descPaymentInFull1 {
+						payment: (fmtCurrency 'credit (objGetData gPlayerShip "blackMarketCrimeCost"))
+						crime: (objGetData gPlayerShip "blackMarketCrime")
+						})
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block Nil
 							(plyCharge gPlayer (objGetData gPlayerShip "blackMarketCrimeCost"))
 							(objSetData gPlayerShip "blackMarketCrimeCost" Nil)
@@ -1063,7 +1067,7 @@ PLAYER DATA
 
 			<PaymentInFull2 descID="descPaymentInFull2">
 				<Actions>
-					<Action name="Undock" cancel="1" key="U">
+					<Action id="actionContinue" default="1" cancel="1">
 						(scrExitScreen gScreen)
 					</Action>
 				</Actions>
@@ -1071,16 +1075,13 @@ PLAYER DATA
 
 			<Killed>
 				<OnPaneInit>
-					(scrSetDesc gScreen 
-						"Lord Mikho is waiting in his study, standing by a large portrait of a mustached man in uniform.\n\n"
-						"\"You are responsible for " (objGetData gPlayerShip "blackMarketCrime") "? "
-						"I suppose I expected someone smarter. Still, I respect you enough to kill you myself.\"\n\n"
-						"Two men hold you as Lord Mikho approaches with an old pistol..."
-						)
+					(scrSetDescTranslate gScreen 'descKilled {
+						crime: (objGetData gPlayerShip "blackMarketCrime")
+						})
 				</OnPaneInit>
 
 				<Actions>
-					<Action name="Continue" default="1" cancel="1" key="C">
+					<Action id="actionContinue" default="1" cancel="1">
 						(block Nil
 							(plyDestroyed gPlayer "was killed by Lord Mikho")
 							(scrExitScreen gScreen 'forceUndock)
@@ -1100,10 +1101,29 @@ PLAYER DATA
 				They take you inside the station to see Lord Mikho.
 
 			</Text>
+			<Text id="descPaymentInFull1">
+
+				Lord Mikho is dining alone at a large table.
+				
+				"Well, well! You've certainly caused us a bit of trouble! You owe us %payment% for 
+				%crime%! You were wise to come here to repay your debt."
+
+			</Text>
 			<Text id="descPaymentInFull2">
 
 				After paying your debt, Lord Mikho assures you that the bounty hunters 
 				will be called off. The armed guards lead you back to your ship.
+
+			</Text>
+			<Text id="descKilled">
+			
+				Lord Mikho is waiting in his study, standing by a large portrait of a mustached 
+				man in uniform.
+
+				"You are responsible for %crime%? I suppose I expected someone smarter. 
+				Still, I respect you enough to kill you myself."
+
+				Two men hold you as Lord Mikho approaches with an old pistol...
 
 			</Text>
 		</Language>
