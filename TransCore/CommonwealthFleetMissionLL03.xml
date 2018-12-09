@@ -95,7 +95,11 @@
 			
 			<OnObjDestroyed>
 				(switch
-					(and (= aObjDestroyed gPlayerShip) (objGetItems gPlayerShip "wU +LamplighterPrototype;"))
+					(and aDestroy
+							(= aObjDestroyed gPlayerShip) 
+							(objGetItems gPlayerShip "wU +LamplighterPrototype;")
+							(= (sysGetNode) 'PJ)
+							)
 						(block Nil
 							;	Remove the prototype from player's ship
 							(enum (objGetItems gPlayerShip "wU +LamplighterPrototype;") theItem
