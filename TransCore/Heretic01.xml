@@ -231,17 +231,14 @@
 		<Language>
 			<!-- Code Points -->
 
-			<Text id="Summary">
-				(cat
-					(msnTranslate gSource 'textSummary)
-					"\n\n"
-					(typTranslate &dsRPGMission; 'mission.rewardSummary {
-						systemName: (sysGetName)
-						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
-						})
-					)
+			<Text id="Name">
+				Escort the Svalbard Explorer
 			</Text>
-
+			<Text id="Summary">
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					})
+			</Text>
 			<Text id="Intro">
 				(block (
 					(rel (rpgCharacterGetQuickRel &unidKateMorgental;))
@@ -324,10 +321,17 @@
 			<!-- Text -->
 
 			<Text id="textSummary">
-				Help Kate
+
+				Escort the Svalbard Explorer as she scans the Iocrym structures
+				orbiting the Heretic sun.
+
+				System: %systemName%\n
+				Payment: None
+
 			</Text>
 
 			<Text id="textIntroFirst">
+
 				The bridge of the Svalbard hums with activity. An elegant woman
 				is giving orders as you walk in. She turns to you:
 
@@ -336,9 +340,10 @@
 				the Iocrym and trying to understand why they have blocked our access
 				to the rest of the galaxy. He's asked me to study them here in the
 				Heretic system."
-			</Text>
 
+			</Text>
 			<Text id="textIntroAlly">
+
 				The bridge of the Svalbard hums with activity and you see a familiar face
 				giving orders as you walk in. Kate Morgental is excited to see you:
 
@@ -347,9 +352,10 @@
 				intelligence about the Iocrym and trying to understand why they have
 				blocked our access to the rest of the galaxy. He's asked me to study
 				them here in the Heretic system."
-			</Text>
 
+			</Text>
 			<Text id="textIntroHostile">
+
 				The bridge of the Svalbard hums with activity. You see Kate Morgental at
 				the center of the bridge giving orders. A ripple of contempt flashes
 				across her face as she sees you:
@@ -357,44 +363,56 @@
 				"%name%. I haven't forgotten what you did! But our work is too important to
 				let emotions get in the way. My father wants to learn more about the Iocrym
 				and he's asked me to study their technology here in the Heretic system."
-			</Text>
 
+			</Text>
 			<Text id="textBriefing1">
+
 				"The truth is that we need help. We want to scan the Iocrym structures that
 				are surrounding the Heretic sun, but the area is infested with pteravores and
 				we don't dare get too close without protection."
+
 			</Text>
 			<String id="actionHelp">"I'll [h]elp you."</String>
 			<Text id="textBriefing2">
+
 				"I was hoping you'd say that! We're going to orbit around the Heretic sun to
 				study the Iocrym devices. Follow us and protect us from pteravores. If they
-				attach to our ship they will drain our reactor and we'll be helpless."
+				attach to our ship they will drain our reactor and we'll be helpless.
 
 				"Good luck!"
+
 			</Text>
 			<Text id="textBriefing2Hostile">
+
 				"Well, we don't have a choice; we'll have to trust you."
 
 				"Escort us while we do our scan and maybe your good deed will salve
 				your conscience."
-			</Text>
 
+			</Text>
 			<String id="textExploring">
+
 				"We're still scanning the Iocrym devices. No definitive results yet."
+
 			</String>
 			<Text id="textOutOfFuel">
+
 				The bridge is dim and almost silent. Kate Morgental approaches you:
 
 				"Pteravores have eaten all our fuel! We can't continue our research
 				unless we get some pteracnium or even xenotite. Can you help us?"
+
 			</Text>
 			<String id="actionOfferFuel">"I can [h]elp"</String>
 			<String id="actionNoFuel">"[S]orry, I don't have any fuel."</String>			
 			<Text id="textGetFuel">
+
 				"We can last for a while on emergency power, but if you can find some
 				fuel and bring it here we will be able to continue our research."
+
 			</Text>
 			<Text id="textDoneExploring">
+
 				Kate looks exhausted, but pleased:
 
 				"Great work! We've finished our scan. The Iocrym devices are manipulating
@@ -404,10 +422,13 @@
 				"All of the Iocrym devices are controlled from a central point. If we set
 				up a research base there we may be able to disable them! Follows us there
 				and we'll see!"
+
 			</Text>
 			<Text id="textEnRouteToControlPoint">
+
 				"Follow us to the Iocrym control point and maybe we can figure out a way
 				to disable the Iocrym quarantine."
+
 			</Text>
 
 			<String id="msgFollow">Follow us!</String>

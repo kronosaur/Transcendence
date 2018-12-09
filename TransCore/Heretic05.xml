@@ -215,15 +215,13 @@
 		<Language>
 			<!-- Code Points -->
 
+			<Text id="Name">
+				Search for the Huygens Explorer
+			</Text>
 			<Text id="Summary">
-				(cat
-					(msnTranslate gSource 'textSummary)
-					"\n\n"
-					(typTranslate &dsRPGMission; 'mission.rewardSummary {
-						systemName: (sysGetName)
-						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
-						})
-					)
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					})
 			</Text>
 
 			<Text id="SuccessDebrief">
@@ -238,46 +236,62 @@
 			<!-- Text -->
 
 			<Text id="textSummary">
+
 				The Ringers have lost communications with the Huygens Explorer.
 				Your mission is to investigate and provide any assistance they
 				may require.
+
+				System: %systemName%\n
+				Payment: None
+
 			</Text>
 			<Text id="Intro">
+
 				A young ringer greets you as you enter the lab. His melodic
 				voice is translated through a device on his neck:
 
 				"Earthican, welcome! We seek answers to questions related to Iocrym.
 				We seek answers to questions related to their intentions. All
 				human-descendents are interested. Ringer and Earthican are united."
+
 			</Text>
 			<Text id="Briefing">
+
 				"The Earthican vessel Huygens Explorer seeks answers to questions.
 				We help the vessel to seek answers throughout the system. But the
 				vessel does not communicate. We fear the vessel struggles with
-				danger. We fear the vessel ceases to exist."
+				danger. We fear the vessel ceases to exist.
 				
 				"The Earthican vessel Huygens Explorer needs help. Do you seek
 				to journey to help them?"
+
 			</Text>
 			<String id="AcceptLabel">"[Y]es, I will help."</String>
 			<Text id="AcceptReply">
+
 				"We express relief. You will help the Huygens Explorer.
 
 				"We give you coordinates to begin your search. The Earthican
 				vessel is not there, but possible answers are there. We seek
 				answers. Ringer and Earthican are united."
+
 			</Text>
 			<String id="DeclineLabel">"[N]o, I don't have time."</String>
 			<Text id="DeclineReply">
+
 				"We express surprise. We express sadness. The Earthican vessel
 				Huygens Explorer needs help. Ringer and Earthican are opposed."
+
 			</Text>
 			<Text id="InProgress">
+
 				The young ringer greets you:
 
 				"We express surprise. Answers are not here. Answers exist out there."
+
 			</Text>
 			<Text id="textSuccessFoundROM">
+
 				A group of ringers greet you. The young ringer is among them
 				and he speaks through a translator:
 
@@ -285,8 +299,10 @@
 				ceases to exist. The collective diminishes. But answers exist.
 				Information ROM exists that contains possible answers to Iocrym
 				intentions. The sacrifice achieves purpose."
+
 			</Text>
 			<Text id="textSuccessSeekROM">
+
 				A group of ringers greet you. The young ringer is among them
 				and he speaks through a translator:
 
@@ -294,12 +310,15 @@
 				ceases to exist. The collective diminishes. But answers exist.
 				Information ROM in wreckage contains possible answers to Iocrym
 				intentions. Seek to retrieve the ROM and the answers."
+
 			</Text>
 			<Text id="textBusy">
+
 				A young ringer greets you as you enter the lab:
 
 				"Earthican, welcome! We seek answers to questions related to Iocrym.
 				Return here once your other task is done and seek answers with us."
+
 			</Text>
 			<Text id="SuccessMsg">Huygens Explorer destroyed!</Text>
 
@@ -308,6 +327,7 @@
 				Captain's Log
 			</Text>
 			<Text id="textLog1">
+
 				The signal that we were tracking led us to an interesting discovery:
 				the wreck of an Iocrym sentinel with an intact AI core. It must have
 				been destroyed in a battle because we found several Luminous drone
@@ -318,8 +338,10 @@
 
 				We've deployed a log buoy marking this location and attached the
 				coordinates of our next destination.
+
 			</Text>
 			<Text id="textLog2">
+
 				In studying the sentinel's AI core we have learned a lot more about
 				the Iocrym. They are an ancient race bred to be guardians and
 				defenders. Their role is to protect other civilizations from
@@ -331,8 +353,10 @@
 				decided to connect it to the Huygens' mainframe in order analyze the
 				information more quickly. Of course we have followed the standard
 				quarantine procedures to ensure the AI cannot compromise our systems.
+
 			</Text>
 			<Text id="textLog3">
+
 				In the last few days we have learned much from the sentinel's AI.
 				Masud has made progress interpreting some of the Iocrym symbols and
 				language. Much of the information that we're finding is actually
@@ -345,8 +369,10 @@
 				array. The Huygen's mainframe indicates that we will be unable to
 				send or receive for the next seven hours, but the outage will not
 				affect our investigations.
+
 			</Text>
 			<Text id="textLog4">
+
 				The sentinel's AI has shut down for unknown reasons. We have tried
 				several times to re-establish a connection but to no avail. Masud
 				is puzzled and he has begun an analysis of all data traffic between
@@ -361,8 +387,10 @@
 				other manual checks show that the mainframe is correct in its
 				diagnosis and repairs of the main drive. Nevertheless, the crew is
 				uneasy, particularly since communications is still inoperative.
+
 			</Text>
 			<Text id="textLog5">
+
 				The sentinel's AI has control of the ship! It must have exploited a
 				vulnerability in the mainframe kernel or perhaps gained physical
 				access to the databanks. We don't even know when the AI gained
@@ -372,8 +400,10 @@
 
 				We have attached tracking signatures to this buoy that will lead to
 				our current location. Whoever finds this log, please come and help us!
+
 			</Text>
 			<Text id="textWarning">
+
 				RECORDED from astrokor.masud.9277huygens_explorer.rinc
 
 				MESSAGE BEGINS\n
@@ -381,18 +411,20 @@
 				crew is already dead... Save yourselves: Destroy the Huygens!
 
 				MESSAGE ENDS
+
 			</Text>
 			<Text id="textDockHuygens">
+
 				You dock with the Huygens Explorer, but the airlock reports zero
 				pressure inside. Peering in through the airlock window you see
 				floating bodies and debris.
 
 				Suddenly you feel the Huygens's engines kick into action.
 				Your stomach fills with dread...
+
 			</Text>
 		</Language>
 	</MissionType>
-
 
 <!-- EVENT HANDLERS -->
 

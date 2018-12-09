@@ -551,7 +551,13 @@
 				You are in the docking bay of a Commonwealth research station.
 			</Text>
 			<Text id="descNoMissions">
-				No missions today
+
+				Researchers stand around holocharts discussing graviton 
+				science. The chief scientist talks to you:
+
+				"We're studying the gravitational distortion the Iocrym used
+				to trap us here. We've got ten years' worth of data to analyze."
+
 			</Text>
 		</Language>
 	</StationType>
@@ -695,17 +701,21 @@
 			<Text id="actionResearchLab">[R]esearch Lab</Text>
 
 			<Text id="descWelcome">
+
 				You are docked at a Ringers Collective. Ringer neo-humans float
 				through the vast volume of the station, perfectly adapted to
 				zero-gravity and space.
+
 			</Text>
 			<Text id="descNoMissions">
+
 				A young ringer greets you as you enter the lab. His melodic
 				voice is translated through a device on his neck:
 
 				"Earthican, welcome! We seek answers to questions unrelated to
 				Earthicans. Return here later and perhaps we have questions for
 				all human-descendents."
+
 			</Text>
 			<Text id="core.commoditiesExchangeDesc">
 
@@ -820,27 +830,33 @@
 			<Text id="actionSanctum">"[S]anctum"</Text>
 
 			<Text id="descWelcome">
+
 				You are docked at an abbey of the Sisters of Domina.
 				A woman wearing a flowing red robe approaches you,
 
 				"How may I help you, child?"
+
 			</Text>
 			<Text id="descWelcomeFreeSanctum">
+
 				You are docked at an abbey of the Sisters of Domina.
 				A woman wearing a flowing red robe is before you.
 
 				"Take your ease here before you go, or seek guidance at our Sanctum.
 				May the blessings of Domina protect you."
+
 			</Text>
 			<Text id="descNothingToTalkAbout">
+
 				You enter the abbess's spartan office and chat with her.
 				She leaves you with a small piece of advice:
 
 				The universe is dark and lonely; I do not envy your task.
+
 			</Text>
 
             <Text id="core.mapDesc">
-                "Contemplation and communion"
+                Contemplation and communion
             </Text>
         </Language>
 	</StationType>
@@ -953,10 +969,12 @@
 				You are docked at a Taikon research station.
 			</Text>
 			<Text id="descNoMissions">
+
 				A tall man in a corporate suit approaches you:
 
 				"Welcome to TVX-1! Taikon Ventures is out here in the Heretic
 				system studying Iocrym technology."
+
 			</Text>
 		</Language>
 	</StationType>
@@ -1052,24 +1070,30 @@
 			<Text id="actionCommandCenter">[C]ommand Center</Text>
 
 			<Text id="descWelcome">
+
 				You are docked at an Ares research outpost. Ares warriors stare
 				at you as you enter the station.
+
 			</Text>
 			<Text id="descGetOut">
+
 				Ares warriors meet you at the airlock. Their weapons are pointed at you:
 
 				"We don't want conflict, Human. Leave now and don't disturb our research."
+
 			</Text>
 			<Text id="descNoMissions">
+
 				An Ares scientist comes forward:
 
 				"Welcome, Human! It is good that we can meet under peaceful circumstances.
 				We are studying the Iocrym, but unfortunately, there are no Iocrym stations in
 				the system for us to probe. Perhaps you will have better luck elsewhere."
+
 			</Text>
 
             <Text id="core.mapDesc">
-                "Research base"
+                Research base
             </Text>
         </Language>
 	</StationType>
@@ -1195,13 +1219,24 @@
 			<Main>
 				<InitialPane>
 					(switch
-						(herStatus 'controlPointCamp)
-							"EmptyWreck"
+						;	If Kate Morgental is already at the Control Point, then
+						;	we don't need to do anything.
 
-						(typGetGlobalData &scSvalbardExplorer; "inTransfer")
-							"EmptyWreck"
+						(objGetData (@ (sysFindObject Nil "T +unid:&stHereticControlCenter;;") 0) 'stationMaster)
+							'EmptyWreck
 
-						"Default"
+						;	If the quarantine has already been liftedn then nothing 
+						;	to do.
+
+						(sysGetData 'G2 'quarantineLifted)
+							'EmptyWreck
+
+						;	If we're already transfering people, then nothing to do.
+
+						(typGetGlobalData &scSvalbardExplorer; 'inTransfer)
+							'EmptyWreck
+
+						'Default
 						)
 				</InitialPane>
 
@@ -1221,7 +1256,7 @@
 									(shpCancelOrders gPlayerShip)
 									(shpOrder gPlayerShip 'dock (sysFindObject gSource "TN +hereticControlPoint"))
 
-									(typSetGlobalData &scSvalbardExplorer; "inTransfer" True)
+									(typSetGlobalData &scSvalbardExplorer; 'inTransfer True)
 									(scrExitDock gScreen)
 									)
 							</Action>
@@ -1464,6 +1499,19 @@
 		
 		<DockScreens>
 			<Main>
+				<InitialPane>
+					(switch
+						;	If we're bringing Kate and others here.
+
+						(typGetGlobalData &scSvalbardExplorer; 'inTransfer)
+							'TransferSvalbardCrew
+
+						;	Otherwise, continue
+
+						'Default
+						)
+				</InitialPane>
+
 				<Panes>
 					<Default>
 						<OnPaneInit>
@@ -1494,6 +1542,20 @@
 							</Action>
 						</Actions>
 					</Default>
+
+					<TransferSvalbardCrew descID="descTransferSvalbardCrew">
+						<Actions>
+							<Action id="actionContinue" default="1" cancel="1">
+								(block ()
+									(shpCancelOrders gPlayerShip)
+									(typSetGlobalData &scSvalbardExplorer; 'inTransfer Nil)
+									(objSetData gSource 'stationMaster 'kateMorgental)
+
+									(scrShowPane gScreen 'Default)
+									)
+							</Action>
+						</Actions>
+					</TransferSvalbardCrew>
 				</Panes>
 			</Main>
 		</DockScreens>
@@ -1552,6 +1614,14 @@
 				to study this technology. We're going to make some amazing discoveries here!
 				Maybe someday soon we'll be as advanced as the Iocrym!"
 
+			</Text>
+			<Text id="descTransferSvalbardCrew">
+
+				Kate Morgental disembarks with her research team:
+
+				"Thanks for bringing us here; our whole mission would have failed without you.
+				Fortunately we were able to salvage a lot of our equipment from the Svalbard."
+			
 			</Text>
 
             <Text id="core.mapDesc">

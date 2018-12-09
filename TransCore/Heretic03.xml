@@ -140,38 +140,50 @@
 			<!-- Text -->
 
 			<Text id="Intro">
+
 				The station master greets you:
 
 				"Welcome to the Heretic Archipelago! Are you a researcher? We get all kinds
 				of scientists here&mdash;this is the Edge of Human Space, after all&mdash;so
 				if you are a researcher, you've come to the right place, certainly!"
+
 			</Text>
 			<Text id="textSvalbard">
+
 				"In fact, the Svalbard Explorer just arrived here all the way from St. Kats.
 				They're studying the Iocrym and their confounded quarantine, but I think
 				they might need some help."
+
 			</Text>
 			<Text id="textStations">
+
 				"There are lots of scientific outposts here in the archipelago, but if you're
 				looking to help, you could visit %stationName%, certainly. They're always
 				asking for help!"
+
 			</Text>
 			<Text id="textControlPoint">
+
 				"Matter of fact, I hear that some scientists even set up a base on an Iocrym
 				station! Can you believe that? I'd like to know what the Iocrym think of
 				that, certainly!"
+
 			</Text>
 			<Text id="textAllDead">
+
 				"'Course I don't really know what those scientists are up to. Come to think
 				of it, I haven't seen any of them around here lately. I wonder if they poked
 				their telescopes into something they weren't supposed to. I don't think the
 				Iocrym like to be spied on, certainly! I don't think they like it at all!"
+
 			</Text>
 			<Text id="textDirect">
+
 				"Well, I'm sure I've got their coordinates here somewhere..."
 
 				"Here they are! I knew I had them! I'll program them into your ship's
 				computer and you should be able to find them, certainly."
+
 			</Text>
 
 			<String id="actionTell">"[T]ell me how to find it."</String>

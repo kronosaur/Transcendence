@@ -70,15 +70,13 @@
 		<Language>
 			<!-- Code Points -->
 
+			<Text id="Name">
+				Access an Alien Archive
+			</Text>
 			<Text id="Summary">
-				(cat
-					(msnTranslate gSource 'textSummary)
-					"\n\n"
-					(typTranslate &dsRPGMission; 'mission.rewardSummary {
-						systemName: (sysGetName)
-						payment: (fmtCurrency 'credit (msnGetData gSource 'reward))
-						})
-					)
+				(msnTranslate gSource 'textSummary {
+					systemName: (sysGetName)
+					})
 			</Text>
 
 			<Text id="Intro">
@@ -91,68 +89,89 @@
 			<!-- Text -->
 
 			<Text id="textSummary">
+
 				The matriarch of St. Josephine Mission has asked you to go to
 				an alien archive and subdue the AI that guards it.
-			</Text>
 
+				System: %systemName%\n
+				Payment: None
+
+			</Text>
 			<Text id="textIntro1">
+
 				"Welcome, pilgrim! Your journey to Domina has only just begun,
 				yet I fear that your road is blocked. The Iocrym, who no doubt
 				serve Oracus, have blocked your path. They want to prevent you
 				from meeting Domina."
+
 			</Text>
 			<Text id="textIntro2">
+
 				"Yet faith in Domina will see you through. Many years ago, a
 				convert to our cause dreamt of a repository of knowledge in the
 				Heretic system. Her name was Sister Maryam Harawi and she
-				dedicated her life to finding it."
+				dedicated her life to finding it.
 
 				"A few months ago, we found an alien archive in deep space. It
 				must be the object of Sister Maryam's vision, and we believe
 				that it contains knowledge that will help you to complete your
 				journey to the Core."
+
 			</Text>
 			<Text id="Briefing">
+
 				"It is your destiny to seek this artifact of knowledge and gain
-				access to the information that it contains."
+				access to the information that it contains.
 
 				"Do you accept the undertaking of this labor?"
+
 			</Text>
 			<Text id="AcceptReply">
+
 				"Excellent! We will tell you how to reach the alien archive,
-				but once you get there you must subdue the AI that guards it."
+				but once you get there you must subdue the AI that guards it.
 
 				"Take this ROM to help you to defeat the AI. After you connect
 				your ship's computer to the archive, you must attempt to subdue
 				the AI by inserting the proper level of virus code into its
-				neural circuitry."
+				neural circuitry.
 
 				"Domina is with you! Good luck!"
+
 			</Text>
 			<Text id="DeclineReply">
+
 				"Your destiny will not change even if you choose to ignore it.
 				Return here once you understand that."
+
 			</Text>
 			<Text id="InProgress">
+
 				"Your task is not yet complete. Go subdue the AI and retrieve
 				the information from the alien archive."
+
 			</Text>
 			<Text id="SuccessDebrief">
+
 				"Your faith in Domina has been rewarded! Take the information
 				that you obtained and give it to your friends from the Svalbard
 				Explorer&mdash;they will be able to help you now."
+
 			</Text>
 			<Text id="FailureDebrief">
+
 				"Domina tests our faith. Perhaps your failure to subdue the AI
 				will prove to be a blessing in some way. Go with Domina, pilgrim!"
+
 			</Text>
 			<Text id="textBusy">
+
 				"Welcome, pilgrim! When your labors are done, return here and
 				seek answers. Domina will show you the path forward."
+
 			</Text>
 		</Language>
 	</MissionType>
-
 
 	<!-- Sister Maryam's Archive
 	
