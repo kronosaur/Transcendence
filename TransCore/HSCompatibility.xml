@@ -3451,5 +3451,9 @@
 	<Image UNID="&rsHimalInterceptorHD;"	obsoleteVersion="43"		bitmap="Resources\HimalInterceptorHD.jpg"		bitmask="Resources\HimalInterceptorHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCSC;"			obsoleteVersion="43"		bitmap="Resources\CSC.jpg" bitmask="Resources\CSCMask.bmp" loadOnUse="true" />
 	<Image UNID="&rsCSCBkgnd;"		obsoleteVersion="43" bitmap="Resources\CSCScreen.jpg" loadOnUse="true" />
+	<Image UNID="&rsCharonFrigateImage;"	obsolete="43"	bitmap="Resources\CharonFrigate.jpg" bitmask="Resources\CharonFrigateMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsTripoli;"	obsolete="43"			bitmap="Resources\Tripoli.jpg"		bitmask="Resources\TripoliMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsCorporateCruiser;"	obsolete="43"	bitmap="Resources\CorporateCruiser.jpg" bitmask="Resources\CorporateCruiserMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI7000Image;"	obsolete="43"		bitmap="Resources\EI7000.jpg" bitmask="Resources\EI7000Mask.bmp" loadOnUse="true"/>
 
 </TranscendenceModule>

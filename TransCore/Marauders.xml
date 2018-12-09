@@ -369,7 +369,94 @@
 
 	</ShipClass>
 
-	<!-- Marauder Raid Platform -->
+	<!-- Level 5: Marauder Raid Platform (Stock) -->
+
+	<ShipClass UNID="&scMarauderRaidPlatformStock;"
+			manufacturer=		"Marauder"
+			class=				""
+			type=				"raid platform"
+			defaultSovereign=	"&svMarauders;"
+
+			attributes=			"marauders"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"86"
+			mass=				"3000"
+			cargoSpace=			"1000"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"500"
+			maxDevices=			"8"
+
+			stdArmor=			"10000"
+			maxArmor=			"20000"
+			/>
+
+		<Drive
+			maxSpeed=			"6"
+			thrust=				"1700"
+			powerUse=			"300"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"1.0"
+			rotationAccel=		"0.1"
+			/>
+
+		<DeviceSlots>
+			<DeviceSlot id="port1"		criteria="w"	posAngle="90"   posRadius="48"   posZ="35"	fireAngle="90"  fireArc="240"	secondaryWeapon="true"/>
+			<DeviceSlot id="starboard1"	criteria="w"	posAngle="-90"  posRadius="48"   posZ="30"	fireAngle="-90"	fireArc="240"	secondaryWeapon="true"/>
+		</DeviceSlots>
+
+		<Wreck
+			explosionType=		"&vtBlastExplosion2;"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itReinforcedTitanium2;"
+			count=				"16"
+			/>
+		
+		<Devices>
+			<Device slotID="port1"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard1" deviceID="&itTurbolaserCannon;"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
+		<Items>
+			<Item				count="2d6"	item="&itHeliumAssembly;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsMarauderRaidPlatformHD;" imageWidth="128" imageHeight="128"	rotationCount="120" rotationColumns="12" viewportRatio="0.01375"/>
+		<HeroImage imageID="&rsMarauderRaidPlatformHero;" imageWidth="320" imageHeight="320"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="148"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-148"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="156"	posRadius="56"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-156"	posRadius="56"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+
+		<!-- AI and Events -->
+		
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"30"
+			fireAccuracy=		"95"
+			perception=			"5"
+			/>
+
+	</ShipClass>
+
+	<!-- Level 5: Marauder Raid Platform -->
 
 	<ShipClass UNID="&scMarauderRaidPlatform;"
 			manufacturer=		"Marauder"
@@ -377,15 +464,8 @@
 			type=				"raid platform"
 			defaultSovereign=	"&svMarauders;"
 
-			size=				"90"
-			mass=				"4000"
-			cargoSpace=			"500"
-			thrustRatio=		"0.4"
-			maxSpeed=			"6"
-
-			explosionType=		"&vtBlastExplosion2;"
-
 			attributes=			"genericClass, marauders"
+			inherit=			"&scMarauderRaidPlatformStock;"
 			>
 
 		<!-- Configuration -->
@@ -396,15 +476,10 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="200" posAngle="90" posRadius="48" posZ="35"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="160" maxFireArc="20" posAngle="270" posRadius="48" posZ="30"/>
+			<Device slotID="port1"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard1" deviceID="&itTurbolaserCannon;"/>
 			<Device deviceID="&it100MWReactor;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"1.0"
-			rotationAccel=		"0.1"
-			/>
 
 		<Items>
 			<Item				count="2d6"	item="&itHeliumAssembly;"/>
@@ -416,15 +491,8 @@
 			<Lookup chance="50" count="1"	table="&trMajorItem4;"/>
 		</Items>
 
-		<Image imageID="&rsMediumShips4;" imageX="0" imageY="0" imageWidth="128" imageHeight="128"/>
+		<!-- Escorts -->
 
-		<Effects>
-			<Effect type="thrustMain"		posAngle="148"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-148"	posRadius="60"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="156"	posRadius="56"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-156"	posRadius="56"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
-		</Effects>
-		
 		<Escorts>
 			<LevelTable>
 				<Group levelFrequency="cccur v----">
@@ -447,17 +515,9 @@
 				</Group>
 			</LevelTable>
 		</Escorts>
-
-		<AISettings
-			aggressor=			"true"
-			fireRateAdj=		"30"
-			fireAccuracy=		"95"
-			perception=			"5"
-			/>
-
 	</ShipClass>
 
-	<!-- Tripoli-class Destroyer -->
+	<!-- Level 7: Tripoli-class Destroyer -->
 
 	<ShipClass UNID="&scTripoli;"
 			manufacturer=		"Charon Pirates"
@@ -466,39 +526,43 @@
 			defaultSovereign=	"&svMarauders;"
 
 			attributes=			"capitalShip, genericClass, marauders"
-			   
-			size=				"140"
-			mass=				"14000"
-			thrustRatio=		"1"
-			maxSpeed=			"12"
-			cargoSpace=			"500"
-
-			cyberDefenseLevel=	"4"
-
-			explosionType=		"&vtBlastExplosion4;"
+			inherit=			"&baHumanTechShip;"
 			>
 
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itBlastPlate;"
-			count=				"12"
+		<!-- Hull -->
+
+		<Hull
+			size=				"149"
+			mass=				"14000"
+			cargoSpace=			"1000"
+			cyberDefenseLevel=	"4"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"1000"
+			maxDevices=			"12"
+
+			stdArmor=			"10000"
+			maxArmor=			"20000"
 			/>
-		
-		<Devices>
-			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"								 posAngle="0"   posRadius="0"   posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="340" maxFireArc="160" posAngle="17"  posRadius="66"  posZ="5"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="200" maxFireArc="20"	 posAngle="343" posRadius="66"  posZ="5"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="350" maxFireArc="170" posAngle="60"  posRadius="36"  posZ="10"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="10"  posAngle="300" posRadius="36"  posZ="10"/>
-			<Device deviceID="&itClass3Deflector;"/>
-			<Device deviceID="&it100MWReactor;"/>
-		</Devices>
+
+		<Drive
+			maxSpeed=			"12"
+			thrust=				"15000"
+			powerUse=			"1000"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"5"
 			rotationAccel=		"0.5"
 			/>
+
+		<DeviceSlots>
+			<DeviceSlot id="omni1"		criteria="w"	posAngle="0"    posRadius="30"   posZ="16"	omnidirectional="true"/>
+			<DeviceSlot id="port1"		criteria="w"	posAngle="17"   posRadius="70"   posZ="5"	fireAngle="70"	fireArc="180"	secondaryWeapon="true"/>
+			<DeviceSlot id="port2"		criteria="w"	posAngle="60"   posRadius="38"   posZ="10"	fireAngle="80"	fireArc="180"	secondaryWeapon="true"/>
+			<DeviceSlot id="starboard1"	criteria="w"	posAngle="-17"  posRadius="70"   posZ="5"	fireAngle="-70"	fireArc="180"	secondaryWeapon="true"/>
+			<DeviceSlot id="starboard2"	criteria="w"	posAngle="-60"  posRadius="38"   posZ="10"	fireAngle="-80"	fireArc="180"	secondaryWeapon="true"/>
+		</DeviceSlots>
 
 		<Interior>
 			<Compartment name="interior"
@@ -516,6 +580,27 @@
 					/>
 		</Interior>
 
+		<Wreck
+			explosionType=		"&vtBlastExplosion4;"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itBlastPlate;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device slotID="omni1"		deviceID="&itNAMIMissileLauncher;"/>
+			<Device slotID="port1"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="port2"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard1"	deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard2"	deviceID="&itTurbolaserCannon;"/>
+			<Device deviceID="&itClass3Deflector;"/>
+			<Device deviceID="&it100MWReactor;"/>
+		</Devices>
+
 		<Items>
 			<Item				  count="2d6"	item="&itHeliumAssembly;"/>
 			<Table>
@@ -532,7 +617,8 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsTripoli;" imageWidth="156" imageHeight="156"/>
+		<Image imageID="&rsTripoliHD;" imageWidth="156" imageHeight="156" rotationCount="120" rotationColumns="12" viewportRatio="0.019375"/>
+		<HeroImage imageID="&rsTripoliHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="167"	posRadius="72"	posZ="0"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -607,8 +693,11 @@
 	<Image UNID="&rsMarauderStrongholdRocky;"			bitmap="Resources\MarauderStrongholdRocky.jpg"			bitmask="Resources\MarauderStrongholdRockyMask.bmp"  	loadOnUse="true"/>
 	<Image UNID="&rsMarauderStrongholdVolcanic;"		bitmap="Resources\MarauderStrongholdVolcanic.jpg"		bitmask="Resources\MarauderStrongholdVolcanicMask.bmp"  	loadOnUse="true"/>
 
-	<Image UNID="&rsTripoli;"			bitmap="Resources\Tripoli.jpg"		bitmask="Resources\TripoliMask.bmp"  	loadOnUse="true"/>
-	<Image UNID="&rsBarbaryHD;"			bitmap="Resources\BarbaryHD.jpg"	bitmask="Resources\BarbaryHDMask.bmp"	loadOnUse="true"/>
-	<Image UNID="&rsBarbaryHero;"		bitmap="Resources\BarbaryLarge.jpg"	bitmask="Resources\BarbaryLargeMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsBarbaryHD;"					bitmap="Resources\BarbaryHD.jpg"	bitmask="Resources\BarbaryHDMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsBarbaryHero;"				bitmap="Resources\BarbaryLarge.jpg"	bitmask="Resources\BarbaryLargeMask.bmp"	loadOnUse="true"/>
+	<Image UNID="&rsMarauderRaidPlatformHD;"	bitmap="Resources\MarauderRaidPlatformHD.jpg" bitmask="Resources\MarauderRaidPlatformHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsMarauderRaidPlatformHero;"	bitmap="Resources\MarauderRaidPlatformLarge.jpg"		bitmask="Resources\MarauderRaidPlatformLargeMask.bmp"  	loadOnUse="true"/>
+	<Image UNID="&rsTripoliHD;"					bitmap="Resources\TripoliHD.jpg" bitmask="Resources\TripoliHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsTripoliHero;"				bitmap="Resources\TripoliLarge.jpg"	bitmask="Resources\TripoliLargeMask.bmp"	loadOnUse="true"/>
 	
 </TranscendenceModule>

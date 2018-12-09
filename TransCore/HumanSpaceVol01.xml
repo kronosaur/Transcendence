@@ -1501,6 +1501,12 @@
 
 	-->
 	
+	<!ENTITY rsCorporateCruiserHD		"0x00830002">
+	<!ENTITY rsEI7000HD					"0x00830009">
+	<!ENTITY rsMarauderRaidPlatformHD	"0x0083000A">
+	<!ENTITY rsDrakeHD					"0x0083000B">
+	<!ENTITY rsTripoliHD				"0x0083000E">
+	<!ENTITY rsCharonFrigateHD			"0x0083000C">
 	<!ENTITY rsCSCHD					"0x0083001D">
 
 	<!-- LIBRARIES -->
@@ -1592,6 +1598,7 @@
 	<!ENTITY rsCorporateFuelDepot		"0x0010004C">
 	<!ENTITY smCorporateSpace			"0x0010004D">
 	<!ENTITY tbCorporateDeliveryTransport		"0x0010004E">
+	<!ENTITY rsCorporateCruiserHero		"0x0010004F">
 	
 	<!-- 0060-007F COMMONWEALTH FLEET -->
 	
@@ -1727,7 +1734,6 @@
 	<!ENTITY rsVikingHero				"0x00100108">
 	<!ENTITY rsBarbaryHero				"0x00100109">
 	<!ENTITY etPirateAmbush				"0x0010010A">
-
 	<!ENTITY rsMarauderOutpostIce		"0x0010010B">
 	<!ENTITY rsMarauderOutpostMetallic	"0x0010010C">
 	<!ENTITY rsMarauderOutpostPrimordial	"0x0010010D">
@@ -1743,6 +1749,11 @@
 	<!ENTITY rsMarauderStrongholdPrimordial	"0x00100117">
 	<!ENTITY rsMarauderStrongholdRocky		"0x00100118">
 	<!ENTITY rsMarauderStrongholdVolcanic	"0x00100119">
+	<!ENTITY scCharonFrigateStock		"0x0010011A">
+	<!ENTITY rsDrakeHero				"0x0010011B">
+	<!ENTITY rsMarauderRaidPlatformHero	"0x0010011C">
+	<!ENTITY scMarauderRaidPlatformStock	"0x0010011D">
+	<!ENTITY rsTripoliHero				"0x0010011E">
 
 	<!-- 0120-013F SUNG SLAVERS -->
 	
@@ -1975,6 +1986,7 @@
 	<!ENTITY rsIAVHeavyHero				"0x001003A1">
 	<!ENTITY smCommonwealthSpace		"0x001003A2">
 	<!ENTITY chCommonwealthStationMastersCommon		"0x001003A3">
+	<!ENTITY scEI7000Stock				"0x001003A4">
 
 	<!-- 03B0-03CF SAPIENS -->
 

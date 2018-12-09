@@ -87,7 +87,7 @@
 			fireAccuracy=		"90"
 			perception=			"4"
 			combatStyle=		"standOff"
-		/>
+			/>
 
 		<StaticData>
 			<Data id="korolov.containerPrice">
@@ -210,7 +210,7 @@
 			fireAccuracy=		"90"
 			perception=			"4"
 			combatStyle=		"standOff"
-		/>
+			/>
 
 		<StaticData>
 			<Data id="korolov.containerPrice">
@@ -336,7 +336,7 @@
 			fireAccuracy=		"90"
 			perception=			"4"
 			combatStyle=		"standOff"
-		/>
+			/>
 
 		<StaticData>
 			<Data id="korolov.containerPrice">
@@ -511,7 +511,7 @@
 			fireRateAdj=		"90"
 			fireAccuracy=		"85"
 			perception=			"4"
-		/>
+			/>
 
 		<StaticData>
 			<Data id="korolov.containerPrice">
@@ -567,12 +567,7 @@
 			defaultSovereign=	"&svCorporate;"
 
 			attributes=			"commonwealth, EI, freighter, genericClass"
-			
-			size=				"75"
-			mass=				"2100"
-			thrustRatio=		"2"
-			maxSpeed=			"12"
-			cargoSpace=			"2000"
+			inherit=			"&scEI7000Stock;"
 			>
 
 		<Names definiteArticle="true">
@@ -593,60 +588,17 @@
 			/>
 
 		<Devices>
-			<Device deviceID="&itTurbolaserCannon;" omnidirectional="true" posAngle="0" posRadius="25" posZ="15"/>
+			<Device slotID="omni1" deviceID="&itTurbolaserCannon;"/>
 			<Device deviceID="&itClass3Deflector;"/>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"6"
-			rotationAccel=		"1"
-			/>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"30"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"70"
-
-					posX=		"-40"
-					posY=		"0"
-					sizeX=		"26"
-					sizeY=		"50"
-					/>
-			
-			<Compartment name="cargo containers"
-					type=		"cargo"
-					hitPoints=	"50"
-
-					posX=		"6"
-					posY=		"0"
-					sizeX=		"74"
-					sizeY=		"36"
-					/>
-		</Interior>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsEI7000Image;" imageWidth="110" imageHeight="110"	rotationCount="20" rotationColumns="1" viewportRatio="0.01"/>
-		<HeroImage imageID="&rsEI7000Hero;" imageWidth="320" imageHeight="320"/>
-		
-		<Effects>
-			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
-			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
-		</Effects>
-		
 		<!-- AI and Behavior -->
 
 		<AISettings
 			fireRateAdj=		"20"
 			fireAccuracy=		"95"
 			perception=			"4"
-		/>
+			/>
 
 		<StaticData>
 			<Data id="korolov.containerPrice">
@@ -742,7 +694,5 @@
 	<Image UNID="&rsAntaresIImage;"		bitmap="Resources\AntaresI.jpg" bitmask="Resources\AntaresIMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAntaresIIImage;"	bitmap="Resources\AntaresII.jpg" bitmask="Resources\AntaresIIMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsAntaresVImage;"		bitmap="Resources\AntaresV.jpg" bitmask="Resources\AntaresVMask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsEI7000Image;"		bitmap="Resources\EI7000.jpg" bitmask="Resources\EI7000Mask.bmp" loadOnUse="true"/>
-	<Image UNID="&rsEI7000Hero;"		bitmap="Resources\EI7000Large.jpg" bitmask="Resources\EI7000LargeMask.bmp" loadOnUse="true"/>
 	
 </TranscendenceModule>

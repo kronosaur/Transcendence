@@ -673,6 +673,108 @@
 
 	</ShipClass>
 	
+	<!-- Level 5: EI7000 Freighter -->
+
+	<ShipClass UNID="&scEI7000Stock;"
+			manufacturer=		"Earth Industries"
+			class=				"EI7000"
+			type=				"freighter"
+			level=				"5"
+			defaultSovereign=	"&svCorporate;"
+
+			attributes=			"commonwealth, EI, freighter"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"75"
+			mass=				"2100"
+			cargoSpace=			"2000"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"2000"
+			maxDevices=			"10"
+
+			stdArmor=			"10000"
+			maxArmor=			"20000"
+			/>
+
+		<Drive
+			maxSpeed=			"12"
+			thrust=				"5000"
+			powerUse=			"240"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"6"
+			rotationAccel=		"1"
+			/>
+
+		<DeviceSlots>
+			<DeviceSlot id="omni1"		criteria="w"	posAngle="0"    posRadius="25"   posZ="15"	omnidirectional="true"/>
+		</DeviceSlots>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"30"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"70"
+
+					posX=		"-40"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"50"
+					/>
+			
+			<Compartment name="cargo containers"
+					type=		"cargo"
+					hitPoints=	"50"
+
+					posX=		"6"
+					posY=		"0"
+					sizeX=		"74"
+					sizeY=		"36"
+					/>
+		</Interior>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"12"
+			/>
+
+		<Devices>
+			<Device slotID="omni1" deviceID="&itTurbolaserCannon;"/>
+			<Device deviceID="&itClass3Deflector;"/>
+		</Devices>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsEI7000HD;" imageWidth="110" imageHeight="110"	rotationCount="120" rotationColumns="12" viewportRatio="0.01"/>
+		<HeroImage imageID="&rsEI7000Hero;" imageWidth="320" imageHeight="320"/>
+		
+		<Effects>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="-10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+			<Effect type="thrustMain"		posAngle="-165"	posRadius="52"	posZ="10"	rotation="180"	effect="&efMainThrusterLarge;"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			fireRateAdj=		"20"
+			fireAccuracy=		"95"
+			perception=			"4"
+			/>
+	</ShipClass>
+
 	<!-- Level 5: Medium IAV -->
 
 	<ShipClass UNID="&scIAVMedium;"
@@ -1367,6 +1469,9 @@
 
 	<Image UNID="&rsEI500;"				bitmap="Resources\EI500.jpg"	bitmask="Resources\EI500Mask.bmp" 	loadOnUse="true" />
 	<Image UNID="&rsEI500Large;"		bitmap="Resources\EI500Large.jpg"	bitmask="Resources\EI500LargeMask.bmp" 	loadOnUse="true" />
+
+	<Image UNID="&rsEI7000HD;"			bitmap="Resources\EI7000HD.jpg" bitmask="Resources\EI7000HDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsEI7000Hero;"		bitmap="Resources\EI7000Large.jpg" bitmask="Resources\EI7000LargeMask.bmp" loadOnUse="true"/>
 
 	<Image UNID="&rsSapphire;"			bitmap="Resources\Sapphire.jpg"	bitmask="Resources\SapphireMask.bmp" 	loadOnUse="true" />
 	<Image UNID="&rsSapphireLarge;"		bitmap="Resources\ZubrinLarge.jpg"	bitmask="Resources\ZubrinLargeMask.bmp" 	loadOnUse="true" />

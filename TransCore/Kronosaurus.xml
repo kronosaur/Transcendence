@@ -30,15 +30,8 @@
 			type=				""
 			   
 			attributes=			"capitalShip, charonPirates, charonFrigate, majorShip"
+			inherit=			"&scCharonFrigateStock;"
 			character=			"&unidKronosaurus;"
-
-			size=				"120"
-			mass=				"7500"
-			cargoSpace=			"1000"
-			thrustRatio=		"2"
-			maxSpeed=			"18"
-
-			explosionType=		"&vtKineticExplosion4;"
 			>
 
 		<Names definiteArticle="true">pirate ship Kronosaurus</Names>
@@ -51,50 +44,20 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="29" posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="32" posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="25" posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="25" posZ="0"/>
+			<Device slotID="omni1"		deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Item count="20d20" item="&itKM500Missile;"/>
+				</Items>
+			</Device>
+			<Device slotID="port1"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="port2"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard1"	deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard2"	deviceID="&itTurbolaserCannon;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.0"
-			rotationAccel=		"0.25"
-			/>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"100"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"50"
-
-					posX=		"-52"
-					posY=		"0"
-					sizeX=		"26"
-					sizeY=		"42"
-					/>
-		</Interior>
 
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
-			<Item count="20d20" item="&itKM500Missile;"/>
 		</Items>
-
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsCharonFrigateImage;" imageWidth="140" imageHeight="140"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="171"	posRadius="67"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="66"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-171"	posRadius="67"	posZ="0"	rotation="180"/>
-		</Effects>
-		
-		<!-- AI and Behavior -->
 
 		<AISettings
 			aggressor=			"true"

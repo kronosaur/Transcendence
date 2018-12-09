@@ -2546,22 +2546,10 @@
 			rotationAccel=		"0.5"
 			/>
 
-		<Wreck
-			explosionType=		"&vtThermoExplosion3;"
-			/>
-
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itHexaCarbideArmor;"
-			count=				"16"
-			/>
-		
-		<Devices>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="340" maxFireArc="200"	posAngle="110" posRadius="60" posZ="0"/>
-			<Device deviceID="&itRasiermesserLauncher;" secondaryWeapon="true" minFireArc="160" maxFireArc="20"		posAngle="250" posRadius="60" posZ="0"/>
-			<Device deviceID="&itPlasmaShieldGenerator;"/>
-		</Devices>
+		<DeviceSlots>
+			<DeviceSlot id="portArm1"		criteria="w"	posAngle="114"   posRadius="60"   posZ="0"	fireAngle="90"	fireArc="220"	secondaryWeapon="true"/>
+			<DeviceSlot id="starboardArm1"	criteria="w"	posAngle="-114"  posRadius="60"   posZ="0"	fireAngle="-90"	fireArc="220"	secondaryWeapon="true"/>
+		</DeviceSlots>
 
 		<Interior>
 			<Compartment name="interior"
@@ -2579,6 +2567,23 @@
 					/>
 		</Interior>
 
+		<Wreck
+			explosionType=		"&vtThermoExplosion3;"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itHexaCarbideArmor;"
+			count=				"16"
+			/>
+		
+		<Devices>
+			<Device slotID="portArm1"		deviceID="&itRasiermesserLauncher;"/>
+			<Device slotID="starboardArm1"	deviceID="&itRasiermesserLauncher;"/>
+			<Device deviceID="&itPlasmaShieldGenerator;"/>
+		</Devices>
+
 		<Items>
 			<Item count="40d20" item="&itGotha10Missile;"/>
 			<Item count="2d12" item="&itPteracniumFuelRod;"/>
@@ -2586,7 +2591,8 @@
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsCorporateCruiser;" imageWidth="230" imageHeight="230"/>
+		<Image imageID="&rsCorporateCruiserHD;" imageWidth="230" imageHeight="230"	rotationCount="120" rotationColumns="12" viewportRatio="0.035"/>
+		<HeroImage imageID="&rsCorporateCruiserHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="180"	posRadius="0"	posZ="-10"	rotation="180"	sendToBack="*"/>
@@ -2872,6 +2878,7 @@
 	<Image UNID="&rsMakayevFactory;"		bitmap="Resources\MakayevFactory.jpg" bitmask="Resources\MakayevFactoryMask.bmp" loadOnUse="true"/>
 	<Image UNID="&rsManufacturingPlant;"	bitmap="Resources\ManufacturingPlant.jpg" bitmask="Resources\ManufacturingPlantMask.bmp" loadOnUse="true"/>
 
-	<Image UNID="&rsCorporateCruiser;"		bitmap="Resources\CorporateCruiser.jpg" bitmask="Resources\CorporateCruiserMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsCorporateCruiserHD;"	bitmap="Resources\CorporateCruiserHD.jpg" bitmask="Resources\CorporateCruiserHDMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCorporateCruiserHero;"	bitmap="Resources\CorporateCruiserLarge.jpg" bitmask="Resources\CorporateCruiserLargeMask.bmp"  loadOnUse="true"/>
 	
 </TranscendenceModule>

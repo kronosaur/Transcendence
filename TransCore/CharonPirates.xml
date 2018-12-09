@@ -616,7 +616,7 @@
 
 <!-- SHIP CLASSES -->
 
-	<!-- Corsair-class Gunship -->
+	<!-- Level 1: Corsair-class Gunship -->
 
 	<ShipClass UNID="&scCorsair;"
 			manufacturer=		"Charon Pirates"
@@ -664,7 +664,7 @@
 
 	</ShipClass>
 
-	<!-- Corsair II-class Gunship -->
+	<!-- Level 3: Corsair II-class Gunship -->
 
 	<ShipClass UNID="&scCorsair-II;"
 			manufacturer=		"Charon Pirates"
@@ -727,43 +727,50 @@
 
 	</ShipClass>
 
-	<!-- Drake-class Missileship -->
+	<!-- Level 3: Drake-class Missileship -->
 
 	<ShipClass UNID="&scDrake;"
 			manufacturer=		"Charon Pirates"
 			class=				"Drake"
 			type=				"missileship"
 			defaultSovereign=	"&svPirates;"
+
 			level=				"3"
-
 			attributes=			"capitalShip, charonPirates, genericClass"
-			
-			size=				"70"
-			mass=				"6000"
-			thrustRatio=		"1"
-			maxSpeed=			"12"
-			cargoSpace=			"500"
-
-			explosionType=		"&vtKineticExplosion3;"
+			inherit=			"&baHumanTechShip;"
 			>
 
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itAdvancedReactiveArmor;"
-			count=				"8"
+		<!-- Hull -->
+
+		<Hull
+			size=				"66"
+			mass=				"3200"
+			cargoSpace=			"500"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"500"
+			maxDevices=			"10"
+
+			stdArmor=			"10000"
+			maxArmor=			"20000"
 			/>
-		
-		<Devices>
-			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
-			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="20"  maxFireArc="160" posAngle="60"  posRadius="30"/>
-			<Device deviceID="&itLaserCannon;" secondaryWeapon="true"	minFireArc="200" maxFireArc="340" posAngle="300" posRadius="30"/>
-		</Devices>
+
+		<Drive
+			maxSpeed=			"12"
+			thrust=				"6000"
+			powerUse=			"500"
+			/>
 
 		<Maneuver
 			maxRotationRate=	"4"
 			rotationAccel=		"0.5"
 			/>
+
+		<DeviceSlots>
+			<DeviceSlot id="omni1"		criteria="w"	posAngle="0"    posRadius="20"   posZ="10"	omnidirectional="true"/>
+			<DeviceSlot id="port1"		criteria="w"	posAngle="58"   posRadius="34"   posZ="0"	fireAngle="80"	fireArc="160"	secondaryWeapon="true"/>
+			<DeviceSlot id="starboard1" criteria="w"	posAngle="-58"  posRadius="34"   posZ="0"	fireAngle="-80"	fireArc="160"	secondaryWeapon="true"/>
+		</DeviceSlots>
 
 		<Interior>
 			<Compartment name="interior"
@@ -781,17 +788,38 @@
 					/>
 		</Interior>
 
+		<Wreck
+			explosionType=		"&vtKineticExplosion3;"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"8"
+			/>
+		
+		<Devices>
+			<Device slotID="omni1"		deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Table>
+						<Item chance="85" count="10d20" item="&itKM100Missile;"/>
+						<Item chance="15" count="10d20" item="&itFragmentationMissile;"/>
+					</Table>
+				</Items>
+			</Device>
+			<Device slotID="port1"		deviceID="&itLaserCannon;"/>
+			<Device slotID="starboard1"	deviceID="&itLaserCannon;"/>
+		</Devices>
+
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
-			<Table>
-				<Item chance="85" count="10d20" item="&itKM100Missile;"/>
-				<Item chance="15" count="10d20" item="&itFragmentationMissile;"/>
-			</Table>
 		</Items>
 
 		<!-- Image and Effects -->
 
-		<Image imageID="&rsMediumShips3;" imageX="96" imageY="0" imageWidth="96" imageHeight="96"/>
+		<Image imageID="&rsDrakeHD;" imageWidth="96" imageHeight="96" rotationCount="120" rotationColumns="12" viewportRatio="0.009375"/>
+		<HeroImage imageID="&rsDrakeHero;" imageWidth="320" imageHeight="320"/>
 
 		<Effects>
 			<Effect type="thrustMain"		posAngle="171"	posRadius="42"	posZ="6"	rotation="180"	effect="&efMainThrusterLarge;"/>
@@ -811,7 +839,7 @@
 
 	</ShipClass>
 
-	<!-- Viking-class Gunship -->
+	<!-- Level 2: Viking-class Gunship -->
 
 	<ShipClass UNID="&scViking;"
 			manufacturer=		"Charon Pirates"
@@ -890,7 +918,7 @@
 
 	</ShipClass>
 
-	<!-- Viking II-class Gunship -->
+	<!-- Level 4: Viking II-class Gunship -->
 
 	<ShipClass UNID="&scViking-II;"
 			manufacturer=		"Charon Pirates"
@@ -969,7 +997,121 @@
 
 	</ShipClass>
 
-	<!-- Charon Frigate
+	<!-- Level 4: Charon Frigate -->
+
+	<ShipClass UNID="&scCharonFrigateStock;"
+			manufacturer=		"Charon Pirates"
+			class=				"Charon frigate"
+			type=				""
+			defaultSovereign=	"&svPirates;"
+
+			attributes=			"capitalShip, charonPirates, charonFrigate"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"120"
+			mass=				"7500"
+			cargoSpace=			"1000"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"1000"
+			maxDevices=			"12"
+
+			stdArmor=			"10000"
+			maxArmor=			"20000"
+			/>
+
+		<Drive
+			maxSpeed=			"18"
+			thrust=				"15000"
+			powerUse=			"1000"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"4.0"
+			rotationAccel=		"0.25"
+			/>
+
+		<DeviceSlots>
+			<DeviceSlot id="omni1"		criteria="w"	posAngle="0"    posRadius="14"   posZ="20"	omnidirectional="true"/>
+			<DeviceSlot id="port1"		criteria="w"	posAngle="40"   posRadius="35"   posZ="0"	fireAngle="80"	fireArc="170"	secondaryWeapon="true"/>
+			<DeviceSlot id="port2"		criteria="w"	posAngle="114"  posRadius="26"   posZ="0"	fireAngle="90"	fireArc="170"	secondaryWeapon="true"/>
+			<DeviceSlot id="starboard1"	criteria="w"	posAngle="-40"  posRadius="35"   posZ="0"	fireAngle="-80"	fireArc="170"	secondaryWeapon="true"/>
+			<DeviceSlot id="starboard2"	criteria="w"	posAngle="-114" posRadius="26"   posZ="0"	fireAngle="-90"	fireArc="170"	secondaryWeapon="true"/>
+		</DeviceSlots>
+
+		<Interior>
+			<Compartment name="interior"
+					hitPoints=	"100"
+					/>
+			
+			<Compartment name="main drive"
+					type=		"mainDrive"
+					hitPoints=	"50"
+
+					posX=		"-52"
+					posY=		"0"
+					sizeX=		"26"
+					sizeY=		"42"
+					/>
+		</Interior>
+
+		<Wreck
+			explosionType=		"&vtKineticExplosion4;"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itAdvancedReactiveArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device slotID="omni1"		deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Table>
+						<Item chance="85" count="10d20" item="&itKM500Missile;"/>
+						<Item chance="15" count="15d20" item="&itFragmentationMissile;"/>
+					</Table>
+				</Items>
+			</Device>
+			<Device slotID="port1"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="port2"		deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard1" deviceID="&itTurbolaserCannon;"/>
+			<Device slotID="starboard2" deviceID="&itTurbolaserCannon;"/>
+		</Devices>
+
+		<Items>
+			<Item count="2d6" item="&itHelium3FuelRod;"/>
+		</Items>
+
+		<!-- Image and Effects -->
+
+		<Image imageID="&rsCharonFrigateHD;" imageWidth="140" imageHeight="140"	rotationCount="120" rotationColumns="12" viewportRatio="0.015625"/>
+
+		<Effects>
+			<Effect type="thrustMain"		posAngle="171"	posRadius="67"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="180"	posRadius="66"	posZ="0"	rotation="180"/>
+			<Effect type="thrustMain"		posAngle="-171"	posRadius="67"	posZ="0"	rotation="180"/>
+		</Effects>
+		
+		<!-- AI and Behavior -->
+
+		<AISettings
+			aggressor=			"true"
+			fireRateAdj=		"50"
+			fireAccuracy=		"90"
+			perception=			"4"
+			
+			combatStyle=		"standOff"
+			/>
+	</ShipClass>
+
+	<!-- Level 4: Charon Frigate
 
 	GLOBAL DATA
 
@@ -1028,14 +1170,7 @@
 			defaultSovereign=	"&svPirates;"
 
 			attributes=			"capitalShip, charonPirates, charonFrigate, genericClass"
-			   
-			size=				"120"
-			mass=				"7500"
-			cargoSpace=			"1000"
-			thrustRatio=		"2"
-			maxSpeed=			"18"
-
-			explosionType=		"&vtKineticExplosion4;"
+			inherit=			"&scCharonFrigateStock;"
 			>
 
 		<Names definiteArticle="true">
@@ -1058,62 +1193,25 @@
 			/>
 		
 		<Devices>
-			<Device deviceID="&itNAMIMissileLauncher;" omnidirectional="true"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="0" maxFireArc="170" posAngle="43" posRadius="29" posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="190" maxFireArc="0" posAngle="320" posRadius="32" posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="5" maxFireArc="175" posAngle="118" posRadius="25" posZ="0"/>
-			<Device deviceID="&itTurbolaserCannon;" secondaryWeapon="true" minFireArc="185" maxFireArc="355" posAngle="238" posRadius="25" posZ="0"/>
+			<Device slotID="omni1"		deviceID="&itNAMIMissileLauncher;">
+				<Items>
+					<Table>
+						<Item chance="85" count="10d20" item="&itKM500Missile;"/>
+						<Item chance="15" count="15d20" item="&itFragmentationMissile;"/>
+					</Table>
+				</Items>
+			</Device>
+			<Device slotID="port1"		deviceID="&itTurbolaserCannon;" secondaryWeapon="true"/>
+			<Device slotID="port2"		deviceID="&itTurbolaserCannon;" secondaryWeapon="true"/>
+			<Device slotID="starboard1" deviceID="&itTurbolaserCannon;" secondaryWeapon="true"/>
+			<Device slotID="starboard2" deviceID="&itTurbolaserCannon;" secondaryWeapon="true"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"4.0"
-			rotationAccel=		"0.25"
-			/>
-
-		<Interior>
-			<Compartment name="interior"
-					hitPoints=	"100"
-					/>
-			
-			<Compartment name="main drive"
-					type=		"mainDrive"
-					hitPoints=	"50"
-
-					posX=		"-52"
-					posY=		"0"
-					sizeX=		"26"
-					sizeY=		"42"
-					/>
-		</Interior>
 
 		<Items>
 			<Item count="2d6" item="&itHelium3FuelRod;"/>
-			<Table>
-				<Item chance="85" count="10d20" item="&itKM500Missile;"/>
-				<Item chance="15" count="15d20" item="&itFragmentationMissile;"/>
-			</Table>
 		</Items>
 
-		<!-- Image and Effects -->
-
-		<Image imageID="&rsCharonFrigateImage;" imageWidth="140" imageHeight="140"/>
-
-		<Effects>
-			<Effect type="thrustMain"		posAngle="171"	posRadius="67"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="180"	posRadius="66"	posZ="0"	rotation="180"/>
-			<Effect type="thrustMain"		posAngle="-171"	posRadius="67"	posZ="0"	rotation="180"/>
-		</Effects>
-		
 		<!-- AI and Behavior -->
-
-		<AISettings
-			aggressor=			"true"
-			fireRateAdj=		"50"
-			fireAccuracy=		"90"
-			perception=			"4"
-			
-			combatStyle=		"standOff"
-			/>
 
 		<Events>
 			<OnCreate>
@@ -2183,9 +2281,15 @@
 
 <!-- RESOURCES -->
 
-	<Image UNID="&rsCharonFrigateImage;"	bitmap="Resources\CharonFrigate.jpg" bitmask="Resources\CharonFrigateMask.bmp"  loadOnUse="true"/>
+	<Image UNID="&rsCharonFrigateHD;"		bitmap="Resources\CharonFrigateHD.jpg" bitmask="Resources\CharonFrigateHDMask.bmp" loadOnUse="true"/>
+
+
 	<Image UNID="&rsCorsairHD;"				bitmap="Resources\CorsairHD.jpg" bitmask="Resources\CorsairHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsCorsairHero;"			bitmap="Resources\CorsairLarge.jpg" bitmask="Resources\CorsairLargeMask.bmp"  loadOnUse="true"/>
+
+	<Image UNID="&rsDrakeHD;"				bitmap="Resources\DrakeHD.jpg" bitmask="Resources\DrakeHDMask.bmp" loadOnUse="true"/>
+	<Image UNID="&rsDrakeHero;"				bitmap="Resources\DrakeLarge.jpg" bitmask="Resources\DrakeLargeMask.bmp" loadOnUse="true"/>
+
 	<Image UNID="&rsVikingHD;"				bitmap="Resources\VikingHD.jpg" bitmask="Resources\VikingHDMask.bmp"  loadOnUse="true"/>
 	<Image UNID="&rsVikingHero;"			bitmap="Resources\VikingLarge.jpg" bitmask="Resources\VikingLargeMask.bmp"  loadOnUse="true"/>
 
