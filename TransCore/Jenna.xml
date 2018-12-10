@@ -57,28 +57,28 @@
 		</StaticData>
 		
 		<Language>
-			<Text id="ArmorRepaired">			"\"Good as new!\""</Text>
-			<Text id="AttackTargetAck">			"\"I got it!\""</Text>
-			<Text id="CancelAttackAck">			"\"Roger, I'm inbound\""</Text>
-			<Text id="FormUpAck">				"\"Roger, I'm inbound\""</Text>
-			<Text id="IcantAttackFriends">		"\"Aren't they the good guys?\""</Text>
-			<Text id="IcantAttackMyself">		"\"Yeah, right!\""</Text>
-			<Text id="ImFarFromHome">			"\"Whoa, I'm pretty far from home!\""</Text>
-			<Text id="ImTooFarFromHome">		"\"I don't like being so far from home\""</Text>
-			<Text id="ImGoingHome">				"\"I can't follow you anymore; I'm sorry\""</Text>
-			<Text id="ImRepairingArmor">		"Jenna docks to repair her armor"</Text>
-			<Text id="MyArmorNeedsRepair">		"\"Can we go somewhere to repair my armor?\""</Text>
-			<Text id="NiceShooting">			"\"Not bad for an old-timer!\""</Text>
-			<Text id="NoTargetInRange">			"\"I think you're seeing things...\""</Text>
-			<Text id="Status100Percent">		"\"Ready when you are, old-timer\""</Text>
-			<Text id="StatusAttackingTarget">	"\"I'm a little busy right now\""</Text>
-			<Text id="StatusGoingHome">			"\"I'm sorry, my mind is made up: I'm going home\""</Text>
-			<Text id="StatusRepairingArmor">	"\"I'm just repairing my armor\""</Text>
-			<Text id="StatusWaiting">			"\"I'm waiting for you\""</Text>
-			<Text id="WaitAck">					"\"OK, but don't be gone too long\""</Text>
-			<Text id="WatchYourTargets">		"\"Hey, watch it!\""</Text>
-			<Text id="WingmanJoined">			"\"Ready for action, boss\""</Text>
-			<Text id="WingmanKilled">			"You have a sad feeling for a moment, then it passes"</Text>
+			<Text id="ArmorRepaired">			Good as new!</Text>
+			<Text id="AttackTargetAck">			I got it!</Text>
+			<Text id="CancelAttackAck">			Roger, I'm inbound</Text>
+			<Text id="FormUpAck">				Roger, I'm inbound</Text>
+			<Text id="IcantAttackFriends">		Aren't they the good guys?</Text>
+			<Text id="IcantAttackMyself">		Yeah, right!</Text>
+			<Text id="ImFarFromHome">			Whoa, I'm pretty far from home!</Text>
+			<Text id="ImTooFarFromHome">		I don't like being so far from home</Text>
+			<Text id="ImGoingHome">				I can't follow you anymore; I'm sorry</Text>
+			<Text id="ImRepairingArmor">		Docking to repair armor</Text>
+			<Text id="MyArmorNeedsRepair">		Can we go somewhere to repair my armor?</Text>
+			<Text id="NiceShooting">			Not bad for an old-timer!</Text>
+			<Text id="NoTargetInRange">			I think you're seeing things...</Text>
+			<Text id="Status100Percent">		Ready when you are, old-timer</Text>
+			<Text id="StatusAttackingTarget">	I'm a little busy right now</Text>
+			<Text id="StatusGoingHome">			I'm sorry, my mind is made up: I'm going home</Text>
+			<Text id="StatusRepairingArmor">	I'm just repairing my armor</Text>
+			<Text id="StatusWaiting">			I'm waiting for you</Text>
+			<Text id="WaitAck">					OK, but don't be gone too long</Text>
+			<Text id="WatchYourTargets">		Hey, watch it!</Text>
+			<Text id="WingmanJoined">			Ready for action, boss</Text>
+			<Text id="WingmanKilled">			You have a sad feeling for a moment, then it passes</Text>
 
 			<Text id="Intro">
 				(list

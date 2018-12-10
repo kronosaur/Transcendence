@@ -51,28 +51,28 @@
 			inherit=	"&baStdWingmanBase;">
 
 		<Language>
-			<Text id="ArmorRepaired">			"\"My ship's as good as new\""</Text>
-			<Text id="AttackTargetAck">			"\"Target acquired\""</Text>
-			<Text id="CancelAttackAck">			"\"Acknowledged\""</Text>
-			<Text id="FormUpAck">				"\"Acknowledged\""</Text>
-			<Text id="IcantAttackFriends">		"\"I won't kill innocents!\""</Text>
-			<Text id="IcantAttackMyself">		"\"Someday, perhaps...\""</Text>
-			<Text id="ImFarFromHome">			""</Text>
-			<Text id="ImTooFarFromHome">		""</Text>
-			<Text id="ImGoingHome">				""</Text>
-			<Text id="ImRepairingArmor">		"Rama docks to repair his armor"</Text>
-			<Text id="MyArmorNeedsRepair">		"\"My ship needs repairs\""</Text>
-			<Text id="NiceShooting">			""</Text>
-			<Text id="NoTargetInRange">			"\"No targets in sight\""</Text>
-			<Text id="Status100Percent">		"\"All systems normal\""</Text>
-			<Text id="StatusAttackingTarget">	"\"Engaging the enemy\""</Text>
-			<Text id="StatusGoingHome">			""</Text>
-			<Text id="StatusRepairingArmor">	"\"Repairing my ship\""</Text>
-			<Text id="StatusWaiting">			"\"Waiting as ordered\""</Text>
-			<Text id="WaitAck">					"\"Acknowledged\""</Text>
-			<Text id="WatchYourTargets">		""</Text>
-			<Text id="WingmanJoined">			"\"To hell with destiny!\""</Text>
-			<Text id="WingmanKilled">			"Rama has met his destiny"</Text>
+			<Text id="ArmorRepaired">			My ship's as good as new</Text>
+			<Text id="AttackTargetAck">			Target acquired</Text>
+			<Text id="CancelAttackAck">			Acknowledged</Text>
+			<Text id="FormUpAck">				Acknowledged</Text>
+			<Text id="IcantAttackFriends">		I won't kill innocents!</Text>
+			<Text id="IcantAttackMyself">		Someday, perhaps...</Text>
+			<Text id="ImFarFromHome">			</Text>
+			<Text id="ImTooFarFromHome">		</Text>
+			<Text id="ImGoingHome">				</Text>
+			<Text id="ImRepairingArmor">		Docking to repair armor</Text>
+			<Text id="MyArmorNeedsRepair">		My ship needs repairs</Text>
+			<Text id="NiceShooting">			</Text>
+			<Text id="NoTargetInRange">			No targets in sight</Text>
+			<Text id="Status100Percent">		All systems normal</Text>
+			<Text id="StatusAttackingTarget">	Engaging the enemy</Text>
+			<Text id="StatusGoingHome">			</Text>
+			<Text id="StatusRepairingArmor">	Repairing my ship</Text>
+			<Text id="StatusWaiting">			Waiting as ordered</Text>
+			<Text id="WaitAck">					Acknowledged</Text>
+			<Text id="WatchYourTargets">		</Text>
+			<Text id="WingmanJoined">			To hell with destiny!</Text>
+			<Text id="WingmanKilled">			Rama has met his destiny</Text>
 
 			<Text id="Intro">
 				(list
