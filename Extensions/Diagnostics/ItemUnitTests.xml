@@ -76,6 +76,29 @@
 									testItem2
 									'ignoreCharges
 									)														result:Nil	}
+
+						;	itmMatches -----------------------------------------
+
+						{	test:'(itmMatches testItem1 "w")								result:True	}
+						{	test:'(itmMatches testItem1 "*~s")								result:True	}
+						{	test:'(itmMatches testItem1 "*~w")								result:Nil	}
+						{	test:'(itmMatches testItem1 "w +energyWeapon;")					result:True	}
+						{	test:'(itmMatches testItem1 "w -launcher;")						result:True	}
+						{	test:'(itmMatches testItem1 "w =1;")							result:True	}
+						{	test:'(itmMatches testItem1 "w L:1-4;")							result:True	}
+						{	test:'(itmMatches testItem1 "w L:2-5;")							result:Nil	}
+						{	test:'(itmMatches testItem1 "w +unid:&itLaserCannon;;")			result:True	}
+
+						{	test:'(itmMatches testItem1 "w +property:omnidirectional;")		result:Nil	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots;")			result:True	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots=1;")		result:True	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots=2;")		result:Nil	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots&gt;1;")	result:Nil	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots&gt;=1;")	result:True	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots&lt;1;")	result:Nil	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots&lt;=1;")	result:True	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots!=1;")		result:Nil	}
+						{	test:'(itmMatches testItem1 "w +property:deviceSlots!=3;")		result:True	}
 						))
 					)
 			</OnGlobalStartDiagnostics>
