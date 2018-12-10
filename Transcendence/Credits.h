@@ -198,6 +198,7 @@ static char *FEEDBACK[] =
 	"Sheltem",
 	"SiaFu",
 	"Sideyr",
+	"SiegeLord",
 	"Siegfried",
 	"Silentdances",
 	"6cef",
@@ -231,6 +232,7 @@ static char *FEEDBACK[] =
 	"Watch TV, Do Nothing",
 	"Weelillad",
 	"Wolfwalker",
+	"Wolfwalker Prime",
 	"Wurmish",
 
 	"Xephyr",

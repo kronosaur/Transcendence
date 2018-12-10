@@ -65,8 +65,8 @@ VS_VERSION_INFO$(MULTIVERSE_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,8,204,0
- PRODUCTVERSION 1,8,204,0
+ FILEVERSION 1,8,204,1
+ PRODUCTVERSION 1,8,204,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -83,7 +83,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.8.204.0"
+            VALUE "FileVersion", "1.8.204.1"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2018 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
@@ -105,8 +105,8 @@ VS_VERSION_INFO$(STEAM_BUILD) VERSIONINFO
 #else
 VS_VERSION_INFO VERSIONINFO
 #endif
- FILEVERSION 1,8,204,0
- PRODUCTVERSION 1,8,204,0
+ FILEVERSION 1,8,204,1
+ PRODUCTVERSION 1,8,204,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -123,7 +123,7 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Kronosaur Productions, LLC"
             VALUE "FileDescription", "Transcendence"
-            VALUE "FileVersion", "1.8.204.0"
+            VALUE "FileVersion", "1.8.204.1"
             VALUE "InternalName", "Transcendence"
             VALUE "LegalCopyright", "Copyright © 2003-2018 Kronosaur Productions, LLC. All Rights Reserved."
             VALUE "LegalTrademarks", "Transcendence is a registered trademark of Kronosaur Productions, LLC."
