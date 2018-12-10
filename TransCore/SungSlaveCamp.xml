@@ -248,7 +248,22 @@
 
 <!-- DOCK SCREENS -->
 
-	<!-- Sung Slave Quarters -->
+	<!-- Sung Slave Quarters
+	
+		We rely on the data sungState on the slave camp object. sungState can be one
+		of the following:
+
+		Nil: We've never computed the number of slave coffins available.
+		'angry: Too many slave quarters killed; angry with player
+		'allDead: No slave conffins survived.
+		'coffins: At least one coffin is available for the player to take
+		'coffinsTaken: Player got a chance to take some coffins, but there are
+			more left.
+		'done: All coffins taken.
+
+		In addition, the data coffinCount is the number of coffins left.
+	
+	-->
 
 	<DockScreen UNID="&dsSungSlaveQuarters;"
 			inherit="&dsDockScreenBase;"
@@ -258,63 +273,82 @@
 			(block (
 				(slaverObj (sysFindObject gSource "T:sungSlaveCamp; N"))
 				(sungState (objGetData slaverObj 'sungState))
+				(coffinCount (objGetData slaverObj 'coffinCount))
 				)
 				;	Remember the Slave camp object
 
 				(scrSetData gScreen 'slaverObj slaverObj)
 
+				;	Figure out what to do.
+
 				;	When we first dock, we compute the number of slaves rescued 
 				;	by the player.
 
-				(if (and slaverObj (objIsAbandoned slaverObj) (not sungState))
-					(block (
-						(totalSlaveCount (objGetData slaverObj 'totalSlaveCount))
+				(switch
+					;	If the slave camp is not dead, then nothing to.
 
-						;	Get all the slave quarters
+					(or (not slaverObj) (not (objIsAbandoned slaverObj)))
+						Nil
 
-						(slaves (sysFindObject slaverObj "T:sungSlaveQuarters; N:8;"))
+					;	See if we need to calculate how many coffins to add
 
-						;	Count how many are still alive
+					(not sungState)
+						(block (
+							(totalSlaveCount (objGetData slaverObj 'totalSlaveCount))
 
-						(alive 
-							(map slaves 'reduceSum slaveObj
-								(if (objIsAbandoned slaveObj) 0 1)
+							;	Get all the slave quarters
+
+							(slaves (sysFindObject slaverObj "T:sungSlaveQuarters; N:8;"))
+
+							;	Count how many are still alive
+
+							(alive 
+								(map slaves 'reduceSum slaveObj
+									(if (objIsAbandoned slaveObj) 0 1)
+									)
+								)
+
+							;	The dead are the total minus the living
+
+							(dead (- totalSlaveCount alive))
+
+							;	For each surviving slave quarter, there is a 50% 
+							;	chance of a surviving slave coffin
+
+							(slaveCoffins 
+								(map (make 'sequence alive) 'reduceSum i
+									(round 'stochastic 0.5)
+									)
+								)
+							)
+							(switch
+								;	If there are more dead than alive, the player 
+								;	gets nothing.
+
+								(gr dead alive)
+									(objSetData slaverObj 'sungState 'angry)
+
+								;	If no coffins, then too many died
+
+								(= slaveCoffins 0)
+									(objSetData slaverObj 'sungState 'allDead)
+
+								;	Otherwise, we add slave coffins to the station
+
+								(block ()
+									(objAddItem gSource (itmCreate &itSlaveCoffin; slaveCoffins))
+									(objSetData slaverObj 'sungState 'coffins)
+									)
 								)
 							)
 
-						;	The dead are the total minus the living
+					;	If the player left some coffins behind, add them
 
-						(dead (- totalSlaveCount alive))
-
-						;	For each surviving slave quarter, there is a 50% 
-						;	chance of a surviving slave coffin
-
-						(slaveCoffins 
-							(map (make 'sequence alive) 'reduceSum i
-								(round 'stochastic 0.5)
-								)
+					coffinCount
+						(block ()
+							(objAddItem gSource (itmCreate &itSlaveCoffin; coffinCount))
+							(objSetData slaverObj 'coffinCount Nil)
 							)
-						)
-						(switch
-							;	If there are more dead than alive, the player 
-							;	gets nothing.
-
-							(gr dead alive)
-								(objSetData slaverObj 'sungState 'angry)
-
-							;	If no coffins, then too many died
-
-							(= slaveCoffins 0)
-								(objSetData slaverObj 'sungState 'allDead)
-
-							;	Otherwise, we add slave coffins to the station
-
-							(block ()
-								(objAddItem gSource (itmCreate &itSlaveCoffin; slaveCoffins))
-								(objSetData slaverObj 'sungState 'coffins)
-								)
-							)
-						)
 					)
 				)
 		</OnScreenInit>
@@ -369,28 +403,29 @@
 
 				<Actions>
 					<Action id="actionLiberate" default="1">
-						(block (
-							(slaverObj (scrGetData gScreen 'slaverObj))
-							)
-							(scrShowScreen gScreen &dsRPGLoot; {
-								nextScreen: &dsSungSlaveQuarters;
-								lootLabel: (scrTranslate gScreen 'actionLiberate)
-								})
-
-							;	Remember that the player got an opportunity to loot
-							;	(But they haven't necessarily taken all coffins.)
-
-							(objSetData slaverObj 'sungState 'coffinsTaken)
-							)
+						(scrShowScreen gScreen &dsRPGLoot; {
+							nextScreen: &dsSungSlaveQuarters;
+							lootLabel: (scrTranslate gScreen 'actionLiberate)
+							})
 					</Action>
 
 					<Action id="actionUndock" default="1" cancel="1">
 						(block (
 							(slaverObj (scrGetData gScreen 'slaverObj))
 							(sungState (objGetData slaverObj 'sungState))
+							(coffinsLeft (@ (objGetItems gSource "* +unid:&itSlaveCoffin;") 0))
 							)
 							(switch
-								(not (objGetItems gSource "* +unid:&itSlaveCoffin;"))
+								coffinsLeft
+									(block ()
+										(objRemoveItem gSource coffinsLeft)
+										(objSetData slaverObj 'coffinCount (itmGetCount coffinsLeft))
+										(objSetData slaverObj 'sungState 'coffinsTaken)
+										)
+
+								(or (= sungState 'coffinsTaken)
+										(= sungState 'conffins)
+										)
 									(objSetData slaverObj 'sungState 'done)
 								)
 
