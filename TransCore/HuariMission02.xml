@@ -90,6 +90,9 @@
 								)
 							)
 						)
+
+					;	Ignore friendly fire
+					(objSetProperty stationObj 'ignoreFriendlyFire True)
 					)
 			</OnStarted>
 
@@ -114,11 +117,18 @@
 			</OnReward>
 
 			<OnCompleted>
-				(switch
-					(and (= aReason 'failure)
-							(geq (count (msnFind "r +huariFortress; +property:isFailure;")) 2)
-							)
-						(typSetData &svHuariEmpire; 'status 'loser)
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(switch
+						(and (= aReason 'failure)
+								(geq (count (msnFind "r +huariFortress; +property:isFailure;")) 2)
+								)
+							(typSetData &svHuariEmpire; 'status 'loser)
+						)
+
+					;	Either way, turn off friendly fire
+					(objSetProperty stationObj 'ignoreFriendlyFire Nil)
 					)
 			</OnCompleted>
 		</Events>

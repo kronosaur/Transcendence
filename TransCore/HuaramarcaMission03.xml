@@ -110,6 +110,9 @@
 							)
 						)
 					(msnSetData gSource 'destID (msnGetProperty gSource 'ownerID))
+
+					;	Ignore friendly fire
+					(objSetProperty baseObj 'ignoreFriendlyFire True)
 					)
 			</OnAccepted>
 
@@ -142,12 +145,19 @@
 			</OnDeliveryMissionCompleted>
 
 			<OnCompleted>
-				(enum (msnGetData gSource 'escorts) theShip
-					(block Nil
-						(shpCancelOrders theShip)
-						(shpOrder theShip 'attackNearestEnemy)
-						(shpOrder theShip 'patrol (objGetObjByID (msnGetProperty gSource 'ownerID)))
+				(block (
+					(stationObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+					)
+					(enum (msnGetData gSource 'escorts) theShip
+						(block Nil
+							(shpCancelOrders theShip)
+							(shpOrder theShip 'attackNearestEnemy)
+							(shpOrder theShip 'patrol stationObj)
+							)
 						)
+
+					;	Either way, turn off friendly fire
+					(objSetProperty stationObj 'ignoreFriendlyFire Nil)
 					)
 			</OnCompleted>
 
