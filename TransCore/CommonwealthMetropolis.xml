@@ -494,14 +494,24 @@
 			<Default descID="descWelcome">
 				<OnPaneInit>
 					(block ()
-						(scrShowAction gScreen 'actionInformation (objGetStaticData gSource 'Info))
+						(scrShowAction gScreen 'actionInformation (or
+							(objTranslate gSource 'starton.info)
+							(objGetStaticData gSource 'Info)
+							))
 						(scrShowAction gScreen 'actionBuyShip (objHasTradeService gSource 'priceOfShipForSale))
 						)
 				</OnPaneInit>
 
 				<Actions>
 					<Action id="actionInformation">
-						<ShowPane pane="Information"/>
+						(block (
+							(infoDlg (objTranslate gSource 'starton.info))
+							)
+							(if infoDlg
+								(scrShowScreen gScreen &dsRPGDialog; infoDlg)
+								(scrShowPane gScreen 'Information)
+								)
+							)
 					</Action>
 
 					<Action id="actionCommoditiesExchange" default="1">

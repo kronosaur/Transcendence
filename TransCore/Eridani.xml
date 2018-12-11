@@ -117,39 +117,153 @@
 			</OnTrafficControl>
 		</Events>
 
-		<StaticData>
-			<Info>
-				"Welcome to the Eridani system and to Starton Eridani! Settled in 2176, our small star system is one of the most friendly in all the Commonwealth. Whatever your purpose here, whether business or pleasure, we're sure that you will enjoy your stay! Please select your topic of interest:"
-			</Info>
-
-			<TouristInfo>
-				"Though far from St. Katharine's Star, the Eridani system is not the backwater station shown on the 3DVs. The bars and nightclubs of Central Plaza are always ready for visitors. But if you prefer a quieter time, you can travel out to St. John's ice moon and visit the monastery of the Sisters of Domina."
-			</TouristInfo>
-
-			<CorporateInfo>
-				"If you are here on corporate business you will find the Commodities Exchange to have many popular items, including starship equipment. The corporate enclave near Starton Eridani also trades in supplies.\n\nNote: In accordance with Commonwealth laws, all customs officers are required to search for contraband&#x97;buy and sell legal goods only."
-			</CorporateInfo>
-
-			<TravelInfo>
-				"Starships are very common here, so you will have no problem obtaining fuel or making repairs to your ship. Starton Eridani's shipyard can install new devices on your ship. And when you've enjoyed everything that the Eridani system has to offer, you can find an outbound stargate around the innermost planet."
-			</TravelInfo>
-
-			<SafetyInfo>
-				"Like any populated star system, Eridani has its share of dangers. Charon pirates and Centauri warlords control some parts of the system&#x97;avoid all non-Commonwealth stations unless escorted or armed.\n\nNote: In accordance with Commonwealth laws, legally armed ships may attack and loot designated enemy targets only. Ships attacking Commonwealth stations or ships will be prosecuted and/or fired upon."
-			</SafetyInfo>
-
-			<FunFacts>
-				(
-				"Starton is more than seven stargates away from St. Katharine's Star."
-				"Starton Eridani was founded by the Commonwealth in 2176."
-				"According to the 2410 census, 29 million people live in this star system; half of them live in Starton Eridani itself."
-				"For some reason, more pilgrims have started their journey to the Galactic Core from Eridani than from any other system of the Commonwealth."
-				"Conrad Decker, admiral of the Commonwealth Fleet, spent his summers in Starton Eridani as a young boy."
-				"In 2240, Starton Eridani was almost evacuated because of rumors that a large Ares fleet was approaching. It later turned out to be a group of Salvagers traveling together."
-				"During the Eridani Bicentennial in 2376, then governor Jerad Norton convinced the Charon pirates to join in the celebrations in exchange for an unspecified sum."
-				)
-			</FunFacts>
-		</StaticData>
+		<Language>
+			<Text id="starton.info">
+				(list
+					{	id: 'welcome
+						descID: 'textInfo1
+						actions: (list
+							{	labelID: 'actionTouristInfo			nextPage:'touristInfo	}
+							{	labelID: 'actionCorporateInfo		nextPage:'corporateInfo	}
+							{	labelID: 'actionTravelInfo			nextPage:'travelInfo	}
+							{	labelID: 'actionSafetyInfo			nextPage:'safetyInfo	}
+							{	labelID: 'actionFunInfo				nextPage:'funInfo	}
+							{	labelID: 'actionDone				nextPage:'exitScreen	}
+							)
+						}
+					{	id: 'touristInfo
+						descID: 'textTouristInfo1		labelID: 'actionDone	nextPage: 'welcome 
+						}
+					{	id: 'corporateInfo
+						descID: 'textCorporateInfo1		labelID: 'actionDone	nextPage: 'welcome 
+						}
+					{	id: 'travelInfo
+						descID: 'textTravelInfo1		labelID: 'actionDone	nextPage: 'welcome 
+						}
+					{	id: 'safetyInfo
+						descID: 'textSafetyInfo1		labelID: 'actionDone	nextPage: 'welcome 
+						}
+					{	id: 'funInfo
+						descID: 'textRandomFunFact
+						actions: (list
+							{	labelID: 'actionMoreFun				nextPage: 'funInfo	}
+							{	labelID: 'actionDone				nextPage: 'welcome }
+							)
+						}
+					)
+			</Text>
+			
+			<Text id="textInfo1">
+				
+				Welcome to the Eridani system and to Starton Eridani! Settled in
+				2176, our small star system is one of the most friendly in all 
+				the Commonwealth. Whatever your purpose here, whether business or
+				pleasure, we're sure that you will enjoy your stay!
+				
+				Please select your topic of interest:
+				
+			</Text>
+			<Text id="textTouristInfo1">
+				
+				Though far from St. Katharine's Star, the Eridani system is not 
+				the backwater station shown on the 3DVs. The bars and nightclubs 
+				of Central Plaza are always ready for visitors. 
+				
+				But if you prefer a quieter time, you can travel out to St. 
+				John's ice moon and visit the monastery of the Sisters of Domina.
+				
+			</Text>
+			<Text id="textCorporateInfo1">
+				
+				If you are here on corporate business you will find the 
+				Commodities Exchange to have many popular items, including 
+				starship equipment. The corporate enclave near Starton Eridani 
+				also trades in supplies.
+				
+				Note: In accordance with Commonwealth laws, all customs officers 
+				are required to search for contraband&mdash;buy and sell legal 
+				goods only."
+				
+			</Text>
+			<Text id="textTravelInfo1">
+				
+				Starships are very common here, so you will have no problem 
+				obtaining fuel or making repairs to your ship. Starton Eridani's 
+				shipyard can install new devices on your ship.
+				
+				And when you've enjoyed everything that the Eridani system has 
+				to offer, you can find an outbound stargate around the innermost
+				planet.
+				
+			</Text>
+			<Text id="textSafetyInfo1">
+				
+				Like any populated star system, Eridani has its share of 
+				dangers. Charon pirates and Centauri warlords control some parts
+				of the system&mdash;avoid all non-Commonwealth stations unless 
+				escorted or armed.
+				
+				Note: In accordance with Commonwealth laws, legally armed ships 
+				may attack and loot designated enemy targets only. Ships 
+				attacking Commonwealth stations or ships will be prosecuted 
+				and/or fired upon.
+				
+			</Text>
+			
+			<Text id="textRandomFunFact">
+				(scrTranslate gScreen (cat "funFact." (random 1 7)))
+			</Text>
+			<Text id="funFact.1">
+				
+				Starton is more than seven stargates away from St. Katharine's Star.
+				
+			</Text>
+			<Text id="funFact.2">
+				
+				Starton Eridani was founded by the Commonwealth in 2176.
+				
+			</Text>
+			<Text id="funFact.3">
+				
+				According to the 2410 census, 29 million people live in this 
+				star system; half of them live on Starton Eridani itself.
+				
+			</Text>
+			<Text id="funFact.4">
+				
+				For some reason, more pilgrims have started their journey to the 
+				Galactic Core from Eridani than from any other system of the 
+				Commonwealth.
+				
+			</Text>
+			<Text id="funFact.5">
+				
+				Conrad Decker, admiral of the Commonwealth Fleet, spent his 
+				summers in Starton Eridani as a young boy.
+				
+			</Text>
+			<Text id="funFact.6">
+				
+				In 2240, Starton Eridani was almost evacuated because of rumors 
+				that a large Ares fleet was approaching. It later turned out to
+				be a group of Salvagers traveling together.
+				
+			</Text>
+			<Text id="funFact.7">
+				
+				During the Eridani Bicentennial in 2376, then governor Jerad 
+				Norton convinced the Charon pirates to join in the celebrations 
+				in exchange for an unspecified sum.
+				
+			</Text>
+		
+			<Text id="actionTouristInfo">[T]ourist Information</Text>
+			<Text id="actionCorporateInfo">[C]orporate Information</Text>
+			<Text id="actionTravelInfo">Tra[v]el Information</Text>
+			<Text id="actionSafetyInfo">[S]afety Information</Text>
+			<Text id="actionFunInfo">[F]un Facts</Text>
+			<Text id="actionMoreFun">More [F]un Facts</Text>
+		</Language>
 	</StationType>
 
 	<!-- Bering Station -->
