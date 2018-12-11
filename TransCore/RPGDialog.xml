@@ -34,6 +34,15 @@
 		
 		code: An optional lambda function to execute when this action is
 				selected.
+				
+	Alternatively, gData is a struct with the following options:
+	
+		dialog: A list of paneDesc (as above)
+		
+		dialogID: A text ID to translate to obtain the dialog.
+		
+		translateType: The type to use for translating dialogID and any IDs 
+				inside the dialog.
 
 -->
 
@@ -44,7 +53,25 @@
 		<Panes>
 			<Default>
 				<OnPaneInit>
-					(rpgPagePaneInit gScreen gData)
+					(switch
+						(!= (typeof gData) 'struct)
+							(rpgPagePaneInit gScreen gData)
+						
+						(@ gData 'dialog)
+							(rpgPagePaneInit gScreen (@ gData 'dialog) {
+								translateType: (@ gData 'translateType)
+								})
+								
+						(@ gData 'dialogID)
+							(rpgPagePaneInit gScreen 
+								(or (scrTranslate gScreen (@ gData 'dialogID)) (typTranslate (@ gData 'translateType) (@ gData 'dialogID)))
+								{
+									translateType: (@ gData 'translateType)
+									}
+								)
+						
+						(rpgPagePaneInit gScreen gData)
+						)
 				</OnPaneInit>
 
 				<Actions>
@@ -174,6 +201,8 @@
 				;		actionDoneID: Action ID to use for the done button (defaults to
 				;				'actionDone).
 				;
+				;		translateType: Use this type for translations
+				;
 				;		missionObj: Required if 'onAcceptDecline is defined.
 				;
 				;		onAcceptDecline: (lambda (theScreen acceptDecline pageDesc options) ...)
@@ -192,7 +221,7 @@
 					(pageDesc (rpgPageDesc textDesc pageNo))
 
 					(firstPageDesc (rpgPageDesc textDesc 0))
-					(translateID (@ firstPageDesc 'translateType))
+					(translateID (or (@ firstPageDesc 'translateType) (@ options 'translateType)))
 					(descID (or (@ pageDesc 'descID) (@ pageDesc 'textID)))
 					
 					(actions (@ pageDesc 'actions))
