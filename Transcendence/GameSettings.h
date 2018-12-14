@@ -256,6 +256,7 @@ class CGameSettings
 		inline bool GetBoolean (int iOption) const { return m_Options[iOption].bValue; }
 		inline void GetDefaultExtensions (DWORD dwAdventure, bool bDebugMode, TArray<DWORD> *retList) const { m_Extensions.GetList(dwAdventure, bDebugMode, retList); }
 		inline void GetDefaultExtensions (DWORD dwAdventure, const TArray<CExtension *> &Available, bool bDebugMode, TArray<DWORD> *retList) const { m_Extensions.GetList(dwAdventure, Available, bDebugMode, retList); }
+		inline const TSortMap<DWORD, bool> &GetDisabledExtensionList (void) const { return m_Extensions.GetDisabledExtensionList(); }
 		inline const TArray<CString> &GetExtensionFolders (void) const { return m_ExtensionFolders; }
 		inline const CString &GetInitialSaveFile (void) const { return m_sSaveFile; }
 		inline int GetInteger (int iOption) const { return m_Options[iOption].iValue; }

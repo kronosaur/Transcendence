@@ -1548,8 +1548,13 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			return NOERROR;
 			}
 
+		CExtensionCollection &Extensions = g_pUniverse->GetExtensionCollection();
+		Extensions.SetRegisteredExtensions(Collection);
+
+		//	Figure out what we need to download
+
 		TArray<CMultiverseCatalogEntry *> Download;
-		g_pUniverse->SetRegisteredExtensions(Collection, &Download);
+		Extensions.ComputeDownloads(Collection, m_Settings.GetDisabledExtensionList(), Download);
 
 		//	Let the Mod Collection session refresh
 
@@ -1693,6 +1698,20 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	uses this command to reload its list.
 
 		m_HI.HISessionCommand(CMD_SERVICE_EXTENSION_LOADED);
+
+		//	Recompute the downloads, in case we just downloaded an extension 
+		//	that requires a library.
+
+		CMultiverseCollection Collection;
+		if (m_Multiverse.GetCollection(&Collection) == NOERROR)
+			{
+			CExtensionCollection &Extensions = g_pUniverse->GetExtensionCollection();
+
+			TArray<CMultiverseCatalogEntry *> Download;
+			Extensions.ComputeDownloads(Collection, m_Settings.GetDisabledExtensionList(), Download);
+
+			RequestCatalogDownload(Download);
+			}
 
 		//	Continue downloading
 

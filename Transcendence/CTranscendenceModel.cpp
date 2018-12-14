@@ -1141,7 +1141,7 @@ ALERROR CTranscendenceModel::InitBackground (const CGameSettings &Settings, cons
 
 	//	Load the universe
 
-	if (error = LoadUniverse(sCollectionFolder, ExtensionFolders, dwAdventure, Extensions, retsError))
+	if (error = LoadUniverse(sCollectionFolder, ExtensionFolders, dwAdventure, Extensions, Settings.GetDisabledExtensionList(), retsError))
 		return error;
 
 	//	Load the high scores list
@@ -1424,7 +1424,7 @@ ALERROR CTranscendenceModel::LoadGameStats (const CString &sFilespec, CGameStats
 	return NOERROR;
 	}
 
-ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, DWORD dwAdventure, const TArray<DWORD> &Extensions, CString *retsError)
+ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, DWORD dwAdventure, const TArray<DWORD> &Extensions, const TSortMap<DWORD, bool> &DisabledExtensions, CString *retsError)
 
 //	LoadUniverse
 //
@@ -1451,6 +1451,7 @@ ALERROR CTranscendenceModel::LoadUniverse (const CString &sCollectionFolder, con
         Ctx.ExtensionUNIDs = Extensions;
 		Ctx.bForceTDB = m_bForceTDB;
         Ctx.bNoCollectionLoad = m_bNoCollectionLoad;
+		Ctx.DisabledExtensions = DisabledExtensions;
 
 		//	Try to recover if loading the adventure or its extensions runs into
 		//	problems. We don't want to fail loading the game because of a probelm

@@ -1079,7 +1079,7 @@ class CTranscendenceModel
 		inline CString GetSaveFilePath (void) const { return (m_SaveFileFolders.GetCount() == 0 ? NULL_STR : m_SaveFileFolders[0]); }
 		ALERROR LoadGameStats (const CString &sFilespec, CGameStats *retStats);
 		ALERROR LoadHighScoreList (CString *retsError = NULL);
-		ALERROR LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, DWORD dwAdventure, const TArray<DWORD> &Extensions, CString *retsError = NULL);
+		ALERROR LoadUniverse (const CString &sCollectionFolder, const TArray<CString> &ExtensionFolders, DWORD dwAdventure, const TArray<DWORD> &Extensions, const TSortMap<DWORD, bool> &DisabledExtensions, CString *retsError = NULL);
 		void MarkGateFollowers (CSystem *pSystem);
 		ALERROR SaveGameStats (const CGameStats &Stats, bool bGameOver = false, bool bEndGame = false);
 		void TransferGateFollowers (CSystem *pOldSystem, CSystem *pSystem, CSpaceObject *pStargate);
