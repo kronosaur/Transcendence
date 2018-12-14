@@ -1554,7 +1554,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Figure out what we need to download
 
 		TArray<CMultiverseCatalogEntry *> Download;
-		Extensions.ComputeDownloads(Collection, m_Settings.GetDisabledExtensionList(), Download);
+		Extensions.ComputeDownloads(Collection, Download);
 
 		//	Let the Mod Collection session refresh
 
@@ -1708,7 +1708,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			CExtensionCollection &Extensions = g_pUniverse->GetExtensionCollection();
 
 			TArray<CMultiverseCatalogEntry *> Download;
-			Extensions.ComputeDownloads(Collection, m_Settings.GetDisabledExtensionList(), Download);
+			Extensions.ComputeDownloads(Collection, Download);
 
 			RequestCatalogDownload(Download);
 			}
