@@ -40,7 +40,7 @@
 	<Type UNID="&unidCommonwealthMilitia;">
 		<Events>
 			<GetGlobalAchievements>
-"				(append
+				(append
 					;	Rank
 					(if  (typGetData &unidCommonwealthMilitia; 'rank)
 						(list
