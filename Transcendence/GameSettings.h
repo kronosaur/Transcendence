@@ -268,6 +268,7 @@ class CGameSettings
 		ALERROR Save (const CString &sFilespec);
 		inline void SetBoolean (int iOption, bool bValue, bool bModifySettings = true) { SetValueBoolean(iOption, bValue, bModifySettings); if (bModifySettings) m_bModified = true; }
 		inline void SetDefaultExtensions (DWORD dwAdventure, const TArray<CExtension *> &Available, bool bDebugMode, const TArray<DWORD> &List) { m_Extensions.SetList(dwAdventure, Available, bDebugMode, List); m_bModified = true; }
+		inline void SetExtensionEnabled (DWORD dwUNID, bool bEnabled = true) { m_Extensions.SetExtensionEnabled(dwUNID, bEnabled); m_bModified = true; }
 		inline void SetInteger (int iOption, int iValue, bool bModifySettings = true) { SetValueInteger(iOption, iValue, bModifySettings); if (bModifySettings) m_bModified = true; }
 		inline void SetModified (void) { m_bModified = true; }
 		inline void SetSettingsHandler (IExtraSettingsHandler *pExtra) { m_pExtra = pExtra; }

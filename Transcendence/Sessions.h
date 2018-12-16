@@ -430,9 +430,15 @@ class CModExchangeSession : public IHISession
 		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
+		bool CanBeEnabledDisabled (const CMultiverseCatalogEntry *pCatalogEntry = NULL) const;
+		void CmdDisableExtension (void);
 		void CmdDone (void);
-		void CmdRefresh (bool bFullRefresh = true);
+		void CmdEnableExtension (void);
+		void CmdOnSelectionChanged (void);
+		void CmdRefresh (DWORD dwFlags = 0);
 		void CmdRefreshComplete (CListCollectionTask *pTask);
+		TArray<CUIHelper::SMenuEntry> CreateMenu (CMultiverseCatalogEntry *pCatalogEntry = NULL);
+		bool GetCurrentSelection (CMultiverseCatalogEntry &Entry) const;
 
 		CCloudService &m_Service;
 		CMultiverseModel &m_Multiverse;

@@ -55,6 +55,8 @@
 
 #define CMD_NULL								CONSTLIT("null")
 
+#define CMD_DISABLE_EXTENSION					CONSTLIT("cmdDisableExtension")
+#define CMD_ENABLE_EXTENSION					CONSTLIT("cmdEnableExtension")
 #define CMD_POST_CRASH_REPORT					CONSTLIT("cmdPostCrashReport")
 #define CMD_SHOW_OK_BUTTON						CONSTLIT("cmdShowOKButton")
 #define CMD_SHOW_WAIT_ANIMATION					CONSTLIT("cmdShowWaitAnimation")
@@ -850,7 +852,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_GAME_CREATE))
 		{
 		SNewGameSettings *pNewGame = (SNewGameSettings *)pData;
-		pNewGame->bFullCreate = !g_pUniverse->InDebugMode() || !m_Settings.GetBoolean(CGameSettings::noFullCreate);
+		pNewGame->bFullCreate = !m_Model.GetUniverse().InDebugMode() || !m_Settings.GetBoolean(CGameSettings::noFullCreate);
 
 		//	Let the model begin the creation
 
@@ -875,7 +877,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		m_Settings.SetString(CGameSettings::playerGenome, GetGenomeID(pNewGame->iPlayerGenome));
 		m_Settings.SetInteger(CGameSettings::playerShipClass, (int)pNewGame->dwPlayerShip);
-		m_Settings.SetInteger(CGameSettings::lastAdventure, (int)g_pUniverse->GetCurrentAdventureDesc()->GetExtensionUNID());
+		m_Settings.SetInteger(CGameSettings::lastAdventure, (int)m_Model.GetUniverse().GetCurrentAdventureDesc()->GetExtensionUNID());
 
 		//	Report creation
 
@@ -1033,7 +1035,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Remember the last adventure so that we load this in the intro next time.
 
-		m_Settings.SetInteger(CGameSettings::lastAdventure, (int)g_pUniverse->GetCurrentAdventureDesc()->GetExtensionUNID());
+		m_Settings.SetInteger(CGameSettings::lastAdventure, (int)m_Model.GetUniverse().GetCurrentAdventureDesc()->GetExtensionUNID());
 
 		//	Start game (this does some stuff and then calls cmdGameStart)
 
@@ -1484,7 +1486,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		else
 			{
 			DisplayMultiverseStatus(NULL_STR);
-			if (error = m_HI.OpenPopupSession(new CModExchangeSession(m_HI, m_Service, m_Multiverse, g_pUniverse->GetExtensionCollection(), m_Settings.GetBoolean(CGameSettings::debugMode))))
+			if (error = m_HI.OpenPopupSession(new CModExchangeSession(m_HI, m_Service, m_Multiverse, m_Model.GetUniverse().GetExtensionCollection(), m_Settings.GetBoolean(CGameSettings::debugMode))))
 				{
 				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_MOD_EXCHANGE, NULL_STR, CMD_NULL));
 				return NOERROR;
@@ -1525,7 +1527,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	that the collection is placed there).
 
 			m_iBackgroundState = stateLoadingCollection;
-			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse), 0, this, CMD_SERVICE_COLLECTION_LOADED);
+			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse, m_Model.GetUniverse().GetExtensionCollection()), 0, this, CMD_SERVICE_COLLECTION_LOADED);
 			}
 
 		//	Now change the UI
@@ -1539,7 +1541,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		m_iBackgroundState = stateIdle;
 
-		//	Set registration status
+		//	Get the collection
 
 		CMultiverseCollection Collection;
 		if (m_Multiverse.GetCollection(&Collection) != NOERROR)
@@ -1548,11 +1550,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			return NOERROR;
 			}
 
-		CExtensionCollection &Extensions = g_pUniverse->GetExtensionCollection();
-		Extensions.SetRegisteredExtensions(Collection);
-
 		//	Figure out what we need to download
 
+		CExtensionCollection &Extensions = m_Model.GetUniverse().GetExtensionCollection();
 		TArray<CMultiverseCatalogEntry *> Download;
 		Extensions.ComputeDownloads(Collection, Download);
 
@@ -1705,7 +1705,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		CMultiverseCollection Collection;
 		if (m_Multiverse.GetCollection(&Collection) == NOERROR)
 			{
-			CExtensionCollection &Extensions = g_pUniverse->GetExtensionCollection();
+			CExtensionCollection &Extensions = m_Model.GetUniverse().GetExtensionCollection();
 
 			TArray<CMultiverseCatalogEntry *> Download;
 			Extensions.ComputeDownloads(Collection, Download);
@@ -1726,7 +1726,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
                 && !m_Settings.GetBoolean(CGameSettings::noCollectionLoad))
 			{
 			TArray<CString> LocalFilenames;
-			g_pUniverse->GetExtensionCollection().GetRequiredResources(&LocalFilenames);
+			m_Model.GetUniverse().GetExtensionCollection().GetRequiredResources(&LocalFilenames);
 
 			//	Ask the multiverse to map to a list of cloud filepaths
 
@@ -1887,6 +1887,30 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		{
 		CAdventureHighScoreList::SSelect *pSelect = (CAdventureHighScoreList::SSelect *)pData;
 		m_HI.AddBackgroundTask(new CReadHighScoreListTask(m_HI, m_Service, *pSelect), 0);
+		}
+
+	//	Enable disable extension
+
+	else if (strEquals(sCmd, CMD_DISABLE_EXTENSION))
+		{
+		DWORD dwUNID = (DWORD)pData;
+		if (dwUNID == 0)
+			return NOERROR;
+
+		m_Settings.SetExtensionEnabled(dwUNID, false);
+		m_Model.GetUniverse().GetExtensionCollection().SetExtensionEnabled(dwUNID, false);
+		}
+
+	else if (strEquals(sCmd, CMD_ENABLE_EXTENSION))
+		{
+		DWORD dwUNID = (DWORD)pData;
+		if (dwUNID == 0)
+			return NOERROR;
+
+		m_Settings.SetExtensionEnabled(dwUNID, true);
+		m_Model.GetUniverse().GetExtensionCollection().SetExtensionEnabled(dwUNID, true);
+
+
 		}
 
 	//	Exit

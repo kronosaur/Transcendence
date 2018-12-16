@@ -150,18 +150,23 @@ class CLoadNewsTask : public IHITask
 class CLoadUserCollectionTask : public IHITask
 	{
 	public:
-		CLoadUserCollectionTask (CHumanInterface &HI, CCloudService &Service, CMultiverseModel &Multiverse) : IHITask(HI), m_Service(Service), m_Multiverse(Multiverse) { }
+		CLoadUserCollectionTask (CHumanInterface &HI, CCloudService &Service, CMultiverseModel &Multiverse, CExtensionCollection &Extensions) : IHITask(HI),
+				m_Service(Service), 
+				m_Multiverse(Multiverse),
+				m_Extensions(Extensions)
+			{ }
 
 		//	IHITask virtuals
 		virtual ALERROR OnExecute (ITaskProcessor *pProcessor, CString *retsResult)
 			{
 			CSmartLock Lock(g_pUniverse->GetSem());
 			::kernelDebugLogPattern("Loading user collection.");
-			return m_Service.LoadUserCollection(pProcessor, m_Multiverse, retsResult); 
+			return m_Service.LoadUserCollection(pProcessor, m_Extensions, m_Multiverse, retsResult); 
 			}
 
 	private:
 		CCloudService &m_Service;
+		CExtensionCollection &m_Extensions;
 		CMultiverseModel &m_Multiverse;
 	};
 
