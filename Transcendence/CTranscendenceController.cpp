@@ -57,6 +57,7 @@
 
 #define CMD_DISABLE_EXTENSION					CONSTLIT("cmdDisableExtension")
 #define CMD_ENABLE_EXTENSION					CONSTLIT("cmdEnableExtension")
+#define CMD_LOAD_COLLECTION						CONSTLIT("cmdLoadCollection")
 #define CMD_POST_CRASH_REPORT					CONSTLIT("cmdPostCrashReport")
 #define CMD_SHOW_OK_BUTTON						CONSTLIT("cmdShowOKButton")
 #define CMD_SHOW_WAIT_ANIMATION					CONSTLIT("cmdShowWaitAnimation")
@@ -1492,6 +1493,22 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 				return NOERROR;
 				}
 			}
+		}
+	else if (strEquals(sCmd, CMD_LOAD_COLLECTION))
+		{
+		//	If we're signed in then we should load the user's collection from
+		//	the service.
+
+		if (m_Service.HasCapability(ICIService::canLoadUserCollection))
+			{
+			//	Start a task to load the collection (we pass in Multiverse so
+			//	that the collection is placed there).
+
+			m_iBackgroundState = stateLoadingCollection;
+			m_HI.AddBackgroundTask(new CLoadUserCollectionTask(m_HI, m_Service, m_Multiverse, m_Model.GetUniverse().GetExtensionCollection()), 0, this, CMD_SERVICE_COLLECTION_LOADED);
+			}
+		else
+			m_HI.HISessionCommand(CMD_SERVICE_EXTENSION_LOADED);
 		}
 
 	//	Service housekeeping

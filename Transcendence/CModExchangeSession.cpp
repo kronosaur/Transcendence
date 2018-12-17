@@ -9,6 +9,7 @@
 #define CMD_CLOSE_SESSION						CONSTLIT("cmdCloseSession")
 #define CMD_DISABLE_EXTENSION					CONSTLIT("cmdDisableExtension")
 #define CMD_ENABLE_EXTENSION					CONSTLIT("cmdEnableExtension")
+#define CMD_LOAD_COLLECTION						CONSTLIT("cmdLoadCollection")
 #define CMD_OK_SESSION							CONSTLIT("cmdOKSession")
 #define CMD_ON_SELECTION_CHANGED				CONSTLIT("cmdOnSelectionChanged")
 #define CMD_REFRESH								CONSTLIT("cmdRefresh")
@@ -94,7 +95,7 @@ void CModExchangeSession::CmdDisableExtension (void)
 	//	Tell our controller to enable the extension and then refresh
 
 	m_HI.HICommand(CMD_DISABLE_EXTENSION, (void *)CatalogEntry.GetUNID());
-	CmdRefresh();
+	CmdRefresh(CListCollectionTask::FLAG_NO_COLLECTION_REFRESH);
 	}
 
 void CModExchangeSession::CmdDone (void)
@@ -121,7 +122,7 @@ void CModExchangeSession::CmdEnableExtension (void)
 	//	Tell our controller to enable the extension and then refresh
 
 	m_HI.HICommand(CMD_ENABLE_EXTENSION, (void *)CatalogEntry.GetUNID());
-	CmdRefresh(CListCollectionTask::FLAG_LOAD_EXTENSIONS);
+	CmdReload();
 	}
 
 void CModExchangeSession::CmdOnSelectionChanged (void)
@@ -176,6 +177,43 @@ void CModExchangeSession::CmdRefresh (DWORD dwFlags)
 
 	m_bWaitingForRefresh = true;
 	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, dwFlags), 0, this, CMD_REFRESH_COMPLETE);
+
+	//	Create a wait animation
+
+	IAnimatron *pAni;
+	VI.CreateWaitAnimation(NULL, ID_CTRL_WAIT, rcCenter, &pAni);
+	StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+	}
+
+void CModExchangeSession::CmdReload (void)
+
+//	CmdReload
+//
+//	Reload the collection from the server and possibly download new extensions.
+
+	{
+	//	If we're already waiting for a refresh, then ignore
+
+	if (m_bWaitingForRefresh)
+		{
+		m_bRefreshAgain = true;
+		return;
+		}
+
+	//	Get metrics
+
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	RECT rcCenter;
+	VI.GetWidescreenRect(&rcCenter);
+
+	//	Done with current list
+
+	StopPerformance(ID_LIST);
+
+	//	Request reload
+
+	m_bWaitingForRefresh = true;
+	m_HI.HICommand(CMD_LOAD_COLLECTION);
 
 	//	Create a wait animation
 
@@ -324,11 +362,18 @@ ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_ON_SELECTION_CHANGED))
 		CmdOnSelectionChanged();
 	else if (strEquals(sCmd, CMD_REFRESH))
-		CmdRefresh();
+		CmdReload();
 	else if (strEquals(sCmd, CMD_REFRESH_COMPLETE))
 		CmdRefreshComplete((CListCollectionTask *)pData);
 	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOADED))
+		{
+		if (m_bWaitingForRefresh)
+			{
+			StopPerformance(ID_CTRL_WAIT);
+			m_bWaitingForRefresh = false;
+			}
 		CmdRefresh(CListCollectionTask::FLAG_NO_COLLECTION_REFRESH);
+		}
 	else if (strEquals(sCmd, CMD_DISABLE_EXTENSION))
 		CmdDisableExtension();
 	else if (strEquals(sCmd, CMD_ENABLE_EXTENSION))

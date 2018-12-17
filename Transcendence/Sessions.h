@@ -436,6 +436,7 @@ class CModExchangeSession : public IHISession
 		void CmdEnableExtension (void);
 		void CmdOnSelectionChanged (void);
 		void CmdRefresh (DWORD dwFlags = 0);
+		void CmdReload (void);
 		void CmdRefreshComplete (CListCollectionTask *pTask);
 		TArray<CUIHelper::SMenuEntry> CreateMenu (CMultiverseCatalogEntry *pCatalogEntry = NULL);
 		bool GetCurrentSelection (CMultiverseCatalogEntry &Entry) const;
