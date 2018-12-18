@@ -408,6 +408,23 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 	RECT rcCenter;
 	VI.GetWidescreenRect(&rcCenter);
 
+	//	Load an image for the generic extension icon (we need to do this before
+	//	we start the list collection).
+
+	HBITMAP hDIB;
+	if (JPEGLoadFromResource(NULL,
+			MAKEINTRESOURCE(IDR_GENERIC_EXTENSION_SMALL),
+			JPEG_LFR_DIB, 
+			NULL,
+			&hDIB) == NOERROR)
+		{
+		m_pGenericIcon = TSharedPtr<CG32bitImage>(new CG32bitImage);
+		if (!m_pGenericIcon->CreateFromBitmap(hDIB))
+			m_pGenericIcon.Delete();
+
+		::DeleteObject(hDIB);
+		}
+
 	//	Create a task to read the list of save files from disk
 
 	StartListCollectionTask();
@@ -490,6 +507,7 @@ void CModExchangeSession::StartListCollectionTask (void)
 	{
 	CListCollectionTask::SOptions Options;
 	Options.cxWidth = ENTRY_WIDTH;
+	Options.pGenericIcon = m_pGenericIcon;
 	Options.bDebugMode = m_bDebugMode;
 
 	m_iState = stateWaitingForList;

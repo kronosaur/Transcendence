@@ -456,6 +456,7 @@ class CModExchangeSession : public IHISession
 		CMultiverseModel &m_Multiverse;
 		CExtensionCollection &m_Extensions;
 		TArray<CMultiverseCatalogEntry> m_Collection;
+		TSharedPtr<CG32bitImage> m_pGenericIcon;
 
 		EStates m_iState = stateNone;
 		bool m_bDebugMode = false;

@@ -14,6 +14,7 @@
 #define IDR_DAMAGE_TYPE_ICONS			115
 #define IDR_GAME_STATS_SCREEN			116
 #define IDR_GAME_BUTTONS_MASK           117
+#define IDR_GENERIC_EXTENSION_SMALL		118
 
 // Next default values for new objects
 // 
