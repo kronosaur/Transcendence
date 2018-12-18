@@ -151,29 +151,17 @@ void CModExchangeSession::CmdRefresh (void)
 //	Refresh the list
 
 	{
-	//	Get metrics
-
-	const CVisualPalette &VI = m_HI.GetVisuals();
-	RECT rcCenter;
-	VI.GetWidescreenRect(&rcCenter);
-
 	//	Done with current list
 
 	StopPerformance(ID_LIST);
 
 	//	Create a task to read the list of save files from disk
 
-	DWORD dwFlags = CListCollectionTask::FLAG_NO_COLLECTION_REFRESH;
-	dwFlags |= (m_bDebugMode ? CListCollectionTask::FLAG_DEBUG_MODE : 0);
-
-	m_iState = stateWaitingForList;
-	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, dwFlags), 0, this, CMD_REFRESH_COMPLETE);
+	StartListCollectionTask();
 
 	//	Create a wait animation
 
-	IAnimatron *pAni;
-	VI.CreateWaitAnimation(NULL, ID_CTRL_WAIT, rcCenter, &pAni);
-	StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+	StartWaitAnimation();
 	}
 
 void CModExchangeSession::CmdReload (void)
@@ -188,12 +176,6 @@ void CModExchangeSession::CmdReload (void)
 	if (m_iState != stateNone)
 		return;
 
-	//	Get metrics
-
-	const CVisualPalette &VI = m_HI.GetVisuals();
-	RECT rcCenter;
-	VI.GetWidescreenRect(&rcCenter);
-
 	//	Done with current list
 
 	StopPerformance(ID_LIST);
@@ -205,9 +187,7 @@ void CModExchangeSession::CmdReload (void)
 
 	//	Create a wait animation
 
-	IAnimatron *pAni;
-	VI.CreateWaitAnimation(NULL, ID_CTRL_WAIT, rcCenter, &pAni);
-	StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+	StartWaitAnimation();
 	}
 
 void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
@@ -372,17 +352,11 @@ void CModExchangeSession::OnCollectionUpdated (void)
 		//	sign that we need to load the list.
 
 		case stateWaitingForReload:
-			{
-			//	Create a task to read the list of save files from disk
+			StartListCollectionTask();
 
-			DWORD dwFlags = CListCollectionTask::FLAG_NO_COLLECTION_REFRESH;
-			dwFlags |= (m_bDebugMode ? CListCollectionTask::FLAG_DEBUG_MODE : 0);
-
-			m_iState = stateWaitingForList;
-			m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, dwFlags), 0, this, CMD_REFRESH_COMPLETE);
-
+			//	NOTE: We've already got a wait animation going, so we don't need
+			//	to create a new one.
 			break;
-			}
 
 		//	Otherwise, we just refresh
 
@@ -436,11 +410,7 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 
 	//	Create a task to read the list of save files from disk
 
-	DWORD dwFlags = 0;
-	dwFlags |= (m_bDebugMode ? CListCollectionTask::FLAG_DEBUG_MODE : 0);
-
-	m_iState = stateWaitingForList;
-	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, dwFlags), 0, this, CMD_REFRESH_COMPLETE);
+	StartListCollectionTask();
 
 	//	Create the title and menu
 
@@ -459,9 +429,7 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 
 	//	Create a wait animation
 
-	IAnimatron *pAni;
-	VI.CreateWaitAnimation(NULL, ID_CTRL_WAIT, rcCenter, &pAni);
-	StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
+	StartWaitAnimation();
 
 	//	Done
 
@@ -508,4 +476,42 @@ void CModExchangeSession::OnReportHardCrash (CString *retsMessage)
 
 	{
 	*retsMessage = CONSTLIT("session: CModExchangeSession\r\n");
+	}
+
+void CModExchangeSession::StartListCollectionTask (void)
+
+//	StartListCollectionTask
+//
+//	Generate a list of mods in our collection. We do this in the background and 
+//	get called at CMD_REFRESH_COMPLETE when done. Callers are responsible for
+//	adding a wait animation and making sure we don't start a background task 
+//	while a different task is running.
+
+	{
+	CListCollectionTask::SOptions Options;
+	Options.cxWidth = ENTRY_WIDTH;
+	Options.bDebugMode = m_bDebugMode;
+
+	m_iState = stateWaitingForList;
+	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, Options), 0, this, CMD_REFRESH_COMPLETE);
+	}
+
+void CModExchangeSession::StartWaitAnimation (void)
+
+//	StartWaitAnimation
+//
+//	Starts the spinning circle animation.
+
+	{
+	//	Get metrics
+
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	RECT rcCenter;
+	VI.GetWidescreenRect(&rcCenter);
+
+	//	Create a wait animation
+
+	IAnimatron *pAni;
+	VI.CreateWaitAnimation(NULL, ID_CTRL_WAIT, rcCenter, &pAni);
+	StartPerformance(pAni, ID_CTRL_WAIT, CReanimator::SPR_FLAG_DELETE_WHEN_DONE);
 	}

@@ -151,6 +151,8 @@ IDR_STARGATE_IMAGE      JPEG                    "Resources\\Stargate.JPG"
 
 IDR_GAME_BUTTONS_IMAGE  JPEG                    "Resources\\GameButtonIcons.jpg"
 
+IDR_GENERIC_EXTENSION_SMALL JPEG                "Resources\\GenericExtensionSmall.jpg"
+
 IDR_ICON_DISPLAY_IMAGE  JPEG                    "Resources\\IconDisplay.jpg"
 
 IDR_HELP_BACKGROUND     JPEG                    "Resources\\Help Screen.jpg"

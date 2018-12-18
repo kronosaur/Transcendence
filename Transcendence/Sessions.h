@@ -449,6 +449,8 @@ class CModExchangeSession : public IHISession
 		TArray<CUIHelper::SMenuEntry> CreateMenu (CMultiverseCatalogEntry *pCatalogEntry = NULL);
 		bool GetCurrentSelection (CMultiverseCatalogEntry &Entry) const;
 		void OnCollectionUpdated (void);
+		void StartListCollectionTask (void);
+		void StartWaitAnimation (void);
 
 		CCloudService &m_Service;
 		CMultiverseModel &m_Multiverse;
