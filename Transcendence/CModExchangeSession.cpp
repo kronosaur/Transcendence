@@ -45,9 +45,7 @@ CModExchangeSession::CModExchangeSession (CHumanInterface &HI, CCloudService &Se
 		m_Service(Service),
 		m_Multiverse(Multiverse),
 		m_Extensions(Extensions),
-		m_bDebugMode(bDebugMode),
-		m_bWaitingForRefresh(false),
-		m_bRefreshAgain(false)
+		m_bDebugMode(bDebugMode)
 
 //	CModExchangeSession constructor
 
@@ -95,7 +93,7 @@ void CModExchangeSession::CmdDisableExtension (void)
 	//	Tell our controller to enable the extension and then refresh
 
 	m_HI.HICommand(CMD_DISABLE_EXTENSION, (void *)CatalogEntry.GetUNID());
-	CmdRefresh(CListCollectionTask::FLAG_NO_COLLECTION_REFRESH);
+	CmdRefresh();
 	}
 
 void CModExchangeSession::CmdDone (void)
@@ -146,21 +144,13 @@ void CModExchangeSession::CmdOnSelectionChanged (void)
 	Helper.RefreshMenu(this, pRoot, CreateMenu(&CatalogEntry));
 	}
 
-void CModExchangeSession::CmdRefresh (DWORD dwFlags)
+void CModExchangeSession::CmdRefresh (void)
 
 //	CmdRefresh
 //
 //	Refresh the list
 
 	{
-	//	If we're already waiting for a refresh, then ignore
-
-	if (m_bWaitingForRefresh)
-		{
-		m_bRefreshAgain = true;
-		return;
-		}
-
 	//	Get metrics
 
 	const CVisualPalette &VI = m_HI.GetVisuals();
@@ -173,9 +163,10 @@ void CModExchangeSession::CmdRefresh (DWORD dwFlags)
 
 	//	Create a task to read the list of save files from disk
 
+	DWORD dwFlags = CListCollectionTask::FLAG_NO_COLLECTION_REFRESH;
 	dwFlags |= (m_bDebugMode ? CListCollectionTask::FLAG_DEBUG_MODE : 0);
 
-	m_bWaitingForRefresh = true;
+	m_iState = stateWaitingForList;
 	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, dwFlags), 0, this, CMD_REFRESH_COMPLETE);
 
 	//	Create a wait animation
@@ -192,13 +183,10 @@ void CModExchangeSession::CmdReload (void)
 //	Reload the collection from the server and possibly download new extensions.
 
 	{
-	//	If we're already waiting for a refresh, then ignore
+	//	Make sure we're in the correct state
 
-	if (m_bWaitingForRefresh)
-		{
-		m_bRefreshAgain = true;
+	if (m_iState != stateNone)
 		return;
-		}
 
 	//	Get metrics
 
@@ -212,7 +200,7 @@ void CModExchangeSession::CmdReload (void)
 
 	//	Request reload
 
-	m_bWaitingForRefresh = true;
+	m_iState = stateWaitingForReload;
 	m_HI.HICommand(CMD_LOAD_COLLECTION);
 
 	//	Create a wait animation
@@ -233,10 +221,14 @@ void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
 	RECT rcRect;
 	VI.GetWidescreenRect(&rcRect);
 
+	//	Get the collection
+
+	m_Collection = pTask->GetCollection();
+
 	//	Done with wait animation
 
 	StopPerformance(ID_CTRL_WAIT);
-	m_bWaitingForRefresh = false;
+	m_iState = stateNone;
 
 	//	Check for error
 
@@ -277,7 +269,7 @@ void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
 	if (m_bRefreshAgain)
 		{
 		m_bRefreshAgain = false;
-		CmdRefresh(CListCollectionTask::FLAG_NO_COLLECTION_REFRESH);
+		CmdRefresh();
 		}
 	}
 
@@ -330,6 +322,11 @@ bool CModExchangeSession::GetCurrentSelection (CMultiverseCatalogEntry &Entry) c
 //	Returns the currently selected entry (or FALSE, if none is selected).
 
 	{
+	//	If we're in the wrong state, then we fail.
+
+	if (m_iState != stateNone)
+		return false;
+
 	//	Get the selected extension
 
 	IAnimatron *pList = GetElement(ID_LIST);
@@ -341,7 +338,58 @@ bool CModExchangeSession::GetCurrentSelection (CMultiverseCatalogEntry &Entry) c
 	if (dwUNID == 0)
 		return false;
 
-	return m_Multiverse.FindEntry(dwUNID, &Entry);
+	//	Find it.
+
+	for (int i = 0; i < m_Collection.GetCount(); i++)
+		if (m_Collection[i].GetUNID() == dwUNID)
+			{
+			Entry = m_Collection[i];
+			return true;
+			}
+
+	//	Otherwise, not found
+
+	return false;
+	}
+
+void CModExchangeSession::OnCollectionUpdated (void)
+
+//	OnCollectionUpdated
+//
+//	The collection has changed.
+
+	{
+	switch (m_iState)
+		{
+		//	If we're waiting for the list to load when the collection gets 
+		//	updated, then we need to refresh again.
+
+		case stateWaitingForList:
+			m_bRefreshAgain = true;
+			break;
+
+		//	If we're waiting for the collection to reload, then this is the 
+		//	sign that we need to load the list.
+
+		case stateWaitingForReload:
+			{
+			//	Create a task to read the list of save files from disk
+
+			DWORD dwFlags = CListCollectionTask::FLAG_NO_COLLECTION_REFRESH;
+			dwFlags |= (m_bDebugMode ? CListCollectionTask::FLAG_DEBUG_MODE : 0);
+
+			m_iState = stateWaitingForList;
+			m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, dwFlags), 0, this, CMD_REFRESH_COMPLETE);
+
+			break;
+			}
+
+		//	Otherwise, we just refresh
+
+		default:
+			CmdRefresh();
+			break;
+		}
 	}
 
 ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
@@ -366,14 +414,7 @@ ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
 	else if (strEquals(sCmd, CMD_REFRESH_COMPLETE))
 		CmdRefreshComplete((CListCollectionTask *)pData);
 	else if (strEquals(sCmd, CMD_SERVICE_EXTENSION_LOADED))
-		{
-		if (m_bWaitingForRefresh)
-			{
-			StopPerformance(ID_CTRL_WAIT);
-			m_bWaitingForRefresh = false;
-			}
-		CmdRefresh(CListCollectionTask::FLAG_NO_COLLECTION_REFRESH);
-		}
+		OnCollectionUpdated();
 	else if (strEquals(sCmd, CMD_DISABLE_EXTENSION))
 		CmdDisableExtension();
 	else if (strEquals(sCmd, CMD_ENABLE_EXTENSION))
@@ -398,7 +439,7 @@ ALERROR CModExchangeSession::OnInit (CString *retsError)
 	DWORD dwFlags = 0;
 	dwFlags |= (m_bDebugMode ? CListCollectionTask::FLAG_DEBUG_MODE : 0);
 
-	m_bWaitingForRefresh = true;
+	m_iState = stateWaitingForList;
 	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, ENTRY_WIDTH, dwFlags), 0, this, CMD_REFRESH_COMPLETE);
 
 	//	Create the title and menu

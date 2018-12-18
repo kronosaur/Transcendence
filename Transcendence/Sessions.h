@@ -430,23 +430,34 @@ class CModExchangeSession : public IHISession
 		virtual void OnReportHardCrash (CString *retsMessage) override;
 
 	private:
+		enum EStates
+			{
+			stateNone,
+
+			stateWaitingForList,
+			stateWaitingForReload,
+			};
+
 		bool CanBeEnabledDisabled (const CMultiverseCatalogEntry *pCatalogEntry = NULL) const;
 		void CmdDisableExtension (void);
 		void CmdDone (void);
 		void CmdEnableExtension (void);
 		void CmdOnSelectionChanged (void);
-		void CmdRefresh (DWORD dwFlags = 0);
+		void CmdRefresh (void);
 		void CmdReload (void);
 		void CmdRefreshComplete (CListCollectionTask *pTask);
 		TArray<CUIHelper::SMenuEntry> CreateMenu (CMultiverseCatalogEntry *pCatalogEntry = NULL);
 		bool GetCurrentSelection (CMultiverseCatalogEntry &Entry) const;
+		void OnCollectionUpdated (void);
 
 		CCloudService &m_Service;
 		CMultiverseModel &m_Multiverse;
 		CExtensionCollection &m_Extensions;
-		bool m_bDebugMode;
-		bool m_bWaitingForRefresh;
-		bool m_bRefreshAgain;
+		TArray<CMultiverseCatalogEntry> m_Collection;
+
+		EStates m_iState = stateNone;
+		bool m_bDebugMode = false;
+		bool m_bRefreshAgain = false;
 	};
 
 class CNewGameSession : public IHISession

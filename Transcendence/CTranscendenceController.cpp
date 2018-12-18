@@ -1560,17 +1560,12 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 		//	Get the collection
 
-		CMultiverseCollection Collection;
-		if (m_Multiverse.GetCollection(&Collection) != NOERROR)
-			{
-			::kernelDebugLogPattern("Failed to GetCollection from Multiverse model.");
-			return NOERROR;
-			}
+		TArray<CMultiverseCatalogEntry> Collection = m_Multiverse.GetCollection();
 
 		//	Figure out what we need to download
 
 		CExtensionCollection &Extensions = m_Model.GetUniverse().GetExtensionCollection();
-		TArray<CMultiverseCatalogEntry *> Download;
+		TArray<CMultiverseCatalogEntry> Download;
 		Extensions.ComputeDownloads(Collection, Download);
 
 		//	Let the Mod Collection session refresh
@@ -1719,16 +1714,13 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		//	Recompute the downloads, in case we just downloaded an extension 
 		//	that requires a library.
 
-		CMultiverseCollection Collection;
-		if (m_Multiverse.GetCollection(&Collection) == NOERROR)
-			{
-			CExtensionCollection &Extensions = m_Model.GetUniverse().GetExtensionCollection();
+		TArray<CMultiverseCatalogEntry> Collection = m_Multiverse.GetCollection();
 
-			TArray<CMultiverseCatalogEntry *> Download;
-			Extensions.ComputeDownloads(Collection, Download);
+		CExtensionCollection &Extensions = m_Model.GetUniverse().GetExtensionCollection();
+		TArray<CMultiverseCatalogEntry> Download;
+		Extensions.ComputeDownloads(Collection, Download);
 
-			RequestCatalogDownload(Download);
-			}
+		RequestCatalogDownload(Download);
 
 		//	Continue downloading
 
@@ -1914,8 +1906,9 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		if (dwUNID == 0)
 			return NOERROR;
 
+		CExtensionCollection &Extensions = m_Model.GetUniverse().GetExtensionCollection();
 		m_Settings.SetExtensionEnabled(dwUNID, false);
-		m_Model.GetUniverse().GetExtensionCollection().SetExtensionEnabled(dwUNID, false);
+		Extensions.SetExtensionEnabled(dwUNID, false);
 		}
 
 	else if (strEquals(sCmd, CMD_ENABLE_EXTENSION))
@@ -1927,7 +1920,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 		m_Settings.SetExtensionEnabled(dwUNID, true);
 		m_Model.GetUniverse().GetExtensionCollection().SetExtensionEnabled(dwUNID, true);
 
-
+		//	Callers are expected to reload the collection
 		}
 
 	//	Exit
@@ -2154,7 +2147,7 @@ void CTranscendenceController::PaintDebugInfo (CG32bitImage &Dest, const RECT &r
 #endif
 	}
 
-bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads)
+bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseCatalogEntry> &Downloads)
 
 //	RequestCatalogDownload
 //
@@ -2184,8 +2177,8 @@ bool CTranscendenceController::RequestCatalogDownload (const TArray<CMultiverseC
 		{
 		//	Get the name of the filePath of the file to download
 
-		const CString &sFilePath = Downloads[i]->GetTDBFileRef().GetFilePath();
-		const CIntegerIP &FileDigest = Downloads[i]->GetTDBFileRef().GetDigest();
+		const CString &sFilePath = Downloads[i].GetTDBFileRef().GetFilePath();
+		const CIntegerIP &FileDigest = Downloads[i].GetTDBFileRef().GetDigest();
 
 		//	Generate a path to download to
 

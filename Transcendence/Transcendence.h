@@ -1204,7 +1204,7 @@ class CTranscendenceController : public IHIController, public IExtraSettingsHand
 		void InitDebugConsole (void);
 		bool InstallUpgrade (CString *retsError);
 		bool IsUpgradeReady (void);
-		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry *> &Downloads);
+		bool RequestCatalogDownload (const TArray<CMultiverseCatalogEntry> &Downloads);
 		bool RequestResourceDownload (const TArray<CMultiverseFileRef> &Downloads);
 		ALERROR WriteUpgradeFile (IMediaType *pData, CString *retsError);
 
