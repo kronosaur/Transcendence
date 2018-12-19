@@ -14,6 +14,7 @@
 #define CMD_ON_SELECTION_CHANGED				CONSTLIT("cmdOnSelectionChanged")
 #define CMD_REFRESH								CONSTLIT("cmdRefresh")
 #define CMD_REFRESH_COMPLETE					CONSTLIT("cmdRefreshComplete")
+#define CMD_SHOW_HIDE_LIBRARIES					CONSTLIT("cmdShowHideLibraries")
 
 #define CMD_SERVICE_EXTENSION_LOADED			CONSTLIT("serviceExtensionLoaded")
 
@@ -249,7 +250,13 @@ void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
 
 TArray<CUIHelper::SMenuEntry> CModExchangeSession::CreateMenu (CMultiverseCatalogEntry *pEntry)
 	{
-	return TArray<CUIHelper::SMenuEntry>();
+	TArray<CUIHelper::SMenuEntry> Menu;
+
+	CUIHelper::SMenuEntry *pEntry = Menu.Insert();
+	pEntry->sCommand = CMD_SHOW_HIDE_LIBRARIES;
+	pEntry->sLabel = (m_bShowLibraries ? CONSTLIT("Hide Libraries") : CONSTLIT("Show Libraries"));
+
+	return Menu;
 	}
 
 #else
@@ -266,6 +273,10 @@ TArray<CUIHelper::SMenuEntry> CModExchangeSession::CreateMenu (CMultiverseCatalo
 	CUIHelper::SMenuEntry *pEntry = Menu.Insert();
 	pEntry->sCommand = CMD_REFRESH;
 	pEntry->sLabel = CONSTLIT("Refresh");
+
+	pEntry = Menu.Insert();
+	pEntry->sCommand = CMD_SHOW_HIDE_LIBRARIES;
+	pEntry->sLabel = (m_bShowLibraries ? CONSTLIT("Hide Libraries") : CONSTLIT("Show Libraries"));
 
 	pEntry = Menu.Insert();
 	pEntry->sCommand = CMD_DISABLE_EXTENSION;
@@ -407,6 +418,11 @@ ALERROR CModExchangeSession::OnCommand (const CString &sCmd, void *pData)
 		CmdDisableExtension();
 	else if (strEquals(sCmd, CMD_ENABLE_EXTENSION))
 		CmdEnableExtension();
+	else if (strEquals(sCmd, CMD_SHOW_HIDE_LIBRARIES))
+		{
+		m_bShowLibraries = !m_bShowLibraries;
+		CmdRefresh();
+		}
 
 	return NOERROR;
 	}
@@ -537,7 +553,7 @@ void CModExchangeSession::StartListCollectionTask (DWORD dwSelect)
 
 	Options.dwSelectUNID = dwSelect;
 	Options.pGenericIcon = m_pGenericIcon;
-	Options.bDebugMode = m_bDebugMode;
+	Options.bShowLibraries = m_bShowLibraries;
 
 	m_iState = stateWaitingForList;
 	m_HI.AddBackgroundTask(new CListCollectionTask(m_HI, m_Extensions, m_Multiverse, m_Service, Options), 0, this, CMD_REFRESH_COMPLETE);

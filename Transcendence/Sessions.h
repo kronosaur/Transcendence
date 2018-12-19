@@ -461,6 +461,7 @@ class CModExchangeSession : public IHISession
 
 		EStates m_iState = stateNone;
 		DWORD m_dwSelect = 0;
+		bool m_bShowLibraries = false;
 		bool m_bDebugMode = false;
 		bool m_bRefreshAgain = false;
 	};
