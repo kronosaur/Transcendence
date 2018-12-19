@@ -32,7 +32,6 @@
 #define PROP_SCALE								CONSTLIT("scale")
 #define PROP_SELECTION_ID						CONSTLIT("selectionID")
 #define PROP_TEXT								CONSTLIT("text")
-#define PROP_VIEWPORT_HEIGHT					CONSTLIT("viewportHeight")
 
 #define URL_MULTIVERSE_CATALOG					CONSTLIT("http://multiverse.kronosaur.com/catalog.hexm")
 
@@ -153,11 +152,12 @@ void CModExchangeSession::CmdRefresh (void)
 	{
 	//	Done with current list
 
+	DWORD dwSelect = GetCurrentSelectionUNID();
 	StopPerformance(ID_LIST);
 
 	//	Create a task to read the list of save files from disk
 
-	StartListCollectionTask();
+	StartListCollectionTask(dwSelect);
 
 	//	Create a wait animation
 
@@ -178,6 +178,7 @@ void CModExchangeSession::CmdReload (void)
 
 	//	Done with current list
 
+	m_dwSelect = GetCurrentSelectionUNID();
 	StopPerformance(ID_LIST);
 
 	//	Request reload
@@ -225,15 +226,6 @@ void CModExchangeSession::CmdRefreshComplete (CListCollectionTask *pTask)
 	//	Get the list
 
 	IAnimatron *pList = pTask->GetListHandoff();
-
-	//	Show it
-
-	RECT rcList;
-	pList->GetSpacingRect(&rcList);
-
-	pList->SetPropertyVector(PROP_POSITION, CVector(rcRect.left + (RectWidth(rcRect) - ENTRY_WIDTH) / 2, rcRect.top));
-	pList->SetPropertyVector(PROP_SCALE, CVector(ENTRY_WIDTH, RectHeight(rcRect)));
-	pList->SetPropertyMetric(PROP_VIEWPORT_HEIGHT, (Metric)RectHeight(rcRect));
 
 	//	Start the list
 
@@ -332,6 +324,28 @@ bool CModExchangeSession::GetCurrentSelection (CMultiverseCatalogEntry &Entry) c
 	return false;
 	}
 
+DWORD CModExchangeSession::GetCurrentSelectionUNID (void) const
+
+//	GetCurrentSelectionUNID
+//
+//	Returns the UNID of the current selection (or 0 if no selection).
+
+	{
+	//	If we're in the wrong state, then we fail.
+
+	if (m_iState != stateNone)
+		return 0;
+
+	//	Get the selected extension
+
+	IAnimatron *pList = GetElement(ID_LIST);
+	if (pList == NULL)
+		return 0;
+
+	CString sUNID = pList->GetPropertyString(PROP_SELECTION_ID);
+	return strToInt(sUNID, 0);
+	}
+
 void CModExchangeSession::OnCollectionUpdated (void)
 
 //	OnCollectionUpdated
@@ -352,7 +366,7 @@ void CModExchangeSession::OnCollectionUpdated (void)
 		//	sign that we need to load the list.
 
 		case stateWaitingForReload:
-			StartListCollectionTask();
+			StartListCollectionTask(m_dwSelect);
 
 			//	NOTE: We've already got a wait animation going, so we don't need
 			//	to create a new one.
@@ -495,7 +509,7 @@ void CModExchangeSession::OnReportHardCrash (CString *retsMessage)
 	*retsMessage = CONSTLIT("session: CModExchangeSession\r\n");
 	}
 
-void CModExchangeSession::StartListCollectionTask (void)
+void CModExchangeSession::StartListCollectionTask (DWORD dwSelect)
 
 //	StartListCollectionTask
 //
@@ -505,8 +519,23 @@ void CModExchangeSession::StartListCollectionTask (void)
 //	while a different task is running.
 
 	{
+	//	Get metrics
+
+	const CVisualPalette &VI = m_HI.GetVisuals();
+	RECT rcCenter;
+	VI.GetWidescreenRect(&rcCenter);
+
+	//	List rect
+
 	CListCollectionTask::SOptions Options;
-	Options.cxWidth = ENTRY_WIDTH;
+	Options.rcRect.left = rcCenter.left + (RectWidth(rcCenter) - ENTRY_WIDTH) / 2;
+	Options.rcRect.top = rcCenter.top;
+	Options.rcRect.right = Options.rcRect.left + ENTRY_WIDTH;
+	Options.rcRect.bottom = Options.rcRect.top + RectHeight(rcCenter);
+
+	//	Options
+
+	Options.dwSelectUNID = dwSelect;
 	Options.pGenericIcon = m_pGenericIcon;
 	Options.bDebugMode = m_bDebugMode;
 

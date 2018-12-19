@@ -448,8 +448,9 @@ class CModExchangeSession : public IHISession
 		void CmdRefreshComplete (CListCollectionTask *pTask);
 		TArray<CUIHelper::SMenuEntry> CreateMenu (CMultiverseCatalogEntry *pCatalogEntry = NULL);
 		bool GetCurrentSelection (CMultiverseCatalogEntry &Entry) const;
+		DWORD GetCurrentSelectionUNID (void) const;
 		void OnCollectionUpdated (void);
-		void StartListCollectionTask (void);
+		void StartListCollectionTask (DWORD dwSelect = 0);
 		void StartWaitAnimation (void);
 
 		CCloudService &m_Service;
@@ -459,6 +460,7 @@ class CModExchangeSession : public IHISession
 		TSharedPtr<CG32bitImage> m_pGenericIcon;
 
 		EStates m_iState = stateNone;
+		DWORD m_dwSelect = 0;
 		bool m_bDebugMode = false;
 		bool m_bRefreshAgain = false;
 	};
