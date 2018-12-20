@@ -16,12 +16,16 @@ struct SNodeEntry
 	CString sLabel;							//	Label
 	};
 
-const int DEFAULT_ZOOM =					20;
-const int OFFSET_Y =						-16;
+const int DEFAULT_ZOOM =					40;	//	Pixels per 100 light-seconds
+const int OFFSET_Y =						-3000;
 
 void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 	{
 	int i, j;
+
+	//	Node ID (blank means all nodes)
+
+	CString sNodeID = pCmdLine->GetAttribute(CONSTLIT("nodeID"));
 
 	//	Image size
 
@@ -67,11 +71,20 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Zoom
 
-	Metric rZoom = (pCmdLine->GetAttributeIntegerBounded(CONSTLIT("zoom"), 1, 100, DEFAULT_ZOOM) / 100.0);
-	Metric rScale = g_AU / (1000.0 * rZoom);
+	Metric rZoom = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("zoom"), 1, 200, DEFAULT_ZOOM);
+	Metric rScale = (100.0 * LIGHT_SECOND) / rZoom;
 
-	int cxImage = 1000;
-	int cyImage = 800;
+	//	Options
+
+	bool bNo3DSystemMap = pCmdLine->GetAttributeBool(CONSTLIT("no3DSystemMap")) || pCmdLine->GetAttributeBool(CONSTLIT("2D"));
+	if (bNo3DSystemMap)
+		Universe.GetSFXOptions().Set3DSystemMapEnabled(false);
+
+	//	Image size
+
+	int cxImage = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("systemWidth"), 100, 10000, 1000);
+	int cyImageDefault = (bNo3DSystemMap ? cxImage : mathRound(0.8 * cxImage));
+	int cyImage = pCmdLine->GetAttributeIntegerBounded(CONSTLIT("systemHeight"), 100, 10000, cyImageDefault);
 
 	//	Figure out how many nodes to show
 
@@ -82,6 +95,9 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 		if (pNode->IsEndGame())
 			continue;
 
+		if (!sNodeID.IsBlank() && !strEquals(pNode->GetID(), sNodeID))
+			continue;
+
 		SNodeEntry *pEntry = NodeList.Insert();
 		pEntry->pNode = pNode;
 		pEntry->sLabel = strPatternSubst(CONSTLIT("%s (%08x)"), pNode->GetSystemName(), pNode->GetSystemTypeUNID());
@@ -89,7 +105,10 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 	
 	if (NodeList.GetCount() == 0)
 		{
-		printf("ERROR: No systems found.\n");
+		if (sNodeID.IsBlank())
+			printf("ERROR: NodeID %s not found.\n", (LPSTR)sNodeID);
+		else
+			printf("ERROR: No systems found.\n");
 		return;
 		}
 
@@ -158,9 +177,22 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 			return;
 			}
 
+		//	Create a POV marker
+
+		CMarker *pPOV;
+		if (CMarker::Create(pSystem,
+				Universe.FindSovereign(g_PlayerSovereignUNID),
+				NullVector,
+				NullVector,
+				CONSTLIT("POV"),
+				&pPOV) != NOERROR)
+			{
+			printf("ERROR: Unable to create marker\n");
+			return;
+			}
+
 		//	Set the POV
 
-		CSpaceObject *pPOV = pSystem->GetObject(0);
 		Universe.SetPOV(pPOV);
 		pSystem->SetPOVLRS(pPOV);
 
@@ -195,9 +227,15 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 
 		Output.SetClipRect(rcMap);
 
-		int iOffset = (int)(OFFSET_Y / rZoom);
-		rcMap.top += iOffset;
-		rcMap.bottom += iOffset;
+		//	In a 3D map we offset slightly because the front part is larger than
+		//	the back part.
+
+		if (!bNo3DSystemMap)
+			{
+			int iOffset = (int)(OFFSET_Y / rZoom);
+			rcMap.top += iOffset;
+			rcMap.bottom += iOffset;
+			}
 
 		Universe.PaintPOVMap(Output, rcMap, rScale);
 

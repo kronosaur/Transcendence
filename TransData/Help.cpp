@@ -336,12 +336,16 @@ void ShowHelp (CXMLElement *pCmdLine)
 	else if (pCmdLine->GetAttributeBool(SYSTEM_IMAGES_SWITCH))
 		{
 		printf("  /systemimages         Generate snapshots of system maps.\n");
+		printf("      [/2D]                 2D system map.\n");
 		printf("      [/adventure:n]        Load the given adventure (by UNID).\n");
 		printf("      [/font:s]             Use given font for labels.\n");
+		printf("      [/nodeID:id]          Only generate this system.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
+		printf("      [/systemHeight:n]     Height of each system image (pixels).\n");
+		printf("      [/systemWidth:n]      Width of each system image (pixels).\n");
 		printf("      [/xMargin:n]          Margin around images.\n");
 		printf("      [/xSpacing:n]         Spacing between images.\n");
-		printf("      [/zoom:n]             Scale (thousands of pixels per AU).\n");
+		printf("      [/zoom:n]             Scale (pixels per 100 light-seconds).\n");
 		}
 	else if (pCmdLine->GetAttributeBool(SYSTEM_LABELS_SWITCH))
 		{
