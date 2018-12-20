@@ -339,7 +339,7 @@ void ShowHelp (CXMLElement *pCmdLine)
 		printf("      [/2D]                 2D system map.\n");
 		printf("      [/adventure:n]        Load the given adventure (by UNID).\n");
 		printf("      [/font:s]             Use given font for labels.\n");
-		printf("      [/nodeID:id]          Only generate this system.\n");
+		printf("      [/node:ID]            Only generate this system.\n");
 		printf("      [/output:file]        Saves image to given filespec.\n");
 		printf("      [/systemHeight:n]     Height of each system image (pixels).\n");
 		printf("      [/systemWidth:n]      Width of each system image (pixels).\n");

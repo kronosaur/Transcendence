@@ -25,7 +25,7 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 
 	//	Node ID (blank means all nodes)
 
-	CString sNodeID = pCmdLine->GetAttribute(CONSTLIT("nodeID"));
+	CString sNodeID = pCmdLine->GetAttribute(CONSTLIT("node"));
 
 	//	Image size
 
@@ -106,7 +106,7 @@ void GenerateSystemImages (CUniverse &Universe, CXMLElement *pCmdLine)
 	if (NodeList.GetCount() == 0)
 		{
 		if (sNodeID.IsBlank())
-			printf("ERROR: NodeID %s not found.\n", (LPSTR)sNodeID);
+			printf("ERROR: Node %s not found.\n", (LPSTR)sNodeID);
 		else
 			printf("ERROR: No systems found.\n");
 		return;
