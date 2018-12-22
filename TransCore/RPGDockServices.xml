@@ -1705,7 +1705,7 @@
 			</Text>
 
 			<Text id="descRemoveDeviceConfirm:Free">
-				We can remove %itemName% free of charge. Are you sure you wish to continue?"
+				We can remove %itemName% free of charge. Are you sure you wish to continue?
 			</Text>
 			<Text id="descRemoveDeviceConfirm">
 				We can remove %itemName% for %cost%. Are you sure you wish to continue?
