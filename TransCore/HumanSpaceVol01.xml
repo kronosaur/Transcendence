@@ -1937,6 +1937,8 @@
 
 	<!ENTITY baRingersStation			"0x001002F0">
 	<!ENTITY smRingerSpace				"0x001002F1">
+	<!ENTITY rsRingersCollective		"0x001002F2">
+	<!ENTITY rsRingersShipyard			"0x001002F3">
 
 	<!-- 0310-032F TERATONS -->
 

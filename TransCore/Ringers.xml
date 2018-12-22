@@ -67,19 +67,21 @@
 			sovereign=			"&svRingers;"
 			inherit=			"&baRingersStation;"
 				 
+			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"329"
 			armorID=			"&itDiamondLatticeArmor;"
 			hitPoints=			"850"
+			multiHull=			"true"
 			regen=              "15"
 			fireRateAdj=		"10"
+
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion2;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
 			>
 
 		<!-- Encounter Info -->
@@ -93,19 +95,17 @@
 				enemyExclusionRadius=	"100"
 				/>
 
-		<Image			imageID="&rsStations6;" imageX="0" imageY="256" imageWidth="160" imageHeight="192"/>
+		<!-- Trade and Items -->
 
-		<Ships>
-			<Lookup count="1" table="&tbCommEliteDefenders;"/>
-			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
-			<Ship chance="50"	count="1" class="&scFerianMiner;" orders="gateOnThreat"/>
-		</Ships>
+		<Trade currency="rin" max="100000" replenish="5000">
+			<Sell	criteria="*NU +ringerValuable;"		priceAdj="250"/>
+			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+			<Buy	criteria="*NU +ringerValuable;"		priceAdj="200"/>
+			<Buy	criteria="*NU +res; &gt;=4;"		priceAdj="90"/>
 
-		<Devices>
-			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="0" posRadius="40"/>
-			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="120" posRadius="40"/>
-			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="240" posRadius="40"/>
-		</Devices>
+			<ConsumeTrade	criteria="{human.res}"		impact="2"/>
+			<ConsumeTrade	criteria="{core.ore}"			impact="5"/>
+		</Trade>
 
 		<Items>
 			<RandomItem count="1d12" 
@@ -149,16 +149,22 @@
 
 			<Item chance="50"	count="1"		item="&itPlasmaTorch;" />
 		</Items>
-		
-		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +ringerValuable;"		priceAdj="250"/>
-			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Buy	criteria="*NU +ringerValuable;"		priceAdj="200"/>
-			<Buy	criteria="*NU +res; &gt;=4;"		priceAdj="90"/>
 
-			<ConsumeTrade	criteria="{human.res}"		impact="2"/>
-			<ConsumeTrade	criteria="{core.ore}"			impact="5"/>
-		</Trade>
+		<!-- Configuration -->
+
+		<Devices>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="0" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="120" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="240" posRadius="40"/>
+		</Devices>
+
+		<!-- Ships and Defenses -->
+
+		<Ships>
+			<Lookup count="1" table="&tbCommEliteDefenders;"/>
+			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
+			<Ship chance="50"	count="1" class="&scFerianMiner;" orders="gateOnThreat"/>
+		</Ships>
 
 		<Reinforcements minShips="3">
 			<Table>
@@ -167,6 +173,24 @@
 				<Ship   chance="20"	class="&scFerianMiner;" orders="gateOnThreat"/>
 			</Table>
 		</Reinforcements>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsRingersCollective;" imageWidth="200" imageHeight="300" viewportRatio="0.04125"/>
+
+		<DockingPorts>
+			<Port posAngle="16"		posRadius="113" posZ="46"/>
+			<Port posAngle="45"		posRadius="106" posZ="110"/>
+			<Port posAngle="122"	posRadius="105" posZ="30"/>
+			<Port posAngle="-171"	posRadius="121" posZ="100"/>
+
+			<Port posAngle="-149"	posRadius="118" posZ="-110"/>
+			<Port posAngle="-112"	posRadius="98"  posZ="-60"/>
+			<Port posAngle="-65"	posRadius="90"  posZ="-30"/>
+			<Port posAngle="-22"	posRadius="104" posZ="-46"/>
+		</DockingPorts>
+
+		<!-- Dock Screens -->
 
 		<DockScreens>
 			<Main>
@@ -206,22 +230,13 @@
 			</Main>
 		</DockScreens>
 
-		<DockingPorts>
-			<Port x="66"	y="94" />
-			<Port x="-66"	y="94" />
-			<Port x="107"	y="30" />
-			<Port x="-107"	y="30" />
-			<Port x="86"	y="-34" />
-			<Port x="-86"	y="-34" />
-			<Port x="39"	y="-72" />
-			<Port x="-39"	y="-72" />
-		</DockingPorts>
-
 		<Language>
 			<Text id="descWelcome">
+
 				You are docked at a Ringers Collective. Ringer neo-humans float
 				through the vast volume of the station, perfectly adapted to
 				zero-gravity and space.
+
 			</Text>
 			<Text id="core.commoditiesExchangeDesc">
 
@@ -240,19 +255,21 @@
 			sovereign=			"&svRingers;"
 			inherit=			"&baRingersStation;"
 				 
+			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
+
 			dockScreen=			"Main"
 			abandonedScreen=	"&dsAbandonedStation;"
-			canAttack=			"true"
 
-			multiHull=			"true"
+			size=				"564"
 			armorID=			"&itDiamondLatticeArmor;"
 			hitPoints=			"2450"
+			multiHull=			"true"
 			regen=              "25"
 			fireRateAdj=		"10"
+
+			canAttack=			"true"
 			explosionType=		"&vtThermoExplosion4;"
 			ejectaType=			"&vtWreckEjecta;"
-
-			attributes=			"envEarth, envAvoidsAir, friendly, generic, independent, majorStation, neoHuman, populated, ringers"
 			>
 
 		<!-- Encounter Info -->
@@ -266,19 +283,24 @@
 				enemyExclusionRadius=	"150"
 				/>
 
-		<Image			imageID="&rsStations7;" imageX="0" imageY="1024" imageWidth="256" imageHeight="256"/>
+		<!-- Trade and items -->
 
-		<Ships>
-			<Lookup count="1d2" table="&tbCommEliteDefenders;"/>
-			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
-			<Ship chance="50"	count="1" class="&scFerianMiner;" orders="gateOnThreat"/>
-		</Ships>
+		<Trade currency="rin" max="100000" replenish="5000">
+			<Sell	criteria="*NU +ringerValuable;"		priceAdj="250"/>
+			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
+			<Buy	criteria="*NU +ringerValuable;"		priceAdj="200"/>
+			<Buy	criteria="*NU +res; &gt;=4;"		priceAdj="90"/>
+			
+			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
+			<RepairArmor	criteria="a L:1-12;" priceAdj="100"/>
+			<ReplaceArmor	criteria="a L:1-12;" priceAdj="100"/>
+			<InstallDevice	criteria="w L:1-10" priceAdj="200"/>
+			<InstallDevice	criteria="d~w L:1-10;" priceAdj="100"/>
+			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
 
-		<Devices>
-			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="0" posRadius="40"/>
-			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="120" posRadius="40"/>
-			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="240" posRadius="40"/>
-		</Devices>
+			<BalanceTrade	criteria="{human.res}"		impact="4"/>
+			<BalanceTrade	criteria="{core.ore}"			impact="10"/>
+		</Trade>
 
 		<Items>
 			<RandomItem count="1d4" criteria="r -illegal; -notForSale; -notStandard; L:7-9;"		levelFrequency="systemLevel:ru|c|curv"/>
@@ -306,22 +328,21 @@
 			<Item				count="1"		item="&itPlasmaTorch;" />
 		</Items>
 
-		<Trade currency="rin" max="100000" replenish="5000">
-			<Sell	criteria="*NU +ringerValuable;"		priceAdj="250"/>
-			<Sell	criteria="*NU -ID;"					priceAdj="100"/>
-			<Buy	criteria="*NU +ringerValuable;"		priceAdj="200"/>
-			<Buy	criteria="*NU +res; &gt;=4;"		priceAdj="90"/>
-			
-			<Refuel			criteria="f +BasicFuel; L:1-9;" priceAdj="100"/>
-			<RepairArmor	criteria="a L:1-12;" priceAdj="100"/>
-			<ReplaceArmor	criteria="a L:1-12;" priceAdj="100"/>
-			<InstallDevice	criteria="w L:1-10" priceAdj="200"/>
-			<InstallDevice	criteria="d~w L:1-10;" priceAdj="100"/>
-			<RemoveDevice	criteria="d L:1-10;" priceAdj="100"/>
+		<!-- Configuration -->
 
-			<BalanceTrade	criteria="{human.res}"		impact="4"/>
-			<BalanceTrade	criteria="{core.ore}"			impact="10"/>
-		</Trade>
+		<Devices>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="0" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="120" posRadius="40"/>
+			<Device deviceID="&itPositronLancer;" omnidirectional="true" posAngle="240" posRadius="40"/>
+		</Devices>
+
+		<!-- Ships and Defense -->
+
+		<Ships>
+			<Lookup count="1d2" table="&tbCommEliteDefenders;"/>
+			<Lookup count="1d3" table="&tbCommPrivateCrafts;"/>
+			<Ship chance="50"	count="1" class="&scFerianMiner;" orders="gateOnThreat"/>
+		</Ships>
 
 		<Reinforcements minShips="3">
 			<Table>
@@ -330,6 +351,17 @@
 				<Ship   chance="20"	class="&scFerianMiner;" orders="gateOnThreat"/>
 			</Table>
 		</Reinforcements>
+
+		<!-- Image and Effects -->
+
+		<Image			imageID="&rsRingersShipyard;" imageWidth="380" imageHeight="380" viewportRatio="0.0365"/>
+
+		<DockingPorts
+				portCount=		"9"
+				portRadius=		"212"
+				/>
+
+		<!-- Dock Screens -->
 
 		<DockScreens>
 			<Main>
@@ -392,32 +424,23 @@
 					</DockServicesGreeter>
 				</Panes>
 			</Main>
-
 		</DockScreens>
-
-		<DockingPorts>
-			<Port x="0"		y="128" />
-			<Port x="90"	y="100" />
-			<Port x="-90"	y="100" />
-			<Port x="140"	y="30" />
-			<Port x="-140"	y="30" />
-			<Port x="140"	y="-70" />
-			<Port x="-140"	y="-70" />
-			<Port x="58"	y="-138" />
-			<Port x="-58"	y="-138" />
-		</DockingPorts>
 
 		<Language>
 			<Text id="descWelcome">
+
 				You are docked at a Ringer Shipyard. Ringer neo-humans float
 				through the vast volume of the station, perfectly adapted to
 				zero-gravity and space.
+
 			</Text>
 			<Text id="descDockServicesGreeter">
+
 				As you enter the shipyard, a greeter scans you and says,
 
 				"Earthican, welcome. Your account balance is 0 rin. Collective
 				does not seek Commonwealth money."
+
 			</Text>
 			<Text id="core.commoditiesExchangeDesc">
 
@@ -586,5 +609,10 @@
 			</OnDestroy>
 		</Events>
 	</Type>
+
+<!-- RESOURCES -->
+
+	<Image UNID="&rsRingersCollective;"		bitmap="Resources\RingersCollective.jpg" bitmask="Resources\RingersCollectiveMask.bmp" loadOnUse="true" />
+	<Image UNID="&rsRingersShipyard;"		bitmap="Resources\RingersShipyard.jpg" bitmask="Resources\RingersShipyardMask.bmp" loadOnUse="true" />
 
 </TranscendenceModule>
