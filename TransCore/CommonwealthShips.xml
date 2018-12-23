@@ -101,12 +101,12 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"150"
 			maxDevices=			"8"
-
-			stdArmor=			"3000"
-			maxArmor=			"6000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"+2"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-2" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
