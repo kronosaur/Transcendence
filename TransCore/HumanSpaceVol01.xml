@@ -1569,6 +1569,7 @@
 	<!ENTITY rsItems10					"0x0010002B">
 	<!ENTITY trStdTreasure				"0x0010002C">
 	<!ENTITY baHumanTechShip			"0x0010002D">
+	<!ENTITY unidArmorMass				"0x0010002E">
 	
 	<!-- 0030-003F SISTERS OF DOMINA -->
 	

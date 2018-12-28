@@ -2,6 +2,18 @@
 
 <TranscendenceModule>
 
+	<Type unid="&unidArmorMass;">
+		<ArmorMassDesc>
+			<ArmorMass id="ultraLight"	label="ultra-light"		mass="1000"/>
+			<ArmorMass id="light"		label="light"			mass="2500"/>
+			<ArmorMass id="medium"		label="medium"			mass="3500"/>
+			<ArmorMass id="heavy"		label="heavy"			mass="6000"/>
+			<ArmorMass id="superHeavy"	label="super-heavy"		mass="9000"/>
+			<ArmorMass id="massive"		label="massive"			mass="12000"/>
+			<ArmorMass id="dreadnought"	label="dreadnought"		mass="100000"/>
+		</ArmorMassDesc>
+	</Type>
+
 <!-- LEVEL I -->
 
 	<!-- Segment of Light Ceramic Plate -->
