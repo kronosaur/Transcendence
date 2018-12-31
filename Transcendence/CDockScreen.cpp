@@ -2101,7 +2101,7 @@ void CDockScreen::UpdateCredits (void)
 	{
 	//	Money
 
-	CEconomyType *pEconomy = m_pLocation->GetDefaultEconomy();
+	const CEconomyType *pEconomy = m_pLocation->GetDefaultEconomy();
 	m_pCredits->SetText(strPatternSubst(CONSTLIT("%s: %s"), 
 			strCapitalize(pEconomy->GetCurrencyNamePlural()),
 			strFormatInteger((int)m_pPlayer->GetCredits(pEconomy->GetUNID()), -1, FORMAT_THOUSAND_SEPARATOR)

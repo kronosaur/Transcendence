@@ -62,7 +62,7 @@ void CompileTradeData (CSpaceObject *pObj, SStationData *retAllStations, SItemDa
 
 	//	All prices in default currency (credits)
 
-	CEconomyType *pCurrency = CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
+	const CEconomyType *pCurrency = CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
 
 	//	Get the entry
 

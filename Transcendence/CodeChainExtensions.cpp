@@ -982,7 +982,7 @@ ICCItem *fnPlyGet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 		{
 		case FN_PLY_CREDITS:
 			{
-			CEconomyType *pEcon = GetEconomyTypeFromItem(*pCC, (pArgs->GetCount() > 1 ? pArgs->GetElement(1) : NULL));
+			const CEconomyType *pEcon = GetEconomyTypeFromItem(*pCC, (pArgs->GetCount() > 1 ? pArgs->GetElement(1) : NULL));
 			if (pEcon == NULL)
 				return pCC->CreateError(CONSTLIT("Invalid economy type"), pArgs->GetElement(1));
 
@@ -1203,7 +1203,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_PLY_CHARGE:
 			{
-			CEconomyType *pEcon = GetEconomyTypeFromItem(*pCC, (pArgs->GetCount() > 2 ? pArgs->GetElement(1) : NULL));
+			const CEconomyType *pEcon = GetEconomyTypeFromItem(*pCC, (pArgs->GetCount() > 2 ? pArgs->GetElement(1) : NULL));
 			if (pEcon == NULL)
 				return pCC->CreateError(CONSTLIT("Invalid economy type"), pArgs->GetElement(1));
 
@@ -1216,7 +1216,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 		case FN_PLY_CREDITS:
 			{
-			CEconomyType *pEcon = GetEconomyTypeFromItem(*pCC, (pArgs->GetCount() > 2 ? pArgs->GetElement(1) : NULL));
+			const CEconomyType *pEcon = GetEconomyTypeFromItem(*pCC, (pArgs->GetCount() > 2 ? pArgs->GetElement(1) : NULL));
 			if (pEcon == NULL)
 				return pCC->CreateError(CONSTLIT("Invalid economy type"), pArgs->GetElement(1));
 
@@ -1279,7 +1279,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			//	The currency
 
-			CEconomyType *pCurrency;
+			const CEconomyType *pCurrency;
 			if (pArgs->GetCount() > 3)
 				{
 				pCurrency = GetEconomyTypeFromItem(*pCC, pArgs->GetElement(iArg));
@@ -1302,7 +1302,7 @@ ICCItem *fnPlySet (CEvalContext *pEvalCtx, ICCItem *pArgs, DWORD dwData)
 
 			if (!pCurrency->IsCreditEquivalent())
 				{
-				CEconomyType *pCreditEcon = CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
+				const CEconomyType *pCreditEcon = CEconomyType::AsType(g_pUniverse->FindDesignType(DEFAULT_ECONOMY_UNID));
 				iPrice = pCreditEcon->Exchange(pCurrency, iPrice);
 				}
 
