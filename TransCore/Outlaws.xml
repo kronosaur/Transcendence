@@ -515,12 +515,13 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"1000"
 			maxDevices=			"6"
-
-			stdArmor=			"4000"
-			maxArmor=			"8000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"16"
@@ -602,12 +603,13 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"1000"
 			maxDevices=			"6"
-
-			stdArmor=			"4000"
-			maxArmor=			"8000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"16"

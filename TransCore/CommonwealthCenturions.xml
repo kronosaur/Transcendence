@@ -27,12 +27,14 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
-
-			stdArmor=			"6000"
-			maxArmor=			"12000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+			<ArmorLimits massClass="massive"		speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
@@ -108,12 +110,14 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
-
-			stdArmor=			"6000"
-			maxArmor=			"12000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+			<ArmorLimits massClass="massive"		speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
@@ -190,12 +194,14 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
-
-			stdArmor=			"6000"
-			maxArmor=			"12000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+			<ArmorLimits massClass="massive"		speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
@@ -271,12 +277,14 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
-
-			stdArmor=			"6000"
-			maxArmor=			"12000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+			<ArmorLimits massClass="massive"		speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"22"

@@ -14,34 +14,47 @@
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"9"
 			mass=				"1"
-			thrustRatio=		"5"
-			maxSpeed=			"25"
 			cargoSpace=			"0"
 
 			maxReactorPower=	"500"
-			reactorPower=		"30"
-			maxArmor=			"2500"
+			maxCargoSpace=		"0"
 			maxDevices=			"1"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"30"
+			/>
+
+		<Drive
+			maxSpeed=			"25"
+			thrust=				"30"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
 
 		<!-- Configuration -->
 		
 		<Armor
-			armorID=			"&itHeavyCeramicPlate;"
+			armorID=			"&itLightPlasteelPlate;"
 			count=				"1"
 			/>
 		
 		<Devices>
 			<Device deviceID="&itLaserCannon;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"18.0"
-			rotationAccel=		"6.0"
-			/>
 
 		<!-- Image and Effects -->
 		
@@ -73,19 +86,38 @@
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"9"
 			mass=				"2"
-			thrustRatio=		"8"
-			maxSpeed=			"25"
 			cargoSpace=			"0"
 
 			maxReactorPower=	"1000"
-			reactorPower=		"250"
-			maxArmor=			"3000"
+			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"250"
+			/>
+
+		<Drive
+			maxSpeed=			"25"
+			thrust=				"60"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"18.0"
+			rotationAccel=		"6.0"
+			/>
 
 		<!-- Configuration -->
 		
@@ -98,11 +130,6 @@
 			<Device deviceID="&itTurbolaserCannon;"/>
 			<Device deviceID="&itHullPlateIonizer;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"18.0"
-			rotationAccel=		"6.0"
-			/>
 
 		<!-- Image and Effects -->
 
@@ -159,19 +186,33 @@
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"9"
 			mass=				"2"
-			thrustRatio=		"8"
-			maxSpeed=			"25"
 			cargoSpace=			"0"
 
-			reactorPower=		"250"
 			maxReactorPower=	"1000"
-			maxArmor=			"3000"
+			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"250"
+			/>
+
+		<Drive
+			maxSpeed=			"25"
+			thrust=				"60"
+			/>
 
 		<!-- Configuration -->
 		
@@ -236,19 +277,33 @@
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"9"
 			mass=				"2"
-			thrustRatio=		"8"
-			maxSpeed=			"25"
 			cargoSpace=			"0"
 
-			reactorPower=		"250"
 			maxReactorPower=	"1000"
-			maxArmor=			"3000"
+			maxCargoSpace=		"0"
 			maxDevices=			"3"
 			maxWeapons=			"1"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"250"
+			/>
+
+		<Drive
+			maxSpeed=			"25"
+			thrust=				"60"
+			/>
 
 		<!-- Configuration -->
 		
@@ -298,21 +353,33 @@
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"15"
 			mass=				"2"
-			thrustRatio=		"6"
-			maxSpeed=			"20"
 			cargoSpace=			"75"
 
-			reactorPower=		"150"
 			maxReactorPower=	"1000"
-			maxArmor=			"3500"
+			maxCargoSpace=		"75"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			   
-			dockScreen=			"Main"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"150"
+			/>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"60"
+			/>
 
 		<!-- Configuration -->
 		
@@ -407,19 +474,33 @@
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"10"
 			mass=				"4"
-			thrustRatio=		"8"
-			maxSpeed=			"25"
 			cargoSpace=			"0"
 
-			reactorPower=		"450"
-			maxReactorPower=	"2500"
-			maxArmor=			"4000"
+			maxReactorPower=	"1000"
+			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"450"
+			/>
+
+		<Drive
+			maxSpeed=			"25"
+			thrust=				"80"
+			/>
 
 		<!-- Configuration -->
 		
@@ -496,19 +577,33 @@
 
 			attributes=			"auton, genericClass"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"10"
 			mass=				"4"
-			thrustRatio=		"8"
-			maxSpeed=			"25"
 			cargoSpace=			"0"
 
-			reactorPower=		"450"
-			maxReactorPower=	"2500"
-			maxArmor=			"4000"
+			maxReactorPower=	"1000"
+			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"450"
+			/>
+
+		<Drive
+			maxSpeed=			"25"
+			thrust=				"80"
+			/>
 
 		<!-- Configuration -->
 		
@@ -557,19 +652,33 @@
 
 			attributes=			"auton, genericClass, taikon"
 			inherit=			"&baStdAutonBase;"
-			   
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"10"
 			mass=				"2"
-			thrustRatio=		"8"
-			maxSpeed=			"25"
 			cargoSpace=			"0"
 
-			reactorPower=		"250"
 			maxReactorPower=	"1000"
-			maxArmor=			"3000"
+			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1" />
+		</Hull>
+
+		<Reactor
+			reactorPower=		"250"
+			/>
+
+		<Drive
+			maxSpeed=			"25"
+			thrust=				"60"
+			/>
 
 		<!-- Configuration -->
 		

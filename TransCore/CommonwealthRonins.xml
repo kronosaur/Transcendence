@@ -26,12 +26,12 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"100"
 			maxDevices=			"6"
-
-			stdArmor=			"4000"
-			maxArmor=			"8000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
@@ -96,12 +96,13 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"200"
 			maxDevices=			"6"
-
-			stdArmor=			"3000"
-			maxArmor=			"6000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-2" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
@@ -180,12 +181,13 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"200"
 			maxDevices=			"6"
-
-			stdArmor=			"4000"
-			maxArmor=			"8000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-2" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
@@ -194,7 +196,7 @@
 
 		<Maneuver
 			maxRotationRate=	"9.0"
-			rotationAccel=		"1.0"
+			rotationAccel=		"2.0"
 			/>
 
 		<!-- Configuration -->

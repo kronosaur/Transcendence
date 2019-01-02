@@ -352,20 +352,38 @@
 			defaultSovereign=	"&svPenitents;"
 
 			attributes=			"genericClass, penitent, penitents"
+			inherit=			"&baHumanTechShip;"
+			>
 
+		<!-- Hull -->
+
+		<Hull
 			size=				"74"
 			mass=				"1200"
-			thrustRatio=		"3"
-			maxSpeed=			"20"
 			cargoSpace=			"500"
 
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"500"
 			maxDevices=			"6"
-
-			maxArmor=			"20000"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+			<ArmorLimits massClass="massive"		speedAdj="-1" />
+		</Hull>
 
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"3600"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"3.0"
+			/>
+		
 		<!-- Configuration -->
 		
 		<Armor
@@ -383,11 +401,6 @@
 			</Device>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"3.0"
-			/>
-		
 		<!-- Items -->
 
 		<Items>

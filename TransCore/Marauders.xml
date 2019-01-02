@@ -391,9 +391,6 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"500"
 			maxDevices=			"8"
-
-			stdArmor=			"10000"
-			maxArmor=			"20000"
 			/>
 
 		<Drive
@@ -540,9 +537,6 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"1000"
 			maxDevices=			"12"
-
-			stdArmor=			"10000"
-			maxArmor=			"20000"
 			/>
 
 		<Drive

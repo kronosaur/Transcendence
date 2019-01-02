@@ -23,12 +23,12 @@
 			maxCargoSpace=		"250"
 			maxDevices=			"8"
 			maxWeapons=			"1"
-
-			stdArmor=			"4000"
-			maxArmor=			"20000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-2" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"12"
@@ -221,12 +221,13 @@
 			maxCargoSpace=		"500"
 			maxDevices=			"8"
 			maxWeapons=			"2"
-
-			stdArmor=			"5000"
-			maxArmor=			"20000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-2" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"16"
@@ -286,19 +287,44 @@
 			type=				""
 			defaultSovereign=	"&svCommonwealth;"
 
+			attributes=			"commonwealth, genericClass, iav"
+			inherit=			"&baHumanTechShip;"
+			>
+
+		<!-- Hull -->
+
+		<Hull
 			size=				"27"
 			mass=				"25"
 			cargoSpace=			"5"
-			thrustRatio=		"6"
-			maxSpeed=			"13"
 
-			attributes=			"commonwealth, genericClass, iav"
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"50"
+			maxDevices=			"6"
+			maxWeapons=			"2"
 			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="-1"  />
+		</Hull>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itTitaniumArmor;" />
-			<ArmorSection start="90"  span="180" armorID="&itTitaniumArmor;" />
-		</Armor>
+		<Drive
+			maxSpeed=			"13"
+			thrust=				"200"
+			powerUse=			"20"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"1.0"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itTitaniumArmor;"
+			count=				"2"
+			/>
 
 		<Devices>
 			<Table>
@@ -308,10 +334,7 @@
 			</Table>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"1.0"
-			/>
+		<!-- Image and Effects -->
 
 		<Image imageID="&rsIAVLightHD;" imageX="0" imageY="0" imageWidth="48" imageHeight="48" rotationCount="120" rotationColumns="12" />
 
@@ -321,6 +344,8 @@
 			<Effect type="thrustMain"		posAngle="-160"	posRadius="22"	posZ="0"	rotation="180"/>
 		</Effects>
 		
+		<!-- AI and Behavior -->
+
 		<AISettings
 			aggressor=			"true"
 			fireRateAdj=		"30"
@@ -340,16 +365,40 @@
 			defaultSovereign=	"&svCommonwealth;"
 
 			attributes=			"commonwealth, genericClass, NAMI"
-
-			size=				"44"
-			mass=				"200"
-			thrustRatio=		"4.0"
-			maxSpeed=			"20"
-			cargoSpace=			"100"
+			inherit=			"&baHumanTechShip;"
 			>
 
-		<!-- Configuration -->
+		<!-- Hull -->
+
+		<Hull
+			size=				"44"
+			mass=				"200"
+			cargoSpace=			"100"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"200"
+			maxDevices=			"8"
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+			<ArmorLimits massClass="massive"		speedAdj="-1" />
+		</Hull>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"900"
+			/>
 		
+		<Maneuver
+			maxRotationRate=	"9.0"
+			rotationAccel=		"3.0"
+			/>
+
+		<!-- Configuration -->
+
 		<Armor
 			armorID=			"&itPlasteelPlate;"
 			count=				"6"
@@ -359,11 +408,6 @@
 			<Device deviceID="&itBallistaCannon;"	posAngle="180" posRadius="8" posZ="20"/>
 			<Device deviceID="&itHullPlateIonizer;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"9.0"
-			rotationAccel=		"3.0"
-			/>
 
 		<Items>
 		</Items>
@@ -413,12 +457,14 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"10"
 			maxWeapons=			"2"
-
-			stdArmor=			"5000"
-			maxArmor=			"20000"
-			maxArmorSpeedAdj=	"-2"
-			minArmorSpeedAdj=	"+1"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-2" />
+			<ArmorLimits massClass="massive"		speedAdj="-2" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"18"
@@ -567,12 +613,13 @@
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
 			maxNonWeapons=		"4"
-
-			stdArmor=			"4000"
-			maxArmor=			"9000"
-			maxArmorSpeedAdj=	"-3"
-			minArmorSpeedAdj=	"0"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="0" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-2" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-3" />
+		</Hull>
 
 		<Drive
 			thrust=				"600"
@@ -696,10 +743,13 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"2000"
 			maxDevices=			"10"
-
-			stdArmor=			"10000"
-			maxArmor=			"20000"
-			/>
+			maxWeapons=			"4"
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"12"
@@ -783,20 +833,45 @@
 			type=				""
 			defaultSovereign=	"&svCommonwealth;"
 
-			size=				"42"
-			mass=				"50"
-			cargoSpace=			"10"
-			thrustRatio=		"6.5"
-			maxSpeed=			"16"
-
 			attributes=			"commonwealth, genericClass, iav"
 			>
 
-		<Armor>
-			<ArmorSection start="270" span="180" armorID="&itHeavyReactiveArmor;" />
-			<ArmorSection start="90"  span="180" armorID="&itHeavyReactiveArmor;" />
-		</Armor>
+		<!-- Hull -->
 
+		<Hull
+			size=				"42"
+			mass=				"50"
+			cargoSpace=			"10"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"100"
+			maxDevices=			"6"
+			maxWeapons=			"2"
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-2" />
+		</Hull>
+
+		<Drive
+			maxSpeed=			"16"
+			thrust=				"400"
+			powerUse=			"25"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"5.0"
+			rotationAccel=		"0.5"
+			/>
+
+		<!-- Configuration -->
+
+		<Armor
+			armorID=			"&itHeavyReactiveArmor;"
+			count=				"2"
+			/>
+		
 		<Devices>
 			<Table>
 				<Device chance="30" item="&itLancerCannon;" enhanced="15"/>
@@ -805,10 +880,7 @@
 			</Table>
 		</Devices>
 
-		<Maneuver
-			maxRotationRate=	"5.0"
-			rotationAccel=		"0.5"
-			/>
+		<!-- Image and Effects -->
 
 		<Image imageID="&rsIAVMediumHD;" imageX="0" imageY="0" imageWidth="64" imageHeight="64" rotationCount="120" rotationColumns="12" />
 
@@ -836,12 +908,7 @@
 			defaultSovereign=	"&svCommonwealth;"
 			   
 			attributes=			"commonwealth, freighter, genericClass, NAMI"
-
-			size=				"58"
-			mass=				"500"
-			thrustRatio=		"2.0"
-			maxSpeed=			"18"
-			cargoSpace=			"500"
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<Names definiteArticle="true">
@@ -852,6 +919,35 @@
 			transport Resnik; transport Schmitt; transport Titov; transport Volk;
 			transport Williams; transport Yegorov
 		</Names>
+
+		<!-- Hull -->
+
+		<Hull
+			size=				"58"
+			mass=				"500"
+			cargoSpace=			"500"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"500"
+			maxDevices=			"10"
+			maxWeapons=			"4"
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="-1" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-2" />
+		</Hull>
+
+		<Drive
+			maxSpeed=			"18"
+			thrust=				"1000"
+			/>
+
+		<Maneuver
+			maxRotationRate=	"6.0"
+			rotationAccel=		"3.0"
+			/>
 
 		<!-- Configuration -->
 		
@@ -864,11 +960,6 @@
 			<Device deviceID="&itOmniParticleCannon;"	posAngle="0" posRadius="4" posZ="16"/>
 			<Device deviceID="&itCyclotronDeflectorIV;"/>
 		</Devices>
-
-		<Maneuver
-			maxRotationRate=	"6.0"
-			rotationAccel=		"3.0"
-			/>
 
 		<Items>
 		</Items>
@@ -907,14 +998,7 @@
 			defaultSovereign=	"&svCommonwealth;"
 			   
 			attributes=			"commonwealth, genericClass, zubrin"
-
-			size=				"140"
-			mass=				"3000"
-			thrustRatio=		"2.0"
-			maxSpeed=			"20"
-			cargoSpace=			"3000"
-
-			explosionType=		"&vtBlastExplosion2;"
+			inherit=			"&baHumanTechShip;"
 			>
 
 		<Names definiteArticle="true">
@@ -929,18 +1013,28 @@
 			megayacht Venus; megayacht Virginian; megayacht Yersin
 		</Names>
 
-		<!-- Configuration -->
-		
-		<Armor
-			armorID=			"&itCeralloyArmor;"
-			count=				"12"
+		<!-- Hull -->
+
+		<Hull
+			size=				"140"
+			mass=				"3000"
+			cargoSpace=			"1000"
+
+			maxReactorPower=	"10000"
+			maxCargoSpace=		"1000"
+			maxDevices=			"12"
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
+			<ArmorLimits massClass="light"			speedAdj="0" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+		</Hull>
+
+		<Drive
+			maxSpeed=			"20"
+			thrust=				"6000"
 			/>
-		
-		<Devices>
-			<Device deviceID="&itLancerCannon;" omnidirectional="true" />
-			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
-			<Device deviceID="&itCeratopsQuasiArmor2;"/>
-		</Devices>
 
 		<Maneuver
 			maxRotationRate=	"6.0"
@@ -963,6 +1057,23 @@
 					sizeY=		"32"
 					/>
 		</Interior>
+
+		<Wreck
+			explosionType=		"&vtBlastExplosion2;"
+			/>
+
+		<!-- Configuration -->
+		
+		<Armor
+			armorID=			"&itCeralloyArmor;"
+			count=				"12"
+			/>
+		
+		<Devices>
+			<Device deviceID="&itLancerCannon;" omnidirectional="true" />
+			<Device deviceID="&itMissileDefense;" omnidirectional="true" />
+			<Device deviceID="&itCeratopsQuasiArmor2;"/>
+		</Devices>
 
 		<Items>
 		</Items>
@@ -1122,12 +1233,14 @@
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
-
-			stdArmor=			"5000"
-			maxArmor=			"20000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-			/>
+			maxWeapons=			"4"
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+1" />
+			<ArmorLimits massClass="medium"			speedAdj="0"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"16"
@@ -1199,13 +1312,15 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 
-			stdArmor=			"5000"
-			maxArmor=			"20000"
-			maxArmorSpeedAdj=	"-1"
-			minArmorSpeedAdj=	"+1"
-
 			valueAdj=			"-2.0"
-			/>
+			>
+			<ArmorLimits massClass="ultraLight"		speedAdj="+2" />
+			<ArmorLimits massClass="light"			speedAdj="+2" />
+			<ArmorLimits massClass="medium"			speedAdj="+1"  />
+			<ArmorLimits massClass="heavy"			speedAdj="0" />
+			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
+			<ArmorLimits massClass="massive"		speedAdj="-2" />
+		</Hull>
 
 		<Drive
 			maxSpeed=			"20"
