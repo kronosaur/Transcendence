@@ -860,13 +860,10 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 			maxWeapons=			"2"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="0" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="0"  />
-			<ArmorLimits massClass="heavy"			speedAdj="-1" />
-			<ArmorLimits massClass="superHeavy"		speedAdj="-2" />
-		</Hull>
+
+			maxArmor=			"superHeavy"
+			stdArmor=			"medium"
+			/>
 
 		<Drive
 			maxSpeed=			"20"
@@ -939,13 +936,10 @@
 			maxCargoSpace=		"200"
 			maxDevices=			"8"
 			maxWeapons=			"2"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="0" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="0"  />
-			<ArmorLimits massClass="heavy"			speedAdj="-1" />
-			<ArmorLimits massClass="superHeavy"		speedAdj="-2" />
-		</Hull>
+
+			maxArmor=			"superHeavy"
+			stdArmor=			"medium"
+			/>
 
 		<Drive
 			maxSpeed=			"20"

@@ -746,14 +746,10 @@ PLAYER DATA
 			maxReactorPower=	"10000"
 			maxCargoSpace=		"100"
 			maxDevices=			"8"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="0"  />
-			<ArmorLimits massClass="heavy"			speedAdj="-1" />
-			<ArmorLimits massClass="superHeavy"		speedAdj="-1" />
-			<ArmorLimits massClass="massive"		speedAdj="-2" />
-		</Hull>
+
+			maxArmor=			"massive"
+			stdArmor=			"medium"
+			/>
 
 		<Drive
 			maxSpeed=			"22"

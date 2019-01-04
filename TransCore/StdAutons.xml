@@ -26,10 +26,10 @@
 			maxReactorPower=	"500"
 			maxCargoSpace=		"0"
 			maxDevices=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-		</Hull>
+
+			maxArmor=			"light"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"30"
@@ -99,11 +99,10 @@
 			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="-1" />
-		</Hull>
+
+			maxArmor=			"medium"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"250"
@@ -199,11 +198,10 @@
 			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="-1" />
-		</Hull>
+
+			maxArmor=			"medium"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"250"
@@ -290,11 +288,10 @@
 			maxCargoSpace=		"0"
 			maxDevices=			"3"
 			maxWeapons=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="-1" />
-		</Hull>
+
+			maxArmor=			"medium"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"250"
@@ -366,11 +363,10 @@
 			maxCargoSpace=		"75"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="-1" />
-		</Hull>
+
+			maxArmor=			"medium"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"150"
@@ -487,11 +483,10 @@
 			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="-1" />
-		</Hull>
+
+			maxArmor=			"medium"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"450"
@@ -590,11 +585,10 @@
 			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="-1" />
-		</Hull>
+
+			maxArmor=			"medium"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"450"
@@ -665,11 +659,10 @@
 			maxCargoSpace=		"0"
 			maxDevices=			"2"
 			maxWeapons=			"1"
-			>
-			<ArmorLimits massClass="ultraLight"		speedAdj="+1" />
-			<ArmorLimits massClass="light"			speedAdj="0" />
-			<ArmorLimits massClass="medium"			speedAdj="-1" />
-		</Hull>
+
+			maxArmor=			"medium"
+			stdArmor=			"light"
+			/>
 
 		<Reactor
 			reactorPower=		"250"
