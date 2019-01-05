@@ -515,6 +515,7 @@
     <Xml Include="CoreProjectileEffects.xml">
       <SubType>Designer</SubType>
     </Xml>
+    <Xml Include="CoreSamples.xml" />
     <Xml Include="CorporateInsurance.xml" />
     <Xml Include="CorporateTradingPost.xml" />
     <Xml Include="CSCTerra.xml" />

@@ -188,6 +188,12 @@
 	<!-- 0080-00BF OVERLAY TYPE -->
 
 	<!ENTITY ovTimeStop					"0x00030080">
+
+	<!-- 00C0-00FF SAMPLES -->
+
+	<!ENTITY itSampleItemMisc			"0x000300C0">
+	<!ENTITY itSampleItemArmor			"0x000300C1">
+
 	]>
 	
 <CoreLibrary

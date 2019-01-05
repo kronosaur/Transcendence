@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TranscendenceModule>
+
+<!--
+
+	1. INTRODUCTION
+	____________________________________________________________________________
+
+	The types defined in this file are samples that describe all the parameters 
+	and options allowed for Transcendence definitions. Use these as a reference
+	for creating your own types.
+
+	1.1 SEE ALSO
+
+	* Getting Started with Modding
+	  https://transcendence.kronosaur.com/guidePage.hexm?id=938
+
+	
+	2. ITEM TYPES
+	____________________________________________________________________________
+
+	An ItemType element defines a type of item available in the game. You can 
+	use an ItemType to define a piece of treasure (ore, resources, etc.) or to
+	define a complex weapon or device.
+
+	2.1 ITEM NAME
+	_____________
+
+	All items must have a name. You may use the following syntax patterns to
+	specify how the name is to be used in a sentence:
+
+	2.1.1 Plural Syntax
+
+	If the plural form of the item name adds an -s or -es, then you may specify
+	the suffix in parentheses at the end. For example:
+
+	"sample item(s)"
+	"sample box(es)"
+
+	In some cases, the plural cannot be formed by adding a suffix. In those case
+	you may specify the singular form followed by the plural form, separated by
+	a vertical bar. For example:
+
+	"foot|feet"
+	"moose|moose"
+
+	2.1.2 Article
+
+	Name can use either "a" or "an" as indefinite articles, or "the" as a 
+	definite article. You can specify the article to use by adding a leading
+	colon followed by the article and then a space. You may also specify that a
+	noun has no article by adding a colon followed by a space.
+
+	Examples:
+
+	":a bear"
+	":an aardvark"
+	":a uranium fuel rod"
+	":the US Constitution"
+	": George Washington's teeth"
+
+	2.1.3 Long Forms
+
+	Some item names have a long form and a short form, particular when an item
+	represents a container of something. Use brackets around the part of the 
+	name that represents the long form:
+
+	"[barrel(s) of ]acid"
+	"[ton(s) of ]titanium ore"
+
+	2.2 ITEM ATTRIBUTES
+	___________________
+
+	Item attributes are used to define sets of related attributes. Once defined,
+	you may specify sets of items by referring to their attributes. For example,
+	all ore items have the "ore" attribute.
+
+	Some attributes are displayed for the player, but others are only used
+	internally.
+
+	The list of displayed attributes is here:
+	
+	* https://ministry.kronosaur.com/record.hexm?id=29454
+
+	The <GetDisplayAttributes> event can be used to specify dynamic display
+	attributes for an item.
+
+	2.3 ITEM LEVEL
+	______________
+
+	Item level is from 1-25.
+
+	2.4 ITEM FREQUENCY
+	__________________
+
+	Item frequency specifies the chance of the item spawning. Valid values are:
+
+	* common: Standard frequency
+	* uncommon: Half of standard frequency
+	* rare: 1/5th of standard frequency
+	* veryrare: 1/20th of standard frequency.
+	* notRandom: Does not appear randomly.
+
+	By default, a single item is spawned. Use the numberAppearing= parameter to
+	spawn more than one item.
+
+	2.5 ITEM VALUE
+	______________
+
+	By default, item value is specified in credits. Use a currency prefix to 
+	specify the value in a different currency. E.g.:
+
+	"rin:200"
+
+	Item value generally doubles with each level. That is, all things being 
+	equal, a level 5 item is twice as expensive as a level 4 item.
+
+	The <GetTradePrice> event can be used to dynamically change this value.
+
+	2.6 ITEM MASS
+	_____________
+
+	Mass is always specified in kilograms.
+
+	2.7 ITEM DESCRIPTION
+	____________________
+
+	The description of the item is what we display to the player. The
+	<GetDescription> event can be used to generate a dynamic description.
+
+-->
+
+	<ItemType unid="&itSampleItemMisc;"
+			name=				"[case(s) of ]sample treasure"
+			attributes=			"consumable, lux"
+
+			level=				"5"
+			frequency=			"common"
+			numberAppearing=	"1d12"
+
+			value=				"100"
+			mass=				"500"
+
+			description=		"This is a description of the item."
+			>
+		<Image imageID="&rsItems1;" imageX="192" imageY="480" imageWidth="96" imageHeight="96"/>
+
+		<Events>
+			<GetDescription>
+
+				;	If this event is defined, we use it to generate the player-
+				;	visible description for the item.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gType: The item type UNID.
+				;
+				;	gSource: The object on which the item is located, if any.
+				;
+				;	gItem: The item being evaluated.
+				;
+				;	RESULT -----------------------------------------------------
+				;
+				;	The event should return the description.
+				;
+				;	NOTES ------------------------------------------------------
+				;
+				;	You may, if you wish, ask for the 'description property for
+				;	the item from inside this event. The engine	will return the
+				;	value of the description= parameter.
+
+			</GetDescription>
+
+			<GetDisplayAttributes>
+
+				;	This event is used to generate dynamic display attributes
+				;	for an item.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gType: The item type UNID.
+				;
+				;	gSource: The object on which the item is located, if any.
+				;
+				;	gItem: The item being evaluated.
+				;
+				;	RESULT -----------------------------------------------------
+				;
+				;	The event should return a list of structures. Each structure
+				;	should have the following fields:
+				;
+				;	label: The text of the attribute.
+				;
+				;	labelType: The type of attribute, which determines the color
+				;		with which to display. One of the following:
+				;
+				;		'advantage
+				;		'disadvantage
+				;		'neutral
+				;
+				;	You may also return Nil to indicate that no additional 
+				;	display attributes should be shown.
+
+			</GetDisplayAttributes>
+
+			<GetName>
+
+				;	This event is called to generate a dynamic name for the 
+				;	item.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gType: The item type UNID.
+				;
+				;	gItem: The item being evaluated.
+				;
+				;	aFlags: This is a list of noun flags used by itmGetName.
+				;		The following are valid flags:
+				;
+				;		'actual
+				;		'adjective
+				;		'article
+				;		'capitalize
+				;		'count
+				;		'countAlways
+				;		'countOnly
+				;		'demonstrative
+				;		'demonym
+				;		'duplicateModifier
+				;		'escapeQuotes
+				;		'generic
+				;		'installedState
+				;		'noDeterminer
+				;		'noEvent
+				;		'noModifier
+				;		'noQuotes
+				;		'plural
+				;		'short
+				;		'titleCapitalize
+				;		'tokenize
+				;
+				;	RESULT -----------------------------------------------------
+				;	
+				;	You must return a single string, representing a noun phrase
+				;	using the normal item name syntax.
+				;
+				;	NOTES ------------------------------------------------------
+				;	
+				;	You do not need to honor the flags to generate the requested
+				;	name. For example, you do not need to pluralize a name if
+				;	requested (this will be done by the engine).
+				;
+				;	But if the name may vary because of a flag (e.g., a short
+				;	vs. long name) then you should honor the flags as 
+				;	appropriate.
+
+			</GetName>
+
+			<GetTradePrice>
+
+				;	This event is called when an item has a dynamic price, i.e.,
+				;	a price that varies based on circumstances.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gType: The item type UNID.
+				;
+				;	gSource: The object that is determining the price. For 
+				;		example, the station selling the item.
+				;
+				;	gItem: The actual item being evaluated.
+				;
+				;	aPriceType: This specifies whether the caller cares about
+				;		whether the item is known or unknown to the player. In
+				;		practice, this will determine whether the code calls
+				;		itmGetPrice or itemGetActualPrice.
+				;
+				;		Possible values are:
+				;
+				;		'actual: The actual price, regardless of whether the 
+				;			item is unknown.
+				;		'normal: The price considering whether or not the item
+				;			is unknown.
+				;
+				;	RESULT -----------------------------------------------------
+				;
+				;	The event should return the price in the default currency of
+				;	the item.
+				;
+				;	NOTES ------------------------------------------------------
+				;
+				;	It is valid to call other price functions such as 
+				;	itmGetPrice, objGetSellPrice, etc. from inside this event.
+				;	Instead of recursing, the engine will simply return the 
+				;	price defined in the value= parameter.
+
+			</GetTradePrice>
+
+			<OnAIUpdate>
+
+				;	This event is called every 30 ticks for every item on an 
+				;	NPC ship. It is NOT currently called for items on a 
+				;	station.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gItem: The actual item being evaluated.
+				;
+				;	NOTES ------------------------------------------------------
+				;
+				;	This is a perfect event to add logic for NPCs to use items.
+				;	For example, a barrel or armor repair paste could have code
+				;	to use itself when the NPC's armor is damaged.
+
+			</OnAIUpdate>
+
+			<OnDocked>
+
+				;	This event notifies the item that a ship containing the item
+				;	docked with some other object.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gType: The item type UNID.
+				;
+				;	gSource: The object that the item is on.
+				;
+				;	gItem: The item being evaluated.
+				;
+				;	aObjDocked: The object that docked (usually the same as
+				;		gSource).
+				;
+				;	aDockTarget: The object that we docked with.
+				;
+				;	NOTES ------------------------------------------------------
+				;
+				;	This event is called on all items when a ship docks, whether
+				;	the ship is the player or an NPC.
+
+			</OnDocked>
+
+			<OnObjDestroyed>
+
+				;	This event is called when the object that an item is on is
+				;	destroyed. For example, if a ship is destroyed, all items on
+				;	the ship are called here.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gType: The item type UNID.
+				;
+				;	gSource: The object that the item is on.
+				;
+				;	gItem: The item being evaluated.
+				;
+				;	aObjDestroyed: The object that was destroyed (usually the 
+				;		same as gSource).
+				;
+				;	aDestroyer: The object that caused the destruction. Usually
+				;		this is the object that fired the shot that caused the
+				;		destruction. It could be Nil, however.
+				;
+				;	aOrderGiver: If aDestroyer is an auton or some other 
+				;		servant, then this will be the object that actually gave
+				;		the order. Otherwise, it is the same as aDestroyer. It
+				;		may also be Nil.
+				;
+				;	aDestroy: True, if the object was actually destroyed. Nil if
+				;		the object entered a stargate or ascended.
+				;
+				;	aDestroyReason: The cause of the destruction. One of the
+				;		following:
+				;
+				;		'ascended
+				;		'custom
+				;		'damage
+				;		'disintegration
+				;		'ejacta
+				;		'enteredStargate
+				;		'explosion
+				;		'gravity
+				;		'playerCreatedExplosion
+				;		'powerFailure
+				;		'radiationPoisoning
+				;		'removedFromSystem
+				;		'runningOutOfFuel
+				;		'self (i.e., self-destruct)
+				;		'shatter
+				;		'weaponMalfunction
+
+			</OnObjDestroyed>
+
+			<OnUpdate>
+
+				;	This event is called every 30 ticks for every item on a 
+				;	ship. It is NOT currently called for items on a station.
+				;
+				;	PARAMETERS -------------------------------------------------
+				;
+				;	gItem: The actual item being evaluated.
+				;
+				;	NOTES ------------------------------------------------------
+				;
+				;	Use this event to implement items that change or act over 
+				;	time.
+			
+			</OnUpdate>
+		</Events>
+	</ItemType>
+
+<!--
+
+-->
+
+</TranscendenceModule>

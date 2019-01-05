@@ -798,5 +798,8 @@
     <Xml Include="Analyzers.xml">
       <Filter>Human Space Library\Items</Filter>
     </Xml>
+    <Xml Include="CoreSamples.xml">
+      <Filter>Core Types</Filter>
+    </Xml>
   </ItemGroup>
 </Project>
