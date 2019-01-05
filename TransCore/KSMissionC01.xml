@@ -147,93 +147,136 @@
 			</OnObjDestroyed>
 
 			<OnGlobalSystemStarted>
-				(switch
-					;	If not in the right system, then nothing to do
-					(!= (sysGetNode) 'CP)
-						Nil
+				(block (missionObj)
+					(switch
+						;	If not in the right system, then nothing to do
 
-					;	If we've already created this mission, then nothing to do
-					(msnFind "* +unid:&msKorolovAtCharon;;")
-						Nil
+						(!= (sysGetNode) 'CP)
+							Nil
 
-					(block (
-						(korolovObj (sysFindObject Nil "TAN +korolovShipping;"))
-						(korolovPos (objGetPos korolovObj))
-						)
+						;	If we have not yet created the mission, the do so now.
 
-						;	Remove default Korolov ships and events
-						(enum (sysFindObject korolovObj "sHZ") theShip (objDestroy theShip))
-						(enum (sysFindObject korolovObj "TN:32; +unid:&stSealedCargoContainer;;") theCrate (objDestroy theCrate))
-						(sysCancelTimerEvent korolovObj 'OnTrafficControl)
-						(objSetEventHandler korolovObj &evKorolovAtCharon;)
-
-						;	Korolov station is already damaged
-						(objSetProperty korolovObj 'hp 250)
-
-						;	Add defenders
-						(for i 1 (rollDice 1 2)
-							(block (theShip)
-								(setq theShip (sysCreateShip &tbCommDefenders; korolovPos &svCorporate;))
-								(shpOrder theShip 'dock korolovObj)
-								(shpOrder theShip 'guard korolovObj)
+						(not (setq missionObj (@ (msnFind "* +unid:&msKorolovAtCharon;;") 0)))
+							(block (
+								(korolovObj (sysFindObject Nil "TAN +korolovShipping;"))
+								(korolovPos (objGetPos korolovObj))
 								)
-							)
-						(for i 1 (rollDice 1 4)
-							(block (theShip)
-								(setq theShip (sysCreateShip &tbCommPrivateCrafts; korolovPos &svCorporate;))
-								(shpOrder theShip 'dock korolovObj)
-								(shpOrder theShip 'gateOnThreat)
-								)
-							)
-						(for i 1 (rollDice 3 6)
-							(block (theShip)
-								(setq theShip (sysCreateShip &scRoninB; korolovPos &svCorporate;))
-								(shpOrder theShip 'patrol korolovObj 10)
-								)
-							)
 
-						;	Create the mission
-						(msnCreate &msKorolovAtCharon; korolovObj)
+								;	Remove default Korolov ships and events
+								(enum (sysFindObject korolovObj "sHZ") theShip (objDestroy theShip))
+								(enum (sysFindObject korolovObj "TN:32; +unid:&stSealedCargoContainer;;") theCrate (objDestroy theCrate))
+								(sysCancelTimerEvent korolovObj 'OnTrafficControl)
+								(objSetEventHandler korolovObj &evKorolovAtCharon;)
+
+								;	Korolov station is already damaged
+								(objSetProperty korolovObj 'hp 250)
+
+								;	Add defenders
+								(for i 1 (rollDice 1 2)
+									(block (theShip)
+										(setq theShip (sysCreateShip &tbCommDefenders; korolovPos &svCorporate;))
+										(shpOrder theShip 'dock korolovObj)
+										(shpOrder theShip 'guard korolovObj)
+										)
+									)
+								(for i 1 (rollDice 1 4)
+									(block (theShip)
+										(setq theShip (sysCreateShip &tbCommPrivateCrafts; korolovPos &svCorporate;))
+										(shpOrder theShip 'dock korolovObj)
+										(shpOrder theShip 'gateOnThreat)
+										)
+									)
+								(for i 1 (rollDice 3 6)
+									(block (theShip)
+										(setq theShip (sysCreateShip &scRoninB; korolovPos &svCorporate;))
+										(shpOrder theShip 'patrol korolovObj 10)
+										)
+									)
+
+								;	Create the mission
+								(msnCreate &msKorolovAtCharon; korolovObj)
+								)
+
+						;	If the mission is already completed, then nothing to do.
+
+						(msnGetProperty missionObj 'isCompleted)
+							Nil
+
+						;	If we missed the initial attack timer, do it now.
+
+						(= (msnGetData missionObj 'timerState) 'attack1)
+							(msnFireEvent missionObj 'OnTimerAttack1)
+
+						;	If we missed the second attack timer, then we return 
+						;	to find the station destroyed.
+
+						(= (msnGetData missionObj 'timerState) 'attack2)
+							(block (
+								(korolovObj (objGetObjByID (objGetProperty missionObj 'ownerID)))
+								)
+								(msnAccept missionObj)
+								(staAbandon korolovObj)
+								)
 						)
 					)
 			</OnGlobalSystemStarted>
 
 			<OnTimerAttack1>
-				(block (
-					(korolovObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					)
-					;	If the player has not seen the briefing yet start the mission anyway
-					(msnAccept gSource)
+				(switch
+					;	If we're not in the Charon system then we remember that the
+					;	timer fired and deal with the result when we re-enter the system.
+
+					(!= (sysGetNode) 'CP)
+						(msnSetData gSource 'timerState 'attack1)
+
+					;	Proceed with encounter
+
+					(block (
+						(korolovObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						)
+						;	If the player has not seen the briefing yet start the mission anyway
+						(msnAccept gSource)
 					
-					;	Create fleets of pirates to attack
-					(for i 1 5
-						(sysAddEncounterEventAtDist 0 korolovObj &etPirateAmbush3; (random 100 200))
+						;	Create fleets of pirates to attack
+						(for i 1 5
+							(sysAddEncounterEventAtDist 0 korolovObj &etPirateAmbush3; (random 100 200))
+							)
 						)
 					)
 			</OnTimerAttack1>
 
 			<OnTimerAttack2>
-				(block (
-					(korolovObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
-					(pos (sysVectorPolarOffset korolovObj (random 0 359) 120))
-					)
+				(switch
+					;	If we're not in the Charon system then we remember that the
+					;	timer fired and deal with the result when we re-enter the system.
 
-					; Create drake missile ships
-					(for i 1 5
-						(block (theShip)
-							(setq theShip 
-								(sysCreateShip 
-										&scDrake; 
-										(sysVectorPolarOffset pos (multiply i 30) 24)
-										&svPirates;)
+					(!= (sysGetNode) 'CP)
+						(msnSetData gSource 'timerState 'attack2)
+
+					;	Proceed with encounter
+
+					(block (
+						(korolovObj (objGetObjByID (msnGetProperty gSource 'ownerID)))
+						(pos (sysVectorPolarOffset korolovObj (random 0 359) 120))
+						)
+
+						; Create drake missile ships
+						(for i 1 5
+							(block (theShip)
+								(setq theShip 
+									(sysCreateShip 
+											&scDrake; 
+											(sysVectorPolarOffset pos (multiply i 30) 24)
+											&svPirates;)
+									)
+
+								(shpOrder theShip 'attack korolovObj)
+								(shpOrder theShip 'gate)
+
+								(objSetData theShip 'KorolovAtCharon (objGetID gSource))
+								(msnIncData gSource 'targetsLeft)
+								(msnRegisterForEvents gSource theShip)
 								)
-
-							(shpOrder theShip 'attack korolovObj)
-							(shpOrder theShip 'gate)
-
-							(objSetData theShip 'KorolovAtCharon (objGetID gSource))
-							(msnIncData gSource 'targetsLeft)
-							(msnRegisterForEvents gSource theShip)
 							)
 						)
 					)
