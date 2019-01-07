@@ -448,6 +448,32 @@
 					(objFireEvent (shpGetOrderTarget gSource) "OnMinerDestroyed")
 					)
 			</OnDestroy>
+
+			<OnOrdersCompleted>
+				(block (
+					colonyObj
+					)
+					(switch
+
+						;	If we ever find ourselves without an order, find another
+						;	Ferian colony in the system and mine for it.
+
+						(setq colonyObj (sysFindObject gSource "TAN +ferian;"))
+							(block ()
+								(shpOrder gSource 'mine colonyObj)
+
+								;	We set our sovereign back to normal in case 
+								;	we're a refugee from a destroyed colony.
+
+								(objSetSovereign gSource &svFerianMiners;)
+								)
+
+						;	Otherwise, we gate out
+
+						(shpOrder gSource 'gate)
+						)
+					)
+			</OnOrdersCompleted>
 		</Events>
 	</ShipClass>
 
