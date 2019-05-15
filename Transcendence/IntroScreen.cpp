@@ -57,7 +57,9 @@ const int NEWS_PANE_INNER_SPACING_Y =			8;
 #define CMD_ACCOUNT_EDIT						CONSTLIT("cmdAccountEdit")
 #define CMD_CHANGE_PASSWORD						CONSTLIT("cmdChangePassword")
 #define CMD_OPEN_NEWS							CONSTLIT("cmdOpenNews")
-#define CMD_SHOW_MOD_EXCHANGE					CONSTLIT("cmdShowModExchange")
+#define CMD_RELOAD								CONSTLIT("cmdReload")
+#define CMD_SHOW_COLLECTION						CONSTLIT("cmdShowModExchange")
+#define CMD_SHOW_EXTENSIONS						CONSTLIT("cmdShowExtensions")
 #define CMD_SHOW_PROFILE						CONSTLIT("cmdShowProfile")
 #define CMD_SHOW_SETTINGS						CONSTLIT("cmdShowSettings")
 #define CMD_SIGN_OUT							CONSTLIT("cmdSignOut")
@@ -625,7 +627,9 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 	//	Debug icon
 
-	if (m_pTC->GetOptionBoolean(CGameSettings::debugMode))
+	bool bDebug = m_pTC->GetOptionBoolean(CGameSettings::debugMode);
+
+	if (bDebug)
 		{
 		VI.CreateImageButton(pRoot, CMD_TOGGLE_DEBUG, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageDebugIcon), CONSTLIT("Debug"), 0, &pButton);
 		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_TOGGLE_DEBUG);
@@ -635,7 +639,7 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
     //  Keyboard settings
 
-	VI.CreateImageButton(pRoot, CMD_SHOW_SETTINGS, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageSettingsIcon), CONSTLIT("Keyboard Settings"), 0, &pButton);
+	VI.CreateImageButton(pRoot, CMD_SHOW_SETTINGS, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageSettingsIcon), CONSTLIT("Controls"), 0, &pButton);
 	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_SETTINGS);
 
 	x -= (BUTTON_WIDTH + PADDING_LEFT);
@@ -661,9 +665,28 @@ void CTranscendenceWnd::CreatePlayerBarAnimation (IAnimatron **retpAni)
 
 	if (Service.HasCapability(ICIService::modExchange))
 		{
-		VI.CreateImageButton(pRoot, CMD_SHOW_MOD_EXCHANGE, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Mod Collection"), 0, &pButton);
-		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_MOD_EXCHANGE);
+		VI.CreateImageButton(pRoot, CMD_SHOW_COLLECTION, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageModExchangeIcon), CONSTLIT("Collection"), 0, &pButton);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_COLLECTION);
+
+		x -= (BUTTON_WIDTH + PADDING_LEFT);
 		}
+
+	//	Extensions
+
+	VI.CreateImageButton(pRoot, CMD_SHOW_EXTENSIONS, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageExtensionsIcon), CONSTLIT("Extensions"), 0, &pButton);
+	pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_SHOW_EXTENSIONS);
+
+	x -= (BUTTON_WIDTH + PADDING_LEFT);
+
+	//	Reload
+
+	if (bDebug)
+		{
+		VI.CreateImageButton(pRoot, CMD_RELOAD, x, (TITLE_BAR_HEIGHT - BUTTON_HEIGHT) / 2, &VI.GetImage(imageCloseIcon), CONSTLIT("Reload"), 0, &pButton);
+		pButton->AddListener(EVENT_ON_CLICK, m_pIntroSession, CMD_RELOAD);
+		}
+
+	x -= (BUTTON_WIDTH + PADDING_LEFT);
 
 	//	Done
 

@@ -126,12 +126,14 @@
 #define CMD_UI_EXIT								CONSTLIT("uiExit")
 #define CMD_UI_MUSIC_VOLUME_DOWN				CONSTLIT("uiMusicVolumeDown")
 #define CMD_UI_MUSIC_VOLUME_UP					CONSTLIT("uiMusicVolumeUp")
+#define CMD_UI_RELOAD							CONSTLIT("uiReload")
 #define CMD_UI_RESET_PASSWORD					CONSTLIT("uiResetPassword")
+#define CMD_UI_SHOW_EXTENSIONS					CONSTLIT("uiShowExtensions")
 #define CMD_UI_SHOW_GAME_STATS					CONSTLIT("uiShowGameStats")
 #define CMD_UI_SHOW_GALACTIC_MAP				CONSTLIT("uiShowGalacticMap")
 #define CMD_UI_SHOW_HELP						CONSTLIT("uiShowHelp")
 #define CMD_UI_SHOW_LOGIN						CONSTLIT("uiShowLogin")
-#define CMD_UI_SHOW_MOD_EXCHANGE				CONSTLIT("uiShowModExchange")
+#define CMD_UI_SHOW_COLLECTION					CONSTLIT("uiShowModExchange")
 #define CMD_UI_SHOW_PROFILE						CONSTLIT("uiShowProfile")
 #define CMD_UI_SHOW_SETTINGS    				CONSTLIT("uiShowSettings")
 #define CMD_UI_SIGN_OUT							CONSTLIT("uiSignOut")
@@ -162,7 +164,8 @@
 #define ERR_CANT_LOAD_GAME						CONSTLIT("Unable to load game")
 #define ERR_CANT_START_GAME						CONSTLIT("Unable to start game")
 #define ERR_CANT_SHOW_ADVENTURES				CONSTLIT("Unable to show list of adventures")
-#define ERR_CANT_SHOW_MOD_EXCHANGE				CONSTLIT("Unable to show Mod Collection screen")
+#define ERR_CANT_SHOW_COLLECTION				CONSTLIT("Unable to show Collection screen")
+#define ERR_CANT_SHOW_EXTENSIONS				CONSTLIT("Unable to show Extensions screen")
 #define ERR_CONTACT_KP							CONSTLIT("Contact Kronosaur Productions")
 #define ERR_LOAD_ERROR							CONSTLIT("Error loading extensions")
 #define ERR_RESET_PASSWORD_DESC					CONSTLIT("Automated password reset is not yet implemented. Please contact Kronosaur Productions at:\n\ntranscendence@kronosaur.com\n\nPlease provide your username.")
@@ -1468,7 +1471,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 
 	//	Mod exchange
 
-	else if (strEquals(sCmd, CMD_UI_SHOW_MOD_EXCHANGE))
+	else if (strEquals(sCmd, CMD_UI_SHOW_COLLECTION))
 		{
 		//	If we're not logged in, log in first.
 
@@ -1477,7 +1480,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			//	We pass the uiShowModExchange command to the login session. On
 			//	success, it will fire the command.
 
-			CLoginSession *pSession = new CLoginSession(m_HI, m_Service, CMD_UI_SHOW_MOD_EXCHANGE);
+			CLoginSession *pSession = new CLoginSession(m_HI, m_Service, CMD_UI_SHOW_COLLECTION);
 			if (error = m_HI.OpenPopupSession(pSession))
 				return error;
 			}
@@ -1489,7 +1492,7 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			DisplayMultiverseStatus(NULL_STR);
 			if (error = m_HI.OpenPopupSession(new CModExchangeSession(m_HI, m_Service, m_Multiverse, m_Model.GetUniverse().GetExtensionCollection(), m_Settings.GetBoolean(CGameSettings::debugMode))))
 				{
-				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_MOD_EXCHANGE, NULL_STR, CMD_NULL));
+				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_COLLECTION, NULL_STR, CMD_NULL));
 				return NOERROR;
 				}
 			}
@@ -1509,6 +1512,28 @@ ALERROR CTranscendenceController::OnCommand (const CString &sCmd, void *pData)
 			}
 		else
 			m_HI.HISessionCommand(CMD_SERVICE_EXTENSION_LOADED);
+		}
+
+	else if(strEquals(sCmd, CMD_UI_SHOW_EXTENSIONS))
+		{
+		if (error = m_HI.OpenPopupSession(new CExtensionsSession(m_HI, m_Service, g_pUniverse->GetExtensionCollection(), m_Settings.GetBoolean(CGameSettings::debugMode))))
+				{
+				m_HI.OpenPopupSession(new CMessageSession(m_HI, ERR_CANT_SHOW_EXTENSIONS, NULL_STR, CMD_NULL));
+				return NOERROR;
+				}
+		}
+
+	else if(strEquals(sCmd, CMD_UI_RELOAD))
+		{
+		//	Kill the intro
+		g_pTrans->StopIntro();
+
+		CString sCollectionFolder = pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_COLLECTION);
+		TArray<CString> ExtensionFolders;
+		ExtensionFolders.Insert(pathAddComponent(m_Settings.GetAppDataFolder(), FOLDER_EXTENSIONS));
+
+		m_HI.AddBackgroundTask(new CInitModelTask(m_HI, m_Model, m_Settings, sCollectionFolder, ExtensionFolders), 0, this, CMD_MODEL_INIT_DONE);
+		m_HI.ShowSession(new CWaitSession(m_HI, m_Service, CONSTLIT("Reloading")));
 		}
 
 	//	Service housekeeping
